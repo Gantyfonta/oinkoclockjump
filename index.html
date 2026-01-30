@@ -32,11 +32,18 @@
             transition: all 0.2s;
         }
         .skin-card:hover {
-            transform: scale(1.05);
+            transform: scale(1.02);
         }
         .skin-card.selected {
             border-color: #F472B6;
             background: rgba(244, 114, 182, 0.2);
+        }
+        .ability-text {
+            font-size: 10px;
+            color: #f472b6;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-top: 4px;
         }
     </style>
 </head>
@@ -48,7 +55,7 @@
         <div id="ui-home" class="absolute inset-0 flex flex-col items-center justify-center bg-indigo-950 z-40 text-white p-6 text-center">
             <div class="mb-8">
                 <h1 class="text-5xl font-black mb-1 tracking-tighter text-pink-400 drop-shadow-lg">OINK-O-CLOCK</h1>
-                <p class="text-pink-300/60 font-bold tracking-widest text-xs uppercase">Jump Through Time</p>
+                <p class="text-pink-300/60 font-bold tracking-widest text-xs uppercase text-glow">Jump Through Time</p>
             </div>
             
             <div class="flex flex-col gap-4 w-64">
@@ -68,14 +75,14 @@
 
         <!-- Skins Menu -->
         <div id="ui-skins" class="absolute inset-0 flex flex-col bg-indigo-900 z-50 text-white p-6 hidden">
-            <div class="flex justify-between items-center mb-8">
+            <div class="flex justify-between items-center mb-6">
                 <h2 class="text-3xl font-black italic">SKINS</h2>
                 <button onclick="closeSkins()" class="bg-white/10 hover:bg-white/20 p-2 rounded-full">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
             </div>
             
-            <div id="skins-grid" class="grid grid-cols-2 gap-4 overflow-y-auto pb-6">
+            <div id="skins-grid" class="grid grid-cols-1 gap-3 overflow-y-auto pb-6 pr-1">
                 <!-- Skins injected by JS -->
             </div>
         </div>
@@ -120,17 +127,19 @@
         const HEIGHT = 700;
         const PIG_RADIUS = 18;
         const JUMP_SPEED = 14;
-        const CLOCK_RADIUS = 60;
+        const BASE_CLOCK_RADIUS = 60;
+        const MIN_CLOCK_RADIUS = 35;
+        const MAX_CLOCK_RADIUS = 85;
         const CLOCK_SPACING = 260;
         const CLOCK_COLORS = ['#F472B6', '#60A5FA', '#34D399', '#FBBF24', '#A78BFA', '#FB923C'];
 
         const SKINS = [
-            { id: 'classic', name: 'Classic', body: '#F472B6', ears: '#EC4899', snout: '#F9A8D4', snoutDots: '#BE185D' },
-            { id: 'blueberry', name: 'Blueberry', body: '#60A5FA', ears: '#2563EB', snout: '#93C5FD', snoutDots: '#1E40AF' },
-            { id: 'matcha', name: 'Matcha', body: '#34D399', ears: '#059669', snout: '#6EE7B7', snoutDots: '#064E3B' },
-            { id: 'golden', name: 'Golden', body: '#FBBF24', ears: '#D97706', snout: '#FDE68A', snoutDots: '#78350F' },
-            { id: 'void', name: 'Void', body: '#4B5563', ears: '#1F2937', snout: '#9CA3AF', snoutDots: '#000000' },
-            { id: 'cyber', name: 'Cyber', body: '#A78BFA', ears: '#7C3AED', snout: '#C4B5FD', snoutDots: '#4C1D95' }
+            { id: 'classic', name: 'Classic', ability: 'None', desc: 'A well-rounded pig.', body: '#F472B6', ears: '#EC4899', snout: '#F9A8D4', snoutDots: '#BE185D' },
+            { id: 'blueberry', name: 'Blueberry', ability: 'Sticky', desc: '+15% Grab range on clocks.', body: '#60A5FA', ears: '#2563EB', snout: '#93C5FD', snoutDots: '#1E40AF' },
+            { id: 'matcha', name: 'Matcha', ability: 'Zen', desc: 'Clocks rotate 25% slower.', body: '#34D399', ears: '#059669', snout: '#6EE7B7', snoutDots: '#064E3B' },
+            { id: 'golden', name: 'Golden', ability: 'Value', desc: 'Earn +1 extra score per jump.', body: '#FBBF24', ears: '#D97706', snout: '#FDE68A', snoutDots: '#78350F' },
+            { id: 'void', name: 'Void', ability: 'Warp', desc: '+20% Jump speed.', body: '#4B5563', ears: '#1F2937', snout: '#9CA3AF', snoutDots: '#000000' },
+            { id: 'cyber', name: 'Cyber', ability: 'Laser', desc: 'Shows jump trajectory line.', body: '#A78BFA', ears: '#7C3AED', snout: '#C4B5FD', snoutDots: '#4C1D95' }
         ];
 
         let state = {
@@ -144,10 +153,8 @@
             stars: []
         };
 
-        // Initialize UI values
         homeBestVal.innerText = state.best;
 
-        // Initialize stars for background
         for(let i=0; i<60; i++) {
             state.stars.push({
                 x: Math.random() * WIDTH,
@@ -159,13 +166,18 @@
 
         function renderSkins() {
             skinsGrid.innerHTML = SKINS.map(skin => `
-                <div onclick="selectSkin('${skin.id}')" class="skin-card border-2 border-white/10 bg-indigo-800/50 p-4 rounded-xl flex flex-col items-center ${state.selectedSkinId === skin.id ? 'selected' : ''}">
-                    <div class="w-12 h-12 mb-2 relative">
-                        <!-- Tiny Preview of Pig -->
-                        <div class="absolute inset-0 rounded-full" style="background: ${skin.body}"></div>
-                        <div class="absolute w-6 h-4 rounded-full bottom-2 left-3" style="background: ${skin.snout}"></div>
+                <div onclick="selectSkin('${skin.id}')" class="skin-card border-2 border-white/10 bg-indigo-800/50 p-4 rounded-xl flex items-center gap-4 ${state.selectedSkinId === skin.id ? 'selected' : ''}">
+                    <div class="w-14 h-14 relative flex-shrink-0">
+                        <div class="absolute inset-0 rounded-full shadow-lg" style="background: ${skin.body}"></div>
+                        <div class="absolute w-7 h-5 rounded-full bottom-2 left-3.5" style="background: ${skin.snout}"></div>
+                        <div class="absolute w-1.5 h-1.5 rounded-full bottom-3.5 left-5" style="background: ${skin.snoutDots}"></div>
+                        <div class="absolute w-1.5 h-1.5 rounded-full bottom-3.5 right-5" style="background: ${skin.snoutDots}"></div>
                     </div>
-                    <span class="text-xs font-black uppercase tracking-wider">${skin.name}</span>
+                    <div class="text-left">
+                        <span class="text-sm font-black uppercase tracking-wider block">${skin.name}</span>
+                        <div class="ability-text">${skin.ability}</div>
+                        <p class="text-[10px] opacity-60 leading-tight">${skin.desc}</p>
+                    </div>
                 </div>
             `).join('');
         }
@@ -194,12 +206,18 @@
         };
 
         function createClock(id, y, index) {
-            const speed = (0.04 + (index * 0.002)) * (index % 2 === 0 ? 1 : -1);
+            const radius = MIN_CLOCK_RADIUS + Math.random() * (MAX_CLOCK_RADIUS - MIN_CLOCK_RADIUS);
+            // Speed is inverse to size: Bigger = Slower
+            let speed = (0.04 + (index * 0.002)) * (BASE_CLOCK_RADIUS / radius) * (index % 2 === 0 ? 1 : -1);
+            
+            // Ability: Matcha slows clocks
+            if (state.selectedSkinId === 'matcha') speed *= 0.75;
+
             return {
                 id,
-                x: 60 + Math.random() * (WIDTH - 120),
+                x: radius + 20 + Math.random() * (WIDTH - (radius * 2 + 40)),
                 y,
-                radius: CLOCK_RADIUS,
+                radius: radius,
                 angle: Math.random() * Math.PI * 2,
                 speed,
                 color: CLOCK_COLORS[index % CLOCK_COLORS.length]
@@ -217,22 +235,20 @@
                 id: 0,
                 x: WIDTH / 2,
                 y: HEIGHT - 150,
-                radius: CLOCK_RADIUS,
+                radius: BASE_CLOCK_RADIUS,
                 angle: -Math.PI / 2,
-                speed: 0.04,
+                speed: state.selectedSkinId === 'matcha' ? 0.03 : 0.04,
                 color: CLOCK_COLORS[0]
             });
             
-            // Setup pig
             state.pig = {
                 x: WIDTH / 2,
-                y: HEIGHT - 150 - CLOCK_RADIUS,
+                y: HEIGHT - 150 - BASE_CLOCK_RADIUS,
                 vx: 0,
                 vy: 0,
                 attachedTo: 0
             };
 
-            // Prep ahead
             for(let i=1; i<6; i++) {
                 state.clocks.push(createClock(i, HEIGHT - 150 - i * CLOCK_SPACING, i));
             }
@@ -250,15 +266,18 @@
             const clock = state.clocks.find(c => c.id === state.pig.attachedTo);
             if (!clock) return;
 
-            state.pig.vx = Math.cos(clock.angle) * JUMP_SPEED;
-            state.pig.vy = Math.sin(clock.angle) * JUMP_SPEED;
+            let force = JUMP_SPEED;
+            // Ability: Void warps jump speed
+            if (state.selectedSkinId === 'void') force *= 1.2;
+
+            state.pig.vx = Math.cos(clock.angle) * force;
+            state.pig.vy = Math.sin(clock.angle) * force;
             state.pig.attachedTo = null;
         }
 
         function update() {
             if (state.status !== 'PLAYING') return;
 
-            // Clocks rotation
             state.clocks.forEach(c => c.angle += c.speed);
 
             if (state.pig.attachedTo !== null) {
@@ -272,35 +291,39 @@
                 state.pig.y += state.pig.vy;
 
                 // Collision
+                let grabRange = 5;
+                // Ability: Blueberry is sticky
+                if (state.selectedSkinId === 'blueberry') grabRange = 12;
+
                 for (const clock of state.clocks) {
                     const dx = state.pig.x - clock.x;
                     const dy = state.pig.y - clock.y;
                     const dist = Math.sqrt(dx*dx + dy*dy);
-                    if (dist < clock.radius + 5) {
+                    if (dist < clock.radius + grabRange) {
                         state.pig.attachedTo = clock.id;
                         state.pig.vx = 0;
                         state.pig.vy = 0;
+                        
                         if (clock.id > state.score) {
-                            state.score = clock.id;
+                            // Ability: Golden grants extra points
+                            const increment = state.selectedSkinId === 'golden' ? 2 : 1;
+                            state.score += (clock.id - (state.score || 0)) * increment;
                             scoreVal.innerText = state.score;
                         }
                         break;
                     }
                 }
 
-                // Bounds
                 if (state.pig.y > state.cameraY + HEIGHT + 50 || state.pig.x < -50 || state.pig.x > WIDTH + 50) {
                     gameOver();
                 }
             }
 
-            // Camera
             const targetY = state.pig.y - HEIGHT / 1.6;
             if (targetY < state.cameraY) {
                 state.cameraY += (targetY - state.cameraY) * 0.1;
             }
 
-            // Infinite gen
             const last = state.clocks[state.clocks.length - 1];
             if (last && last.y > state.cameraY - 400) {
                 const nextId = last.id + 1;
@@ -324,7 +347,6 @@
             ctx.save();
             ctx.translate(0, -state.cameraY);
 
-            // Stars
             state.stars.forEach(s => {
                 let sy = s.y;
                 while(sy < state.cameraY) sy += HEIGHT * 2;
@@ -333,7 +355,21 @@
                 ctx.fillRect(s.x, sy, s.size, s.size);
             });
 
-            // Clocks
+            // Ability: Cyber laser sight
+            if (state.status === 'PLAYING' && state.selectedSkinId === 'cyber' && state.pig.attachedTo !== null) {
+                const clock = state.clocks.find(c => c.id === state.pig.attachedTo);
+                if (clock) {
+                    ctx.beginPath();
+                    ctx.setLineDash([5, 10]);
+                    ctx.moveTo(state.pig.x, state.pig.y);
+                    ctx.lineTo(state.pig.x + Math.cos(clock.angle) * 300, state.pig.y + Math.sin(clock.angle) * 300);
+                    ctx.strokeStyle = 'rgba(167, 139, 250, 0.4)';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+            }
+
             state.clocks.forEach(c => {
                 ctx.beginPath();
                 ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2);
@@ -346,9 +382,10 @@
 
                 ctx.fillStyle = c.color;
                 ctx.globalAlpha = 0.3;
-                for(let i=0; i<12; i++) {
-                    const tx = c.x + Math.cos(i * Math.PI/6) * (c.radius - 12);
-                    const ty = c.y + Math.sin(i * Math.PI/6) * (c.radius - 12);
+                const ticks = Math.floor(c.radius / 5);
+                for(let i=0; i<ticks; i++) {
+                    const tx = c.x + Math.cos(i * (Math.PI*2/ticks)) * (c.radius - 12);
+                    const ty = c.y + Math.sin(i * (Math.PI*2/ticks)) * (c.radius - 12);
                     ctx.beginPath();
                     ctx.arc(tx, ty, 2, 0, Math.PI*2);
                     ctx.fill();
@@ -368,8 +405,7 @@
                 ctx.fill();
             });
 
-            // Pig (Dynamic Skins)
-            if (state.status !== 'HOME' || state.status === 'GAMEOVER') {
+            if (state.status !== 'HOME') {
                 const skin = SKINS.find(s => s.id === state.selectedSkinId) || SKINS[0];
                 const p = state.pig;
                 ctx.save();
@@ -377,18 +413,15 @@
                 const rot = p.attachedTo !== null ? 0 : Math.atan2(p.vy, p.vx) + Math.PI/2;
                 ctx.rotate(rot);
                 
-                // Body
                 ctx.fillStyle = skin.body;
                 ctx.beginPath();
                 ctx.ellipse(0, 0, 18, 16, 0, 0, Math.PI*2);
                 ctx.fill();
-                // Ears
                 ctx.fillStyle = skin.ears;
                 ctx.beginPath();
                 ctx.moveTo(-12, -12); ctx.lineTo(-18, -20); ctx.lineTo(-6, -14); ctx.fill();
                 ctx.beginPath();
                 ctx.moveTo(12, -12); ctx.lineTo(18, -20); ctx.lineTo(6, -14); ctx.fill();
-                // Snout
                 ctx.fillStyle = skin.snout;
                 ctx.beginPath();
                 ctx.ellipse(0, 4, 8, 6, 0, 0, Math.PI*2);
@@ -396,7 +429,6 @@
                 ctx.fillStyle = skin.snoutDots;
                 ctx.beginPath(); ctx.arc(-3, 4, 1.5, 0, Math.PI*2); ctx.fill();
                 ctx.beginPath(); ctx.arc(3, 4, 1.5, 0, Math.PI*2); ctx.fill();
-                // Eyes
                 ctx.fillStyle = skin.id === 'void' ? 'white' : 'black';
                 ctx.beginPath(); ctx.arc(-6, -4, 2.5, 0, Math.PI*2); ctx.fill();
                 ctx.beginPath(); ctx.arc(6, -4, 2.5, 0, Math.PI*2); ctx.fill();
@@ -414,13 +446,10 @@
 
         window.addEventListener('keydown', (e) => {
             if (e.code === 'Space') {
-                // Prevent scrolling when playing or interacting with game
                 e.preventDefault();
-                
                 if (state.status === 'PLAYING') {
                     jump();
                 } else if (state.status === 'HOME' || state.status === 'GAMEOVER') {
-                    // Only trigger if we aren't in a sub-menu like Skins
                     if (uiSkins.classList.contains('hidden')) {
                         startGame();
                     }
@@ -428,7 +457,6 @@
             }
         });
 
-        // Global mouse/touch interaction for jump
         canvas.addEventListener('mousedown', (e) => {
             if (state.status === 'PLAYING') jump();
         });
