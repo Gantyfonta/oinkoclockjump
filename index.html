@@ -318,11 +318,15 @@
                     break;
                 case 'unlock':
                     const osc2 = audioCtx.createOscillator();
-                    osc2.connect(gain);
+                    const gain2 = audioCtx.createGain();
+                    osc2.connect(gain2);
+                    gain2.connect(audioCtx.destination);
                     osc.frequency.setValueAtTime(523.25, now);
                     osc2.frequency.setValueAtTime(659.25, now);
                     gain.gain.setValueAtTime(0.1, now);
+                    gain2.gain.setValueAtTime(0.1, now);
                     gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+                    gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
                     osc.start(now); osc2.start(now);
                     osc.stop(now + 0.8); osc2.stop(now + 0.8);
                     break;
@@ -427,6 +431,20 @@
             { title: "Take the Leap!", desc: "Click or press Space to jump! Try to land on the green clock above.", btn: "Jump!" },
             { title: "Perfect!", desc: "Landing on clocks gives you points. Climbing higher increases your score. Collect coins to buy skins!", btn: "Start Playing!" }
         ];
+
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bg = type === 'error' ? 'bg-red-500' : 'bg-pink-500';
+            toast.className = `toast ${bg} text-white px-6 py-2 rounded-full font-black text-xs shadow-xl flex items-center gap-2 pointer-events-auto`;
+            toast.innerHTML = `<span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-20px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
 
         function drawPigAvatar(pctx, skin, x, y, scale = 1, rotation = 0) {
             pctx.save();
@@ -542,7 +560,6 @@
             document.getElementById('tut-btn').innerText = step.btn;
             uiTutorial.classList.remove('hidden');
             if (state.tutorialStep === 2) {
-                // Wait for jump
                 uiTutorial.classList.add('pointer-events-none');
                 document.getElementById('tut-btn').classList.add('hidden');
             } else {
@@ -604,6 +621,37 @@
             document.getElementById('ui-themes').classList.remove('hidden');
         };
 
+        window.buyRandomSkin = () => {
+            if (state.coins < 100) return showToast("Not enough coins!", "error");
+            const locked = SKINS.filter(s => !state.unlockedSkins.includes(s.id));
+            if (locked.length === 0) return showToast("All skins owned!");
+            const choice = locked[Math.floor(Math.random() * locked.length)];
+            state.coins -= 100;
+            state.unlockedSkins.push(choice.id);
+            localStorage.setItem('oinkCoins', state.coins);
+            localStorage.setItem('oinkUnlocked', JSON.stringify(state.unlockedSkins));
+            playSound('unlock');
+            showToast(`Unlocked ${choice.name}!`);
+            openSkins();
+            refreshUI();
+            checkAchievements();
+        };
+
+        window.buyRandomTheme = () => {
+            if (state.coins < 250) return showToast("Not enough coins!", "error");
+            const locked = THEMES.filter(t => !state.unlockedThemes.includes(t.id));
+            if (locked.length === 0) return showToast("All themes owned!");
+            const choice = locked[Math.floor(Math.random() * locked.length)];
+            state.coins -= 250;
+            state.unlockedThemes.push(choice.id);
+            localStorage.setItem('oinkCoins', state.coins);
+            localStorage.setItem('oinkThemesUnlocked', JSON.stringify(state.unlockedThemes));
+            playSound('unlock');
+            showToast(`Unlocked ${choice.name} Theme!`);
+            openThemes();
+            refreshUI();
+        };
+
         window.selectSkin = (id) => { state.selectedSkinId = id; localStorage.setItem('oinkSkin', id); openSkins(); playSound('land'); };
         window.selectTheme = (id) => { state.selectedThemeId = id; localStorage.setItem('oinkTheme', id); openThemes(); refreshUI(); playSound('land'); };
         window.closeSkins = () => uiSkins.classList.add('hidden');
@@ -615,12 +663,42 @@
             uiLeaderboard.classList.remove('hidden');
             leaderboardList.innerHTML = '<div class="text-center py-10 opacity-50 animate-pulse">SYNCING LEGENDS...</div>';
             try {
-                const snap = await db.ref('leaderboard').orderByChild('score').limitToLast(10).once('value');
-                const data = []; snap.forEach(c => data.push(c.val()));
-                const sorted = data.reverse();
-                if (sorted.length === 0) { leaderboardList.innerHTML = '<div class="text-center py-10 opacity-30">NO RECORDED LEGENDS YET.</div>'; }
-                else { leaderboardList.innerHTML = sorted.map((e, i) => `<div class="flex justify-between items-center p-3 rounded-xl border ${e.name === state.username ? 'border-pink-500 bg-pink-500/10' : 'border-white/5 bg-white/5'}"><div class="flex items-center gap-3"><span class="font-black ${i < 3 ? 'text-yellow-400' : 'text-white/20'} text-xl italic w-6">${i+1}</span><span class="font-bold text-sm">${e.name}</span></div><span class="font-black text-pink-400 text-lg">${e.score}</span></div>`).join(''); }
-            } catch (err) { leaderboardList.innerHTML = '<div class="text-center py-10 opacity-30">CONNECTION INTERRUPTED.</div>'; }
+                const snap = await db.ref('leaderboard').orderByChild('score').limitToLast(20).once('value');
+                const data = []; 
+                snap.forEach(c => {
+                    const val = c.val();
+                    if (val && val.name && typeof val.score === 'number') data.push(val);
+                });
+                
+                // Sort client-side just in case server index is pending
+                data.sort((a, b) => b.score - a.score);
+                
+                if (data.length === 0) { 
+                    leaderboardList.innerHTML = `<div class="text-center py-10 opacity-30">NO GLOBAL LEGENDS YET.<br><span class="text-[10px]">Your best: ${state.best}</span></div>`; 
+                } else { 
+                    leaderboardList.innerHTML = data.map((e, i) => {
+                        const isYou = e.name && state.username && (e.name.toLowerCase() === state.username.toLowerCase());
+                        let medal = '';
+                        if (i === 0) medal = '🥇';
+                        else if (i === 1) medal = '🥈';
+                        else if (i === 2) medal = '🥉';
+
+                        return `<div class="flex justify-between items-center p-4 rounded-2xl border ${isYou ? 'border-pink-500 bg-pink-500/20' : 'border-white/5 bg-white/5'} mb-2 transition-all">
+                            <div class="flex items-center gap-4">
+                                <span class="font-black ${i < 3 ? 'text-yellow-400' : 'text-white/20'} text-xl italic w-8">${medal || (i + 1)}</span>
+                                <div class="flex flex-col">
+                                    <span class="font-black text-sm uppercase tracking-tight">${e.name}</span>
+                                    ${isYou ? '<span class="text-[8px] text-pink-400 font-bold uppercase tracking-widest">YOU</span>' : ''}
+                                </div>
+                            </div>
+                            <span class="font-black text-pink-400 text-xl">${e.score}</span>
+                        </div>`;
+                    }).join(''); 
+                }
+            } catch (err) { 
+                console.error(err);
+                leaderboardList.innerHTML = `<div class="text-center py-10 opacity-30">OFFLINE MODE<br><span class="text-[10px]">Showing your personal best: ${state.best}</span></div>`; 
+            }
         };
 
         function createClock(id, y, index) {
@@ -652,17 +730,13 @@
             state.pig.vy = Math.sin(clock.angle) * force;
             state.pig.attachedTo = null;
             playSound('jump');
-            if (state.isTutorial && state.tutorialStep === 2) {
-                // Advance after jump in tutorial
-            }
         }
 
         function update() {
             if (state.status !== 'PLAYING') return;
             
-            // Tutorial Pausing Logic
             if (state.isTutorial) {
-                if (state.tutorialStep === 0 || state.tutorialStep === 1 || state.tutorialStep === 3) return; // Frozen steps
+                if (state.tutorialStep === 0 || state.tutorialStep === 1 || state.tutorialStep === 3) return;
             }
 
             state.rainbowHue = (state.rainbowHue + 2) % 360;
@@ -686,7 +760,11 @@
                         state.pig.attachedTo = clock.id; state.pig.vx = 0; state.pig.vy = 0;
                         if (clock.id > state.lastClockId) {
                             let multiplier = 1;
-                            if (state.selectedSkinId === 'golden') { multiplier = 2; document.getElementById('score-container').classList.add('gold-flash'); setTimeout(() => document.getElementById('score-container').classList.remove('gold-flash'), 300); }
+                            if (state.selectedSkinId === 'golden') { 
+                                multiplier = 2; 
+                                document.getElementById('score-container').classList.add('gold-flash'); 
+                                setTimeout(() => document.getElementById('score-container').classList.remove('gold-flash'), 300); 
+                            }
                             if (state.selectedSkinId === 'devil') multiplier = 3;
                             if (state.selectedSkinId === 'rainbow') { state.coins += 5; state.totalCoinsEarned += 5; refreshUI(); }
                             state.score += (clock.id - state.lastClockId) * multiplier;
@@ -703,12 +781,14 @@
                 if (state.pig.y > state.cameraY + HEIGHT + 120 || state.pig.x < -150 || state.pig.x > WIDTH + 150) {
                     if (state.isTutorial) {
                         state.pig.x = WIDTH/2; state.pig.y = state.cameraY + HEIGHT - 200; state.pig.vy = -10; state.pig.vx = 0;
-                        return; // Safe tutorial
+                        return;
                     }
                     if (state.selectedSkinId === 'slime' && !state.pig.slimeUsed) {
-                        state.pig.slimeUsed = true; state.pig.y = state.cameraY + HEIGHT - 10; state.pig.vy = -22; state.pig.vx = (WIDTH/2 - state.pig.x) * 0.05; gameContainer.classList.add('slime-flash'); playSound('unlock'); setTimeout(() => gameContainer.classList.remove('slime-flash'), 500); unlockAchievement('ability_slime');
+                        state.pig.slimeUsed = true; state.pig.y = state.cameraY + HEIGHT - 10; state.pig.vy = -22; state.pig.vx = (WIDTH/2 - state.pig.x) * 0.05; 
+                        gameContainer.classList.add('slime-flash'); playSound('unlock'); setTimeout(() => gameContainer.classList.remove('slime-flash'), 500); unlockAchievement('ability_slime');
                     } else if (state.selectedSkinId === 'zombie' && !state.pig.zombieUsed) {
-                        state.pig.zombieUsed = true; state.pig.y = state.cameraY + HEIGHT/2; state.pig.vy = -12; state.pig.vx = 0; state.pig.x = WIDTH/2; gameContainer.classList.add('slime-flash'); playSound('unlock'); setTimeout(() => gameContainer.classList.remove('slime-flash'), 500); unlockAchievement('ability_zombie');
+                        state.pig.zombieUsed = true; state.pig.y = state.cameraY + HEIGHT/2; state.pig.vy = -12; state.pig.vx = 0; state.pig.x = WIDTH/2; 
+                        gameContainer.classList.add('slime-flash'); playSound('unlock'); setTimeout(() => gameContainer.classList.remove('slime-flash'), 500); unlockAchievement('ability_zombie');
                     } else gameOver();
                 }
             }
@@ -726,10 +806,28 @@
             const earned = state.score;
             state.coins += earned; state.totalCoinsEarned += earned;
             localStorage.setItem('oinkCoins', state.coins);
-            if (state.score > state.best) { state.best = state.score; localStorage.setItem('oinkBest', state.best); document.getElementById('new-best-tag').classList.remove('hidden'); }
-            else { document.getElementById('new-best-tag').classList.add('hidden'); }
-            earnedCoinsText.innerText = `+${earned}`; finalScoreLabel.innerText = state.score; gameoverTotalCoins.innerText = state.coins; uiGameOver.classList.remove('hidden'); refreshUI(); checkAchievements();
-            if (state.username) { db.ref('leaderboard/'+state.username.toLowerCase()).set({ name: state.username, score: parseInt(state.best) }).catch(()=>{}); }
+            localStorage.setItem('oinkTotalCoins', state.totalCoinsEarned);
+            
+            if (state.score > state.best) { 
+                state.best = state.score; 
+                localStorage.setItem('oinkBest', state.best); 
+                document.getElementById('new-best-tag').classList.remove('hidden'); 
+                if (state.username) {
+                    db.ref('leaderboard/'+state.username.toLowerCase()).set({ 
+                        name: state.username, 
+                        score: parseInt(state.best) 
+                    }).catch(e => console.error("Score sync failed", e));
+                }
+            } else { 
+                document.getElementById('new-best-tag').classList.add('hidden'); 
+            }
+            
+            earnedCoinsText.innerText = `+${earned}`; 
+            finalScoreLabel.innerText = state.score; 
+            gameoverTotalCoins.innerText = state.coins; 
+            uiGameOver.classList.remove('hidden'); 
+            refreshUI(); 
+            checkAchievements();
         }
 
         function draw() {
@@ -745,7 +843,7 @@
             state.clocks.forEach(c => {
                 ctx.globalAlpha = 1.0;
                 let clockColor = c.color;
-                if (state.isTutorial && c.id === 1) clockColor = '#34D399'; // Highlight target clock
+                if (state.isTutorial && c.id === 1) clockColor = '#34D399';
 
                 if (theme.type === 'CLOCK') {
                     ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2); ctx.strokeStyle = clockColor; ctx.lineWidth = 6; ctx.stroke();
@@ -761,7 +859,6 @@
                 const p = state.pig;
                 const rot = p.attachedTo !== null ? 0 : Math.atan2(p.vy, p.vx) + Math.PI/2;
                 
-                // Tutorial Indicator
                 if (state.isTutorial && p.attachedTo !== null && state.tutorialStep === 2) {
                     const target = state.clocks.find(c => c.id === 1);
                     ctx.setLineDash([5, 5]); ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
@@ -774,11 +871,26 @@
         }
 
         function loop() { update(); draw(); requestAnimationFrame(loop); }
-        window.addEventListener('keydown', (e) => { if (e.code === 'Space') { e.preventDefault(); if (state.status === 'PLAYING') jump(); else if (state.status === 'HOME' || state.status === 'GAMEOVER') startGame(); } });
+        window.addEventListener('keydown', (e) => { 
+            if (e.code === 'Space') { 
+                e.preventDefault(); 
+                if (state.status === 'PLAYING') jump(); 
+                else if (state.status === 'HOME' || state.status === 'GAMEOVER') startGame(); 
+            } 
+        });
         canvas.addEventListener('mousedown', () => { initAudio(); if (state.status === 'PLAYING') jump(); });
         canvas.addEventListener('touchstart', (e) => { e.preventDefault(); initAudio(); if (state.status === 'PLAYING') jump(); });
         loop();
-        window.backToHome = () => { state.status='HOME'; uiGameOver.classList.add('hidden'); uiHUD.classList.add('hidden'); uiHome.classList.remove('hidden'); refreshUI(); };
+        window.backToHome = () => { 
+            state.status='HOME'; 
+            uiGameOver.classList.add('hidden'); 
+            uiHUD.classList.add('hidden'); 
+            uiHome.classList.remove('hidden'); 
+            refreshUI(); 
+        };
+        
+        // Initial Refresh
+        refreshUI();
     </script>
 </body>
 </html>
