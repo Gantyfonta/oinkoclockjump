@@ -108,6 +108,13 @@
             90% { transform: translateY(0); opacity: 1; }
             100% { transform: translateY(-150%); opacity: 0; }
         }
+        .tutorial-pulse {
+            animation: tut-pulse 1.5s infinite ease-in-out;
+        }
+        @keyframes tut-pulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
     </style>
 </head>
 <body>
@@ -140,6 +147,7 @@
                     <button onclick="openAchievements()" class="bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-3 rounded-xl text-xs transition-transform active:scale-95">GOALS</button>
                     <button onclick="openLeaderboard()" class="bg-indigo-800 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-xs transition-transform active:scale-95">RANKINGS</button>
                 </div>
+                <button onclick="startTutorial()" class="mt-2 text-[10px] font-black uppercase text-indigo-400 hover:text-white transition-colors tracking-widest">How to Play?</button>
             </div>
 
             <div class="mt-8 group cursor-pointer" onclick="showUsernameEntry()">
@@ -150,6 +158,16 @@
             <div class="mt-6 text-indigo-300/40 text-[10px] font-bold uppercase tracking-widest">
                 Personal Best Record: <span id="home-best-val" class="text-white">0</span>
             </div>
+        </div>
+
+        <!-- Tutorial UI -->
+        <div id="ui-tutorial" class="absolute inset-0 flex flex-col items-center justify-end p-12 bg-black/40 backdrop-blur-[2px] z-[70] hidden pointer-events-none">
+            <div class="bg-indigo-900/90 border-2 border-pink-500 p-6 rounded-3xl shadow-2xl text-white text-center w-full tutorial-pulse pointer-events-auto">
+                <h3 id="tut-title" class="text-xl font-black italic uppercase mb-2">Tutorial</h3>
+                <p id="tut-desc" class="text-sm font-bold text-pink-200 mb-6">Instructions go here.</p>
+                <button id="tut-btn" onclick="advanceTutorial()" class="bg-pink-500 text-white font-black py-2 px-8 rounded-xl active:scale-95 transition-transform uppercase text-sm">Got it!</button>
+            </div>
+            <button onclick="skipTutorial()" class="mt-4 pointer-events-auto text-[10px] font-bold text-white/40 uppercase tracking-widest hover:text-white transition-colors">Skip Tutorial</button>
         </div>
 
         <!-- Username Entry -->
@@ -320,6 +338,7 @@
         const uiLeaderboard = document.getElementById('ui-leaderboard');
         const uiThemes = document.getElementById('ui-themes');
         const uiAchievements = document.getElementById('ui-achievements');
+        const uiTutorial = document.getElementById('ui-tutorial');
         const achievementsList = document.getElementById('achievements-list');
         const leaderboardList = document.getElementById('leaderboard-list');
         const skinsGrid = document.getElementById('skins-grid');
@@ -390,14 +409,24 @@
             selectedThemeId: localStorage.getItem('oinkTheme') || 'classic',
             unlockedAchievements: JSON.parse(localStorage.getItem('oinkAchieved') || '[]'),
             username: localStorage.getItem('oinkUser') || '',
+            hasSeenTutorial: localStorage.getItem('oinkTutorialSeen') === 'true',
             cameraY: 0,
             pig: { x: 200, y: 550, vx: 0, vy: 0, attachedTo: null, slimeUsed: false, zombieUsed: false },
             clocks: [],
             stars: [],
             localScores: JSON.parse(localStorage.getItem('oinkLocalLeaderboard') || '[]'),
             lastClockId: -1,
-            rainbowHue: 0
+            rainbowHue: 0,
+            isTutorial: false,
+            tutorialStep: 0
         };
+
+        const TUTORIAL_STEPS = [
+            { title: "Welcome Piggy!", desc: "You are a brave pig leaping through time. Your goal is to jump on clocks to climb higher!", btn: "Let's Go!" },
+            { title: "Watch the Hand", desc: "The clock hand shows where you will jump. Wait for it to point towards the next clock above you.", btn: "Okay!" },
+            { title: "Take the Leap!", desc: "Click or press Space to jump! Try to land on the green clock above.", btn: "Jump!" },
+            { title: "Perfect!", desc: "Landing on clocks gives you points. Climbing higher increases your score. Collect coins to buy skins!", btn: "Start Playing!" }
+        ];
 
         function drawPigAvatar(pctx, skin, x, y, scale = 1, rotation = 0) {
             pctx.save();
@@ -448,24 +477,14 @@
             if (state.unlockedAchievements.includes(id)) return;
             const ach = ACHIEVEMENTS.find(a => a.id === id);
             if (!ach) return;
-
             state.unlockedAchievements.push(id);
             localStorage.setItem('oinkAchieved', JSON.stringify(state.unlockedAchievements));
-            
             const container = document.getElementById('achievement-popup-container');
             const popup = document.createElement('div');
             popup.className = 'achievement-unlock bg-gradient-to-r from-yellow-500 to-amber-600 p-4 rounded-2xl border-2 border-yellow-300 shadow-2xl flex items-center gap-4 text-white';
-            popup.innerHTML = `
-                <div class="text-3xl">🏆</div>
-                <div>
-                    <div class="text-[10px] font-black uppercase tracking-widest opacity-70">Achievement Unlocked!</div>
-                    <div class="font-black text-sm">${ach.name}</div>
-                    <div class="text-[9px] opacity-80">+${ach.reward} Coins Rewarded</div>
-                </div>
-            `;
+            popup.innerHTML = `<div class="text-3xl">🏆</div><div><div class="text-[10px] font-black uppercase tracking-widest opacity-70">Achievement Unlocked!</div><div class="font-black text-sm">${ach.name}</div><div class="text-[9px] opacity-80">+${ach.reward} Coins Rewarded</div></div>`;
             container.appendChild(popup);
             setTimeout(() => popup.remove(), 4000);
-
             state.coins += ach.reward;
             refreshUI();
             playSound('unlock');
@@ -492,17 +511,52 @@
             document.getElementById('buy-theme-btn').disabled = state.coins < 250 || lockedThemes === 0;
             if (state.selectedThemeId === 'noir') gameContainer.classList.add('noir-mode');
             else gameContainer.classList.remove('noir-mode');
-            localStorage.setItem('oinkTotalCoins', state.totalCoinsEarned);
         }
 
         for(let i=0; i<60; i++) state.stars.push({ x: Math.random() * WIDTH, y: Math.random() * HEIGHT * 2, size: Math.random() * 2, opacity: Math.random() * 0.5 + 0.2 });
 
-        function showToast(msg, type='info') {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type==='success'?'bg-green-500':'bg-pink-500'} text-white text-[10px] font-bold py-2 px-4 rounded-full shadow-lg pointer-events-none`;
-            toast.innerText = msg;
-            document.getElementById('toast-container').appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+        function startTutorial() {
+            state.isTutorial = true;
+            state.tutorialStep = 0;
+            startGame(true);
+            updateTutorialUI();
+        }
+
+        function advanceTutorial() {
+            state.tutorialStep++;
+            if (state.tutorialStep >= TUTORIAL_STEPS.length) {
+                state.isTutorial = false;
+                state.hasSeenTutorial = true;
+                localStorage.setItem('oinkTutorialSeen', 'true');
+                uiTutorial.classList.add('hidden');
+                return;
+            }
+            updateTutorialUI();
+            playSound('land');
+        }
+
+        function updateTutorialUI() {
+            const step = TUTORIAL_STEPS[state.tutorialStep];
+            document.getElementById('tut-title').innerText = step.title;
+            document.getElementById('tut-desc').innerText = step.desc;
+            document.getElementById('tut-btn').innerText = step.btn;
+            uiTutorial.classList.remove('hidden');
+            if (state.tutorialStep === 2) {
+                // Wait for jump
+                uiTutorial.classList.add('pointer-events-none');
+                document.getElementById('tut-btn').classList.add('hidden');
+            } else {
+                uiTutorial.classList.remove('pointer-events-none');
+                document.getElementById('tut-btn').classList.remove('hidden');
+            }
+        }
+
+        function skipTutorial() {
+            state.isTutorial = false;
+            state.hasSeenTutorial = true;
+            localStorage.setItem('oinkTutorialSeen', 'true');
+            uiTutorial.classList.add('hidden');
+            startGame();
         }
 
         window.saveUsername = () => {
@@ -512,6 +566,7 @@
             document.getElementById('ui-username').classList.add('hidden');
             refreshUI();
             if(state.best > 0) db.ref('leaderboard/'+state.username.toLowerCase()).set({ name: state.username, score: state.best }).catch(()=>{});
+            if (!state.hasSeenTutorial) startTutorial();
         };
 
         window.showUsernameEntry = () => {
@@ -523,17 +578,7 @@
             skinsGrid.innerHTML = SKINS.map(skin => {
                 const unlocked = state.unlockedSkins.includes(skin.id);
                 const isSelected = state.selectedSkinId === skin.id;
-                return `
-                <div onclick="${unlocked?`selectSkin('${skin.id}')`:''}" class="card-item border-2 border-white/10 bg-white/5 p-4 rounded-2xl flex items-center gap-4 ${isSelected?'selected':''} ${!unlocked?'locked':''}">
-                    <div class="w-16 h-16 relative flex items-center justify-center bg-indigo-900/50 rounded-xl overflow-hidden">
-                         <canvas class="pig-preview-canvas" id="preview-${skin.id}" width="64" height="64"></canvas>
-                         ${!unlocked?'<div class="absolute inset-0 flex items-center justify-center bg-black/40 text-xl">🔒</div>':''}
-                    </div>
-                    <div class="text-left flex-1">
-                        <span class="text-sm font-black uppercase tracking-tight">${unlocked?skin.name:'Locked Pig'}</span>
-                        <div class="text-[9px] text-pink-400 font-bold uppercase">${unlocked?skin.ability:'Unlock for 100'}</div>
-                    </div>
-                </div>`;
+                return `<div onclick="${unlocked?`selectSkin('${skin.id}')`:''}" class="card-item border-2 border-white/10 bg-white/5 p-4 rounded-2xl flex items-center gap-4 ${isSelected?'selected':''} ${!unlocked?'locked':''}"><div class="w-16 h-16 relative flex items-center justify-center bg-indigo-900/50 rounded-xl overflow-hidden"><canvas class="pig-preview-canvas" id="preview-${skin.id}" width="64" height="64"></canvas>${!unlocked?'<div class="absolute inset-0 flex items-center justify-center bg-black/40 text-xl">🔒</div>':''}</div><div class="text-left flex-1"><span class="text-sm font-black uppercase tracking-tight">${unlocked?skin.name:'Locked Pig'}</span><div class="text-[9px] text-pink-400 font-bold uppercase">${unlocked?skin.ability:'Unlock for 100'}</div></div></div>`;
             }).join('');
             SKINS.forEach(skin => {
                 const pcanv = document.getElementById(`preview-${skin.id}`);
@@ -545,27 +590,8 @@
         window.openAchievements = () => {
             achievementsList.innerHTML = ACHIEVEMENTS.map(ach => {
                 const unlocked = state.unlockedAchievements.includes(ach.id);
-                let progress = 0;
-                if (unlocked) progress = 100;
-                else {
-                    if (ach.type === 'score') progress = Math.min(100, (state.best / ach.goal) * 100);
-                    if (ach.type === 'coins') progress = Math.min(100, (state.totalCoinsEarned / ach.goal) * 100);
-                    if (ach.type === 'skins') progress = Math.min(100, (state.unlockedSkins.length / ach.goal) * 100);
-                }
-                return `
-                <div class="border-2 ${unlocked?'border-yellow-500/50 bg-yellow-500/10':'border-white/5 bg-white/5'} p-4 rounded-2xl flex items-center gap-4">
-                    <div class="text-2xl">${unlocked?'🏆':'🔒'}</div>
-                    <div class="flex-1">
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="text-xs font-black uppercase ${unlocked?'text-yellow-400':'text-white'}">${ach.name}</span>
-                            ${unlocked?'<span class="text-[8px] bg-yellow-500 text-black px-1.5 rounded font-black">CLAIMED</span>':''}
-                        </div>
-                        <p class="text-[9px] text-white/50 mb-2">${ach.desc}</p>
-                        <div class="h-1 bg-white/10 rounded-full overflow-hidden">
-                            <div class="h-full bg-yellow-500 transition-all duration-1000" style="width: ${progress}%"></div>
-                        </div>
-                    </div>
-                </div>`;
+                let progress = unlocked ? 100 : (ach.type === 'score' ? Math.min(100, (state.best / ach.goal) * 100) : (ach.type === 'coins' ? Math.min(100, (state.totalCoinsEarned / ach.goal) * 100) : Math.min(100, (state.unlockedSkins.length / ach.goal) * 100)));
+                return `<div class="border-2 ${unlocked?'border-yellow-500/50 bg-yellow-500/10':'border-white/5 bg-white/5'} p-4 rounded-2xl flex items-center gap-4"><div class="text-2xl">${unlocked?'🏆':'🔒'}</div><div class="flex-1"><div class="flex justify-between items-center mb-1"><span class="text-xs font-black uppercase ${unlocked?'text-yellow-400':'text-white'}">${ach.name}</span>${unlocked?'<span class="text-[8px] bg-yellow-500 text-black px-1.5 rounded font-black">CLAIMED</span>':''}</div><p class="text-[9px] text-white/50 mb-2">${ach.desc}</p><div class="h-1 bg-white/10 rounded-full overflow-hidden"><div class="h-full bg-yellow-500 transition-all duration-1000" style="width: ${progress}%"></div></div></div></div>`;
             }).join('');
             uiAchievements.classList.remove('hidden');
         };
@@ -573,42 +599,13 @@
         window.openThemes = () => {
             themesGrid.innerHTML = THEMES.map(theme => {
                 const unlocked = state.unlockedThemes.includes(theme.id);
-                return `
-                <div onclick="${unlocked?`selectTheme('${theme.id}')`:''}" class="card-item border-2 border-white/10 bg-white/5 p-4 rounded-2xl flex items-center gap-4 ${state.selectedThemeId===theme.id?'selected':''} ${!unlocked?'locked':''}">
-                    <div class="w-12 h-12 relative rounded-lg border border-white/20" style="background:${theme.bg}">
-                        <div class="absolute inset-0 flex items-center justify-center">${!unlocked?'🔒':''}</div>
-                    </div>
-                    <div class="text-left flex-1">
-                        <span class="text-sm font-black uppercase">${unlocked?theme.name:'Locked Theme'}</span>
-                        <div class="text-[9px] text-indigo-400 font-bold uppercase">${theme.type} STYLE</div>
-                    </div>
-                </div>`;
+                return `<div onclick="${unlocked?`selectTheme('${theme.id}')`:''}" class="card-item border-2 border-white/10 bg-white/5 p-4 rounded-2xl flex items-center gap-4 ${state.selectedThemeId===theme.id?'selected':''} ${!unlocked?'locked':''}"><div class="w-12 h-12 relative rounded-lg border border-white/20" style="background:${theme.bg}"><div class="absolute inset-0 flex items-center justify-center">${!unlocked?'🔒':''}</div></div><div class="text-left flex-1"><span class="text-sm font-black uppercase">${unlocked?theme.name:'Locked Theme'}</span><div class="text-[9px] text-indigo-400 font-bold uppercase">${theme.type} STYLE</div></div></div>`;
             }).join('');
             document.getElementById('ui-themes').classList.remove('hidden');
         };
 
         window.selectSkin = (id) => { state.selectedSkinId = id; localStorage.setItem('oinkSkin', id); openSkins(); playSound('land'); };
         window.selectTheme = (id) => { state.selectedThemeId = id; localStorage.setItem('oinkTheme', id); openThemes(); refreshUI(); playSound('land'); };
-        
-        window.buyRandomSkin = () => {
-            const locked = SKINS.filter(s => !state.unlockedSkins.includes(s.id));
-            if (state.coins < 100 || locked.length === 0) return;
-            state.coins -= 100; localStorage.setItem('oinkCoins', state.coins);
-            const won = locked[Math.floor(Math.random() * locked.length)];
-            state.unlockedSkins.push(won.id); localStorage.setItem('oinkUnlocked', JSON.stringify(state.unlockedSkins));
-            playSound('unlock'); showToast(`UNLOCKED: ${won.name}!`, 'success'); openSkins(); refreshUI();
-            checkAchievements();
-        };
-
-        window.buyRandomTheme = () => {
-            const locked = THEMES.filter(t => !state.unlockedThemes.includes(t.id));
-            if (state.coins < 250 || locked.length === 0) return;
-            state.coins -= 250; localStorage.setItem('oinkCoins', state.coins);
-            const won = locked[Math.floor(Math.random() * locked.length)];
-            state.unlockedThemes.push(won.id); localStorage.setItem('oinkThemesUnlocked', JSON.stringify(state.unlockedThemes));
-            playSound('unlock'); showToast(`NEW THEME: ${won.name}!`, 'success'); openThemes(); refreshUI();
-        };
-
         window.closeSkins = () => uiSkins.classList.add('hidden');
         window.closeThemes = () => uiThemes.classList.add('hidden');
         window.closeLeaderboard = () => uiLeaderboard.classList.add('hidden');
@@ -618,30 +615,12 @@
             uiLeaderboard.classList.remove('hidden');
             leaderboardList.innerHTML = '<div class="text-center py-10 opacity-50 animate-pulse">SYNCING LEGENDS...</div>';
             try {
-                // Fetch the top 10 scores by ordering and limiting
                 const snap = await db.ref('leaderboard').orderByChild('score').limitToLast(10).once('value');
-                const data = []; 
-                snap.forEach(c => data.push(c.val()));
-                
-                // limitToLast returns ascending, so we reverse it for the Top 10 Descending
+                const data = []; snap.forEach(c => data.push(c.val()));
                 const sorted = data.reverse();
-                
-                if (sorted.length === 0) { 
-                    leaderboardList.innerHTML = '<div class="text-center py-10 opacity-30">NO RECORDED LEGENDS YET.</div>'; 
-                } else { 
-                    leaderboardList.innerHTML = sorted.map((e, i) => `
-                        <div class="flex justify-between items-center p-3 rounded-xl border ${e.name === state.username ? 'border-pink-500 bg-pink-500/10' : 'border-white/5 bg-white/5'}">
-                            <div class="flex items-center gap-3">
-                                <span class="font-black ${i < 3 ? 'text-yellow-400' : 'text-white/20'} text-xl italic w-6">${i+1}</span>
-                                <span class="font-bold text-sm">${e.name}</span>
-                            </div>
-                            <span class="font-black text-pink-400 text-lg">${e.score}</span>
-                        </div>`).join(''); 
-                }
-            } catch (err) { 
-                console.error(err);
-                leaderboardList.innerHTML = '<div class="text-center py-10 opacity-30">CONNECTION INTERRUPTED.</div>'; 
-            }
+                if (sorted.length === 0) { leaderboardList.innerHTML = '<div class="text-center py-10 opacity-30">NO RECORDED LEGENDS YET.</div>'; }
+                else { leaderboardList.innerHTML = sorted.map((e, i) => `<div class="flex justify-between items-center p-3 rounded-xl border ${e.name === state.username ? 'border-pink-500 bg-pink-500/10' : 'border-white/5 bg-white/5'}"><div class="flex items-center gap-3"><span class="font-black ${i < 3 ? 'text-yellow-400' : 'text-white/20'} text-xl italic w-6">${i+1}</span><span class="font-bold text-sm">${e.name}</span></div><span class="font-black text-pink-400 text-lg">${e.score}</span></div>`).join(''); }
+            } catch (err) { leaderboardList.innerHTML = '<div class="text-center py-10 opacity-30">CONNECTION INTERRUPTED.</div>'; }
         };
 
         function createClock(id, y, index) {
@@ -652,16 +631,15 @@
             return { id, x: radius + 20 + Math.random() * (WIDTH - (radius * 2 + 40)), y, radius, angle: Math.random() * Math.PI * 2, speed, color: CLOCK_COLORS[index % CLOCK_COLORS.length], isFrozen: false };
         }
 
-        window.startGame = () => {
+        window.startGame = (forceTutorial = false) => {
             initAudio();
             if (!state.username) return showUsernameEntry();
             state.status = 'PLAYING'; state.score = 0; state.cameraY = 0; state.clocks = []; state.lastClockId = 0;
             state.pig = { x: WIDTH/2, y: HEIGHT-150-60, vx: 0, vy: 0, attachedTo: 0, slimeUsed: false, zombieUsed: false };
-            state.clocks.push({ id: 0, x: WIDTH/2, y: HEIGHT-150, radius: 60, angle: -Math.PI/2, speed: state.selectedSkinId==='matcha'?0.03:0.04, color: CLOCK_COLORS[0], isFrozen: false });
+            state.clocks.push({ id: 0, x: WIDTH/2, y: HEIGHT-150, radius: 60, angle: -Math.PI/2, speed: 0.04, color: CLOCK_COLORS[0], isFrozen: false });
             for(let i=1; i<6; i++) state.clocks.push(createClock(i, HEIGHT-150-i*CLOCK_SPACING, i));
             uiHome.classList.add('hidden'); uiGameOver.classList.add('hidden'); uiHUD.classList.remove('hidden');
             scoreVal.innerText = "0"; bestVal.innerText = state.best; refreshUI();
-            if (state.selectedSkinId === 'devil') unlockAchievement('play_devil');
         };
 
         function jump() {
@@ -674,10 +652,19 @@
             state.pig.vy = Math.sin(clock.angle) * force;
             state.pig.attachedTo = null;
             playSound('jump');
+            if (state.isTutorial && state.tutorialStep === 2) {
+                // Advance after jump in tutorial
+            }
         }
 
         function update() {
             if (state.status !== 'PLAYING') return;
+            
+            // Tutorial Pausing Logic
+            if (state.isTutorial) {
+                if (state.tutorialStep === 0 || state.tutorialStep === 1 || state.tutorialStep === 3) return; // Frozen steps
+            }
+
             state.rainbowHue = (state.rainbowHue + 2) % 360;
             state.clocks.forEach(c => { if (!c.isFrozen) c.angle += c.speed; });
             
@@ -689,7 +676,6 @@
             } else {
                 state.pig.x += state.pig.vx; 
                 state.pig.y += state.pig.vy;
-                
                 let grabRange = 5;
                 if (state.selectedSkinId === 'blueberry') grabRange = 12;
                 if (state.selectedSkinId === 'ninja') grabRange = 15;
@@ -697,59 +683,33 @@
                 for (const clock of state.clocks) {
                     const d = Math.sqrt((state.pig.x-clock.x)**2 + (state.pig.y-clock.y)**2);
                     if (d < clock.radius + grabRange) {
-                        state.pig.attachedTo = clock.id; 
-                        state.pig.vx = 0; 
-                        state.pig.vy = 0;
+                        state.pig.attachedTo = clock.id; state.pig.vx = 0; state.pig.vy = 0;
                         if (clock.id > state.lastClockId) {
                             let multiplier = 1;
-                            if (state.selectedSkinId === 'golden') { 
-                                multiplier = 2; 
-                                document.getElementById('score-container').classList.add('gold-flash'); 
-                                setTimeout(() => document.getElementById('score-container').classList.remove('gold-flash'), 300); 
-                            }
+                            if (state.selectedSkinId === 'golden') { multiplier = 2; document.getElementById('score-container').classList.add('gold-flash'); setTimeout(() => document.getElementById('score-container').classList.remove('gold-flash'), 300); }
                             if (state.selectedSkinId === 'devil') multiplier = 3;
-                            if (state.selectedSkinId === 'rainbow') { 
-                                state.coins += 5; 
-                                state.totalCoinsEarned += 5; 
-                                refreshUI(); 
-                            }
+                            if (state.selectedSkinId === 'rainbow') { state.coins += 5; state.totalCoinsEarned += 5; refreshUI(); }
                             state.score += (clock.id - state.lastClockId) * multiplier;
                             state.lastClockId = clock.id;
                             scoreVal.innerText = state.score;
                             playSound('coin');
                             checkAchievements();
+                            if (state.isTutorial && state.tutorialStep === 2) advanceTutorial();
                         }
-                        playSound('land'); 
-                        break;
+                        playSound('land'); break;
                     }
                 }
                 
-                // Out of Bounds / Death Check
                 if (state.pig.y > state.cameraY + HEIGHT + 120 || state.pig.x < -150 || state.pig.x > WIDTH + 150) {
-                    if (state.selectedSkinId === 'slime' && !state.pig.slimeUsed) {
-                        // Improved Slime Bounce
-                        state.pig.slimeUsed = true; 
-                        state.pig.y = state.cameraY + HEIGHT - 10; // Snap to visible bottom
-                        state.pig.vy = -22; // High bounce
-                        state.pig.vx = (WIDTH/2 - state.pig.x) * 0.05; // Nudge towards center
-                        gameContainer.classList.add('slime-flash'); 
-                        playSound('unlock');
-                        setTimeout(() => gameContainer.classList.remove('slime-flash'), 500);
-                        unlockAchievement('ability_slime');
-                    } else if (state.selectedSkinId === 'zombie' && !state.pig.zombieUsed) {
-                        // Improved Zombie Revival
-                        state.pig.zombieUsed = true; 
-                        state.pig.y = state.cameraY + HEIGHT/2; // Teleport to center screen
-                        state.pig.vy = -12; 
-                        state.pig.vx = 0; 
-                        state.pig.x = WIDTH/2;
-                        gameContainer.classList.add('slime-flash'); 
-                        playSound('unlock');
-                        setTimeout(() => gameContainer.classList.remove('slime-flash'), 500);
-                        unlockAchievement('ability_zombie');
-                    } else {
-                        gameOver();
+                    if (state.isTutorial) {
+                        state.pig.x = WIDTH/2; state.pig.y = state.cameraY + HEIGHT - 200; state.pig.vy = -10; state.pig.vx = 0;
+                        return; // Safe tutorial
                     }
+                    if (state.selectedSkinId === 'slime' && !state.pig.slimeUsed) {
+                        state.pig.slimeUsed = true; state.pig.y = state.cameraY + HEIGHT - 10; state.pig.vy = -22; state.pig.vx = (WIDTH/2 - state.pig.x) * 0.05; gameContainer.classList.add('slime-flash'); playSound('unlock'); setTimeout(() => gameContainer.classList.remove('slime-flash'), 500); unlockAchievement('ability_slime');
+                    } else if (state.selectedSkinId === 'zombie' && !state.pig.zombieUsed) {
+                        state.pig.zombieUsed = true; state.pig.y = state.cameraY + HEIGHT/2; state.pig.vy = -12; state.pig.vx = 0; state.pig.x = WIDTH/2; gameContainer.classList.add('slime-flash'); playSound('unlock'); setTimeout(() => gameContainer.classList.remove('slime-flash'), 500); unlockAchievement('ability_zombie');
+                    } else gameOver();
                 }
             }
             state.cameraY += (state.pig.y - HEIGHT/1.6 - state.cameraY) * 0.1;
@@ -764,28 +724,12 @@
         function gameOver() {
             state.status = 'GAMEOVER'; playSound('gameover');
             const earned = state.score;
-            state.coins += earned;
-            state.totalCoinsEarned += earned;
+            state.coins += earned; state.totalCoinsEarned += earned;
             localStorage.setItem('oinkCoins', state.coins);
-            if (state.score > state.best) { 
-                state.best = state.score; 
-                localStorage.setItem('oinkBest', state.best); 
-                document.getElementById('new-best-tag').classList.remove('hidden'); 
-            } else {
-                document.getElementById('new-best-tag').classList.add('hidden'); 
-            }
-            earnedCoinsText.innerText = `+${earned}`; 
-            finalScoreLabel.innerText = state.score;
-            gameoverTotalCoins.innerText = state.coins; 
-            uiGameOver.classList.remove('hidden'); 
-            refreshUI();
-            checkAchievements();
-            if (state.username) {
-                db.ref('leaderboard/'+state.username.toLowerCase()).set({ 
-                    name: state.username, 
-                    score: parseInt(state.best) // Ensure numeric score in DB
-                }).catch(()=>{});
-            }
+            if (state.score > state.best) { state.best = state.score; localStorage.setItem('oinkBest', state.best); document.getElementById('new-best-tag').classList.remove('hidden'); }
+            else { document.getElementById('new-best-tag').classList.add('hidden'); }
+            earnedCoinsText.innerText = `+${earned}`; finalScoreLabel.innerText = state.score; gameoverTotalCoins.innerText = state.coins; uiGameOver.classList.remove('hidden'); refreshUI(); checkAchievements();
+            if (state.username) { db.ref('leaderboard/'+state.username.toLowerCase()).set({ name: state.username, score: parseInt(state.best) }).catch(()=>{}); }
         }
 
         function draw() {
@@ -798,44 +742,32 @@
                 else if (theme.type === 'GRID') { ctx.fillStyle = `rgba(244,114,182,${s.opacity * 0.2})`; ctx.fillRect(s.x, sy, s.size * 4, s.size); }
                 else { ctx.fillStyle = `rgba(255,255,255,${s.opacity})`; ctx.fillRect(s.x, sy, s.size, s.size); }
             });
-            if (theme.type === 'GRID') { ctx.strokeStyle = 'rgba(244,114,182,0.1)'; ctx.lineWidth = 1; for (let i = 0; i < WIDTH; i += 40) { ctx.beginPath(); ctx.moveTo(i, state.cameraY); ctx.lineTo(i, state.cameraY + HEIGHT); ctx.stroke(); } }
             state.clocks.forEach(c => {
                 ctx.globalAlpha = 1.0;
+                let clockColor = c.color;
+                if (state.isTutorial && c.id === 1) clockColor = '#34D399'; // Highlight target clock
+
                 if (theme.type === 'CLOCK') {
-                    ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2); ctx.strokeStyle = c.color; ctx.lineWidth = 6; ctx.stroke();
+                    ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2); ctx.strokeStyle = clockColor; ctx.lineWidth = 6; ctx.stroke();
                     ctx.fillStyle = 'rgba(15,23,42,0.9)'; ctx.fill();
-                    ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.strokeStyle = c.color; ctx.lineWidth = 8; ctx.lineCap='round'; ctx.stroke();
-                } else if (theme.type === 'PLANET') {
-                    const gradient = ctx.createRadialGradient(c.x-c.radius/3, c.y-c.radius/3, 5, c.x, c.y, c.radius);
-                    gradient.addColorStop(0, '#94a3b8'); gradient.addColorStop(1, c.color);
-                    ctx.fillStyle = gradient; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2); ctx.fill();
-                    ctx.beginPath(); ctx.ellipse(c.x, c.y, c.radius*1.4, c.radius*0.3, c.angle, 0, Math.PI*2); ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 3; ctx.stroke();
-                } else if (theme.type === 'COIN' || theme.type === 'NOIR') {
-                    ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2);
-                    ctx.fillStyle = theme.type==='COIN'?'#fbbf24':'#ffffff'; ctx.fill();
-                    ctx.strokeStyle = theme.type==='COIN'?'#78350f':'#000000'; ctx.lineWidth = 4; ctx.stroke();
-                    ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.lineWidth = 6; ctx.stroke();
-                } else if (theme.type === 'GRID') {
-                    ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2); ctx.strokeStyle = '#00ffff'; ctx.lineWidth = 4; ctx.setLineDash([5, 5]); ctx.stroke(); ctx.setLineDash([]);
-                    ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.strokeStyle = '#ff00ff'; ctx.lineWidth = 6; ctx.stroke();
-                } else if (theme.type === 'CANDY') {
-                    ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2); ctx.fillStyle = '#f9a8d4'; ctx.fill(); ctx.strokeStyle = '#f472b6'; ctx.lineWidth = 8; ctx.stroke();
-                    ctx.beginPath(); ctx.arc(c.x, c.y, c.radius * 0.4, 0, Math.PI*2); ctx.fillStyle = '#ffffff'; ctx.fill();
-                    ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.strokeStyle = '#be185d'; ctx.lineWidth = 6; ctx.stroke();
-                } else if (theme.type === 'CORAL') {
-                    ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2); ctx.fillStyle = 'rgba(0,0,0,0.4)'; ctx.fill(); ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 4; ctx.stroke();
-                    ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.strokeStyle = '#0ea5e9'; ctx.lineWidth = 6; ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.strokeStyle = clockColor; ctx.lineWidth = 8; ctx.lineCap='round'; ctx.stroke();
+                } else {
+                    ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2); ctx.fillStyle = '#ffffff'; ctx.fill();
+                    ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.strokeStyle = '#000000'; ctx.lineWidth = 6; ctx.stroke();
                 }
             });
             if (state.status === 'PLAYING') {
                 const skin = SKINS.find(s => s.id === state.selectedSkinId) || SKINS[0];
                 const p = state.pig;
                 const rot = p.attachedTo !== null ? 0 : Math.atan2(p.vy, p.vx) + Math.PI/2;
-                if (skin.id === 'cyber' && p.attachedTo !== null) {
-                    const clock = state.clocks.find(c => c.id === p.attachedTo);
-                    ctx.setLineDash([10, 5]); ctx.strokeStyle = 'rgba(0, 255, 255, 0.4)'; ctx.lineWidth = 2;
-                    ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x + Math.cos(clock.angle) * 300, p.y + Math.sin(clock.angle) * 300); ctx.stroke(); ctx.setLineDash([]);
+                
+                // Tutorial Indicator
+                if (state.isTutorial && p.attachedTo !== null && state.tutorialStep === 2) {
+                    const target = state.clocks.find(c => c.id === 1);
+                    ctx.setLineDash([5, 5]); ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                    ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(target.x, target.y); ctx.stroke(); ctx.setLineDash([]);
                 }
+
                 drawPigAvatar(ctx, skin, p.x, p.y, 1, rot);
             }
             ctx.restore();
