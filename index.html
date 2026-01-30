@@ -24,36 +24,56 @@
         .ui-layer {
             pointer-events: none;
         }
-        .ui-layer button, .ui-layer .clickable {
+        .ui-layer button, .ui-layer .clickable, .ui-layer input {
             pointer-events: auto;
         }
         .skin-card {
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .skin-card:hover {
-            transform: scale(1.02);
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.1);
         }
         .skin-card.selected {
-            border-color: #F472B6;
+            border-color: #f472b6;
             background: rgba(244, 114, 182, 0.2);
+            box-shadow: 0 0 15px rgba(244, 114, 182, 0.4);
         }
-        .ability-text {
-            font-size: 10px;
+        .ability-label {
+            font-size: 9px;
             color: #f472b6;
-            font-weight: bold;
+            font-weight: 900;
             text-transform: uppercase;
+            line-height: 1.2;
             margin-top: 4px;
         }
         ::-webkit-scrollbar {
             width: 4px;
         }
         ::-webkit-scrollbar-track {
-            background: rgba(0,0,0,0.1);
+            background: transparent;
         }
         ::-webkit-scrollbar-thumb {
             background: rgba(255,255,255,0.2);
             border-radius: 10px;
+        }
+        .text-glow {
+            text-shadow: 0 0 10px rgba(244, 114, 182, 0.8);
+        }
+        input::placeholder {
+            color: rgba(244, 114, 182, 0.4);
+        }
+        .neon-input:focus {
+            box-shadow: 0 0 15px rgba(244, 114, 182, 0.4);
+            border-color: #f472b6;
+        }
+        @keyframes pulse-soft {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .sync-status {
+            animation: pulse-soft 2s infinite;
         }
     </style>
 </head>
@@ -62,97 +82,156 @@
         <canvas id="gameCanvas" width="400" height="700"></canvas>
         
         <!-- Home Screen -->
-        <div id="ui-home" class="absolute inset-0 flex flex-col items-center justify-center bg-indigo-950 z-40 text-white p-6 text-center">
+        <div id="ui-home" class="absolute inset-0 flex flex-col items-center justify-center bg-indigo-950/80 backdrop-blur-md z-40 text-white p-6 text-center">
             <div class="mb-8">
-                <h1 class="text-5xl font-black mb-1 tracking-tighter text-pink-400 drop-shadow-lg">OINK-O-CLOCK</h1>
-                <p class="text-pink-300/60 font-bold tracking-widest text-xs uppercase text-glow">Jump Through Time</p>
+                <h1 class="text-6xl font-black mb-1 tracking-tighter text-pink-400 italic drop-shadow-lg text-glow">OINK!</h1>
+                <p class="text-pink-300/60 font-bold tracking-[0.3em] text-[10px] uppercase">Zero-G Space Jumper</p>
             </div>
             
-            <div class="flex flex-col gap-4 w-64">
-                <button onclick="startGame()" class="bg-pink-500 hover:bg-pink-400 text-white font-black py-4 px-12 rounded-full text-2xl transition-transform active:scale-95 shadow-lg shadow-pink-500/20">
-                    PLAY
+            <div class="flex flex-col gap-3 w-64 ui-layer">
+                <div class="flex flex-col items-start gap-1 mb-2">
+                    <label class="text-[9px] uppercase font-black tracking-widest text-pink-400/60 ml-1">Player Name</label>
+                    <input type="text" id="username-input" maxlength="12" placeholder="Enter Name..." 
+                           class="w-full bg-indigo-900/50 border-2 border-indigo-700 rounded-xl px-4 py-3 text-white font-bold focus:outline-none neon-input transition-all">
+                </div>
+
+                <button onclick="startGame()" class="bg-pink-500 hover:bg-pink-400 text-white font-black py-4 rounded-xl text-2xl transition-all active:scale-95 shadow-lg shadow-pink-500/30 uppercase italic">
+                    Start Run
                 </button>
-                <button onclick="openSkins()" class="bg-indigo-800 hover:bg-indigo-700 text-white font-bold py-3 px-12 rounded-full text-lg transition-transform active:scale-95">
-                    SKINS
-                </button>
+                <div class="flex gap-2">
+                    <button onclick="openSkins()" class="flex-1 bg-indigo-700 hover:bg-indigo-600 text-white font-bold py-3 rounded-xl text-sm transition-all uppercase tracking-widest">
+                        Skins
+                    </button>
+                    <button onclick="openLeaderboard()" class="flex-1 bg-indigo-900 hover:bg-indigo-800 text-white font-bold py-3 rounded-xl text-sm transition-all uppercase tracking-widest">
+                        Hall
+                    </button>
+                </div>
             </div>
 
-            <div class="mt-12 text-indigo-300/40 text-[10px] font-bold uppercase tracking-widest">
-                High Score: <span id="home-best-val">0</span>
+            <div class="mt-10">
+                <div class="text-indigo-300/40 text-[9px] font-black uppercase tracking-widest mb-1 text-center">Personal Best</div>
+                <div id="home-best-val" class="text-2xl font-black text-white text-center">0</div>
             </div>
-            <div class="mt-4 text-[10px] opacity-30 font-bold uppercase tracking-tighter">Press [SPACE] to start</div>
         </div>
 
         <!-- Skins Menu -->
         <div id="ui-skins" class="absolute inset-0 flex flex-col bg-indigo-900 z-50 text-white p-6 hidden">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-3xl font-black italic uppercase tracking-tighter">Skins Gallery</h2>
-                <button onclick="closeSkins()" class="bg-white/10 hover:bg-white/20 p-2 rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                <div>
+                    <h2 class="text-2xl font-black italic uppercase tracking-tighter text-pink-400">Wardrobe</h2>
+                    <p id="skin-desc" class="text-[10px] text-white font-bold uppercase mt-1 h-3">Select a Piggy</p>
+                </div>
+                <button onclick="closeSkins()" class="bg-white/10 hover:bg-white/20 p-2 rounded-lg transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
             </div>
-            
-            <div id="skins-grid" class="grid grid-cols-1 gap-3 overflow-y-auto pb-6 pr-1">
-                <!-- Skins injected by JS -->
+            <div id="skins-grid" class="grid grid-cols-3 gap-2 overflow-y-auto pb-6 pr-1"></div>
+        </div>
+
+        <!-- Leaderboard Screen -->
+        <div id="ui-leaderboard" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-8 hidden">
+            <div class="flex justify-between items-start mb-6">
+                <div>
+                    <h2 class="text-3xl font-black italic uppercase tracking-tighter text-pink-400">Global Hall</h2>
+                    <div id="sync-indicator" class="text-[8px] font-black uppercase tracking-[0.2em] text-indigo-400 mt-1 sync-status">Connecting...</div>
+                </div>
+                <button onclick="closeLeaderboard()" class="bg-white/10 p-2 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div id="leaderboard-list" class="space-y-3 overflow-y-auto pr-2 flex-1">
+                <div class="text-center py-10 opacity-50">Syncing...</div>
             </div>
         </div>
 
-        <div id="ui-hud" class="absolute top-0 left-0 right-0 p-4 flex justify-between ui-layer text-white hidden">
+        <div id="ui-hud" class="absolute top-0 left-0 right-0 p-6 flex justify-between ui-layer text-white hidden">
             <div>
-                <div class="text-[10px] uppercase font-bold opacity-60">Score</div>
-                <div id="score-val" class="text-3xl font-black text-pink-400">0</div>
+                <div class="text-[9px] uppercase font-black tracking-tighter text-indigo-300 mb-1">Score</div>
+                <div id="score-val" class="text-4xl font-black text-pink-400 leading-none">0</div>
             </div>
             <div class="text-right">
-                <div class="text-[10px] uppercase font-bold opacity-60">Best</div>
-                <div id="best-val" class="text-xl font-black">0</div>
+                <div class="text-[9px] uppercase font-black tracking-tighter text-indigo-300 mb-1">Best</div>
+                <div id="best-val" class="text-2xl font-black leading-none">0</div>
             </div>
         </div>
 
-        <div id="ui-gameover" class="absolute inset-0 flex flex-col items-center justify-center bg-red-950/90 backdrop-blur-md z-30 text-white p-6 text-center hidden">
-            <h2 class="text-4xl font-black mb-2 uppercase tracking-tighter">Bacon Bits!</h2>
-            <p class="mb-8 opacity-80">You fell out of time...</p>
-            <div class="text-6xl font-black mb-8 text-pink-400" id="final-score">0</div>
+        <div id="ui-gameover" class="absolute inset-0 flex flex-col items-center justify-center bg-indigo-950/95 backdrop-blur-xl z-30 text-white p-6 text-center hidden">
+            <h2 class="text-4xl font-black mb-1 uppercase tracking-tighter text-pink-500 italic">Bacon Bits!</h2>
+            <div class="text-8xl font-black mb-8 text-white italic tracking-tighter" id="final-score">0</div>
+            <div id="new-best-tag" class="hidden mb-4 bg-pink-500 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest animate-pulse">Ranked Run Completed!</div>
             <div class="flex flex-col gap-3 w-64 items-center">
-                <button onclick="startGame()" class="bg-white text-indigo-900 font-black py-4 px-12 rounded-full text-2xl transition-transform active:scale-95 w-full">RETRY</button>
-                <button onclick="backToHome()" class="bg-transparent border-2 border-white/20 hover:border-white/40 text-white font-bold py-2 px-12 rounded-full text-sm transition-transform active:scale-95 w-full">HOME</button>
-                <div class="mt-4 text-[10px] opacity-40 font-bold uppercase tracking-widest">or Press [SPACE] to Retry</div>
+                <button onclick="startGame()" class="bg-white text-indigo-950 font-black py-4 rounded-xl text-2xl transition-all active:scale-95 w-full uppercase italic">Retry</button>
+                <button onclick="backToHome()" class="bg-indigo-800 text-white font-bold py-2 rounded-xl text-sm transition-all w-full uppercase tracking-widest">Lobby</button>
             </div>
         </div>
     </div>
 
     <script type="module">
+        // --- FIREBASE INTEGRATION ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCtj4LFJ7xSbRCGT4Ttc4GCEgQBYDJy4tY",
+            authDomain: "gantymail-b5d24.firebaseapp.com",
+            databaseURL: "https://gantymail-b5d24-default-rtdb.firebaseio.com",
+            projectId: "gantymail-b5d24",
+            storageBucket: "gantymail-b5d24.firebasestorage.app",
+            messagingSenderId: "971596713126",
+            appId: "1:971596713126:web:6c965864b0bdaeaf12b867",
+            measurementId: "G-CB6L6J0S9L"
+        };
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        let db = null;
+        try {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+        } catch(e) { 
+            console.error("Firebase Initialization Error."); 
+        }
+
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const uiHome = document.getElementById('ui-home');
         const uiSkins = document.getElementById('ui-skins');
         const uiHUD = document.getElementById('ui-hud');
         const uiGameOver = document.getElementById('ui-gameover');
+        const uiLeaderboard = document.getElementById('ui-leaderboard');
         const scoreVal = document.getElementById('score-val');
         const bestVal = document.getElementById('best-val');
         const homeBestVal = document.getElementById('home-best-val');
         const finalScore = document.getElementById('final-score');
         const skinsGrid = document.getElementById('skins-grid');
+        const skinDescLabel = document.getElementById('skin-desc');
+        const leaderboardList = document.getElementById('leaderboard-list');
+        const usernameInput = document.getElementById('username-input');
+        const syncIndicator = document.getElementById('sync-indicator');
 
         const WIDTH = 400;
         const HEIGHT = 700;
-        const PIG_RADIUS = 18;
-        const JUMP_SPEED = 14;
+        const JUMP_SPEED = 14.5;
         const BASE_CLOCK_RADIUS = 60;
         const MIN_CLOCK_RADIUS = 35;
         const MAX_CLOCK_RADIUS = 85;
-        const CLOCK_SPACING = 260;
+        const CLOCK_SPACING = 270;
         const CLOCK_COLORS = ['#F472B6', '#60A5FA', '#34D399', '#FBBF24', '#A78BFA', '#FB923C'];
 
         const SKINS = [
-            { id: 'classic', name: 'Classic', ability: 'Standard', desc: 'A well-rounded pig.', body: '#F472B6', ears: '#EC4899', snout: '#F9A8D4', snoutDots: '#BE185D' },
-            { id: 'blueberry', name: 'Blueberry', ability: 'Sticky', desc: '+15% Grab range on clocks.', body: '#60A5FA', ears: '#2563EB', snout: '#93C5FD', snoutDots: '#1E40AF' },
-            { id: 'matcha', name: 'Matcha', ability: 'Zen', desc: 'Clocks rotate 25% slower.', body: '#34D399', ears: '#059669', snout: '#6EE7B7', snoutDots: '#064E3B' },
-            { id: 'golden', name: 'Golden', ability: 'Greed', desc: 'Earn DOUBLE score per jump.', body: '#FBBF24', ears: '#D97706', snout: '#FDE68A', snoutDots: '#78350F' },
-            { id: 'void', name: 'Void', ability: 'Warp', desc: '+20% Jump speed.', body: '#4B5563', ears: '#1F2937', snout: '#9CA3AF', snoutDots: '#000000' },
-            { id: 'cyber', name: 'Cyber', ability: 'Laser', desc: 'Shows jump trajectory line.', body: '#A78BFA', ears: '#7C3AED', snout: '#C4B5FD', snoutDots: '#4C1D95' },
-            { id: 'slime', name: 'Slime', ability: 'Bouncy', desc: 'Can bounce off walls once.', body: '#10B981', ears: '#064E3B', snout: '#D1FAE5', snoutDots: '#059669' },
-            { id: 'robot', name: 'Robot', ability: 'Sync', desc: 'Clock speeds are normalized.', body: '#94A3B8', ears: '#475569', snout: '#CBD5E1', snoutDots: '#1E293B' },
-            { id: 'devil', name: 'Devil', ability: 'Inferno', desc: 'Tiny clocks, but triple score!', body: '#EF4444', ears: '#7F1D1D', snout: '#FCA5A5', snoutDots: '#991B1B' }
+            { id: 'classic', name: 'Classic', ability: 'Standard', desc: 'The balanced original.', body: '#f472b6', ears: '#db2777', snout: '#f9a8d4', eye: 'black' },
+            { id: 'blueberry', name: 'Berry', ability: 'Sticky', desc: '+30% Grab Range.', body: '#60a5fa', ears: '#2563eb', snout: '#93c5fd', eye: 'black' },
+            { id: 'matcha', name: 'Matcha', ability: 'Zen', desc: 'Clocks spin 25% slower.', body: '#34d399', ears: '#059669', snout: '#6ee7b7', eye: 'black' },
+            { id: 'golden', name: 'Golden', ability: 'Greed', desc: 'Score gains are DOUBLED.', body: '#fbbf24', ears: '#d97706', snout: '#fde68a', eye: 'black' },
+            { id: 'void', name: 'Void', ability: 'Phased', desc: '+20% Jump Velocity.', body: '#312e81', ears: '#1e1b4b', snout: '#4338ca', eye: 'white' },
+            { id: 'cyber', name: 'Cyber', ability: 'Sync', desc: 'Predictive laser guides.', body: '#a78bfa', ears: '#7c3aed', snout: '#c4b5fd', eye: 'white' },
+            { id: 'slime', name: 'Slime', ability: 'Residue', desc: 'One-time death save.', body: '#10b981', ears: '#064e3b', snout: '#6ee7b7', eye: 'black' },
+            { id: 'devil', name: 'Devil', ability: 'Chaos', desc: 'Tiny clocks, x3 Score.', body: '#ef4444', ears: '#7f1d1d', snout: '#fca5a5', eye: 'yellow' },
+            { id: 'panda', name: 'Panda', ability: 'Heavy', desc: 'High drag, High score.', body: '#ffffff', ears: '#000000', snout: '#f1f5f9', eye: 'black' },
+            { id: 'angel', name: 'Angel', ability: 'Glide', desc: 'Ultra-low drag drift.', body: '#fef3c7', ears: '#fde68a', snout: '#fffbeb', eye: 'black' },
+            { id: 'ghost', name: 'Spook', ability: 'Ethereal', desc: 'Death floor is lower.', body: '#f8fafc', ears: '#cbd5e1', snout: '#e2e8f0', eye: 'cyan' },
+            { id: 'bee', name: 'Zippy', ability: 'Haste', desc: 'Faster rotation speed.', body: '#fbbf24', ears: '#000000', snout: '#000000', eye: 'white' },
+            { id: 'lava', name: 'Magma', ability: 'Unstoppable', desc: 'Linear flight, no drag.', body: '#ea580c', ears: '#9a3412', snout: '#f97316', eye: 'orange' },
+            { id: 'ninja', name: 'Ninja', ability: 'Quick', desc: 'Small profile, easy grabs.', body: '#1e293b', ears: '#0f172a', snout: '#334155', eye: 'white' },
+            { id: 'puffy', name: 'Puffy', ability: 'Airy', desc: 'Horizontal wind drift.', body: '#e0f2fe', ears: '#7dd3fc', snout: '#bae6fd', eye: 'black' }
         ];
 
         let state = {
@@ -160,56 +239,112 @@
             score: 0,
             best: parseInt(localStorage.getItem('oinkBest') || '0'),
             selectedSkinId: localStorage.getItem('oinkSkin') || 'classic',
+            username: localStorage.getItem('oinkUsername') || 'Piglet',
             cameraY: 0,
-            pig: { x: 200, y: 550, vx: 0, vy: 0, attachedTo: null, wallBounced: false },
+            pig: { x: 200, y: 550, vx: 0, vy: 0, attachedTo: null, hasRevived: false, flightTime: 0, trail: [] },
             clocks: [],
-            stars: []
+            stars: [],
+            leaderboard: []
         };
 
-        homeBestVal.innerText = state.best;
+        // Initialize UI
+        usernameInput.value = state.username;
+        usernameInput.addEventListener('input', (e) => {
+            state.username = e.target.value.trim() || 'Piglet';
+            localStorage.setItem('oinkUsername', state.username);
+        });
 
+        async function saveScoreToCloud(score) {
+            let localScores = JSON.parse(localStorage.getItem('oinkLeaderboard') || '[]');
+            localScores.push({ score, username: state.username, date: new Date().toLocaleDateString() });
+            localScores.sort((a, b) => b.score - a.score);
+            localStorage.setItem('oinkLeaderboard', JSON.stringify(localScores.slice(0, 10)));
+
+            if (db && score > 0) {
+                try {
+                    await addDoc(collection(db, "leaderboard"), {
+                        score: score,
+                        username: state.username,
+                        timestamp: serverTimestamp()
+                    });
+                } catch(e) { console.warn("Cloud save disabled. (Security Rules)"); }
+            }
+        }
+
+        async function loadLeaderboard() {
+            syncIndicator.innerText = "Syncing...";
+            syncIndicator.classList.add('sync-status');
+            
+            if (db) {
+                try {
+                    const q = query(collection(db, "leaderboard"), orderBy("score", "desc"), limit(10));
+                    const querySnapshot = await getDocs(q);
+                    state.leaderboard = querySnapshot.docs.map(doc => ({
+                        score: doc.data().score,
+                        username: doc.data().username || "Anon Pig",
+                        date: doc.data().timestamp?.toDate().toLocaleDateString() || "Today"
+                    }));
+                    syncIndicator.innerText = "Global Active";
+                    syncIndicator.classList.remove('sync-status');
+                    syncIndicator.classList.add('text-pink-400');
+                } catch(e) { 
+                    state.leaderboard = JSON.parse(localStorage.getItem('oinkLeaderboard') || '[]');
+                    syncIndicator.innerText = "Offline Hall";
+                    syncIndicator.classList.remove('sync-status');
+                }
+            } else {
+                state.leaderboard = JSON.parse(localStorage.getItem('oinkLeaderboard') || '[]');
+                syncIndicator.innerText = "Local Records";
+            }
+            renderLeaderboard();
+        }
+
+        function renderLeaderboard() {
+            leaderboardList.innerHTML = state.leaderboard.length ? state.leaderboard.map((l, i) => `
+                <div class="flex justify-between items-center bg-indigo-900/40 p-4 rounded-xl border border-white/5">
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <span class="text-pink-400 font-black text-lg w-6 flex-shrink-0">#${i+1}</span>
+                        <div class="overflow-hidden">
+                            <div class="font-black text-white text-sm truncate">${l.username}</div>
+                            <div class="text-[8px] text-indigo-300/40 font-bold uppercase mt-0.5">${l.date}</div>
+                        </div>
+                    </div>
+                    <div class="text-right flex-shrink-0">
+                        <div class="font-black text-pink-400 text-lg leading-none">${l.score}</div>
+                    </div>
+                </div>
+            `).join('') : '<div class="text-center text-indigo-300 uppercase font-bold py-10 opacity-30">No Scores Found</div>';
+        }
+
+        homeBestVal.innerText = state.best;
         for(let i=0; i<60; i++) {
-            state.stars.push({
-                x: Math.random() * WIDTH,
-                y: Math.random() * HEIGHT * 2,
-                size: Math.random() * 2,
-                opacity: Math.random()
-            });
+            state.stars.push({ x: Math.random() * WIDTH, y: Math.random() * HEIGHT * 2, size: Math.random() * 2, opacity: Math.random() });
         }
 
         function renderSkins() {
             skinsGrid.innerHTML = SKINS.map(skin => `
-                <div onclick="selectSkin('${skin.id}')" class="skin-card border-2 border-white/10 bg-indigo-800/50 p-4 rounded-xl flex items-center gap-4 ${state.selectedSkinId === skin.id ? 'selected shadow-lg shadow-pink-500/20' : ''}">
-                    <div class="w-14 h-14 relative flex-shrink-0">
-                        <div class="absolute inset-0 rounded-full shadow-lg" style="background: ${skin.body}"></div>
-                        <div class="absolute w-7 h-5 rounded-full bottom-2 left-3.5" style="background: ${skin.snout}"></div>
-                        <div class="absolute w-1.5 h-1.5 rounded-full bottom-3.5 left-5" style="background: ${skin.snoutDots}"></div>
-                        <div class="absolute w-1.5 h-1.5 rounded-full bottom-3.5 right-5" style="background: ${skin.snoutDots}"></div>
+                <div onclick="selectSkin('${skin.id}')" onmouseenter="showSkinDesc('${skin.desc}')" class="skin-card border-2 border-white/5 bg-indigo-800/20 p-2 rounded-xl flex flex-col items-center gap-1 ${state.selectedSkinId === skin.id ? 'selected' : ''}">
+                    <div class="w-10 h-10 relative flex-shrink-0">
+                        <div class="absolute inset-0 rounded-full" style="background: ${skin.body}"></div>
+                        <div class="absolute w-5 h-4 rounded-full bottom-1 left-2.5" style="background: ${skin.snout}"></div>
                     </div>
-                    <div class="text-left flex-1">
-                        <span class="text-sm font-black uppercase tracking-wider block">${skin.name}</span>
-                        <div class="ability-text">${skin.ability}</div>
-                        <p class="text-[10px] opacity-60 leading-tight">${skin.desc}</p>
-                    </div>
+                    <span class="text-[9px] font-black uppercase tracking-tight text-center truncate w-full">${skin.name}</span>
+                    <div class="ability-label">${skin.ability}</div>
                 </div>
             `).join('');
         }
 
-        window.openSkins = () => {
-            renderSkins();
-            uiSkins.classList.remove('hidden');
-        };
-
-        window.closeSkins = () => {
-            uiSkins.classList.add('hidden');
-        };
-
+        window.showSkinDesc = (desc) => { skinDescLabel.innerText = desc; };
+        window.openSkins = () => { renderSkins(); uiSkins.classList.remove('hidden'); };
+        window.closeSkins = () => uiSkins.classList.add('hidden');
         window.selectSkin = (id) => {
             state.selectedSkinId = id;
             localStorage.setItem('oinkSkin', id);
             renderSkins();
+            showSkinDesc(SKINS.find(x => x.id === id).desc);
         };
-
+        window.openLeaderboard = () => { uiLeaderboard.classList.remove('hidden'); loadLeaderboard(); };
+        window.closeLeaderboard = () => uiLeaderboard.classList.add('hidden');
         window.backToHome = () => {
             state.status = 'HOME';
             uiGameOver.classList.add('hidden');
@@ -220,88 +355,45 @@
 
         function createClock(id, y, index) {
             let radius = MIN_CLOCK_RADIUS + Math.random() * (MAX_CLOCK_RADIUS - MIN_CLOCK_RADIUS);
-            
-            // Devil skin has tiny clocks
             if (state.selectedSkinId === 'devil') radius *= 0.6;
-
-            // Speed is inverse to size: Bigger = Slower
-            let speedFactor = (0.04 + (index * 0.002));
+            if (state.selectedSkinId === 'ninja') radius *= 0.9;
             
-            // Robot skin normalizes speeds
-            if (state.selectedSkinId === 'robot') speedFactor = 0.06;
-            
-            let speed = speedFactor * (BASE_CLOCK_RADIUS / radius) * (index % 2 === 0 ? 1 : -1);
-            
-            // Ability: Matcha slows clocks
+            let speed = (0.04 + (index * 0.0015)) * (BASE_CLOCK_RADIUS / radius) * (index % 2 === 0 ? 1 : -1);
             if (state.selectedSkinId === 'matcha') speed *= 0.75;
-
-            return {
-                id,
-                x: radius + 20 + Math.random() * (WIDTH - (radius * 2 + 40)),
-                y,
-                radius: radius,
-                angle: Math.random() * Math.PI * 2,
-                speed,
-                color: CLOCK_COLORS[index % CLOCK_COLORS.length]
-            };
+            if (state.selectedSkinId === 'bee') speed *= 1.35;
+            
+            return { id, x: radius + 30 + Math.random() * (WIDTH - (radius * 2 + 60)), y, radius, angle: Math.random() * Math.PI * 2, speed, color: CLOCK_COLORS[index % CLOCK_COLORS.length] };
         }
 
         window.startGame = () => {
             state.status = 'PLAYING';
-            state.score = 0;
-            state.cameraY = 0;
-            state.clocks = [];
-            
-            // Initial clock
-            state.clocks.push({
-                id: 0,
-                x: WIDTH / 2,
-                y: HEIGHT - 150,
-                radius: BASE_CLOCK_RADIUS,
-                angle: -Math.PI / 2,
-                speed: state.selectedSkinId === 'matcha' ? 0.03 : 0.04,
-                color: CLOCK_COLORS[0]
-            });
-            
-            state.pig = {
-                x: WIDTH / 2,
-                y: HEIGHT - 150 - BASE_CLOCK_RADIUS,
-                vx: 0,
-                vy: 0,
-                attachedTo: 0,
-                wallBounced: false
-            };
-
-            for(let i=1; i<6; i++) {
-                state.clocks.push(createClock(i, HEIGHT - 150 - i * CLOCK_SPACING, i));
-            }
-
-            uiHome.classList.add('hidden');
-            uiGameOver.classList.add('hidden');
-            uiHUD.classList.remove('hidden');
-            scoreVal.innerText = "0";
-            bestVal.innerText = state.best;
+            state.score = 0; state.cameraY = 0; state.clocks = [];
+            state.clocks.push({ id: 0, x: WIDTH / 2, y: HEIGHT - 150, radius: BASE_CLOCK_RADIUS, angle: -Math.PI / 2, speed: 0.04, color: CLOCK_COLORS[0] });
+            state.pig = { x: WIDTH / 2, y: HEIGHT - 150 - BASE_CLOCK_RADIUS, vx: 0, vy: 0, attachedTo: 0, hasRevived: false, flightTime: 0, trail: [] };
+            for(let i=1; i<6; i++) state.clocks.push(createClock(i, HEIGHT - 150 - i * CLOCK_SPACING, i));
+            uiHome.classList.add('hidden'); uiGameOver.classList.add('hidden'); uiHUD.classList.remove('hidden');
+            scoreVal.innerText = "0"; bestVal.innerText = state.best;
         };
 
         function jump() {
-            if (state.status !== 'PLAYING' || state.pig.attachedTo === null) return;
-            
-            const clock = state.clocks.find(c => c.id === state.pig.attachedTo);
-            if (!clock) return;
+            if (state.status !== 'PLAYING') return;
+            if (state.pig.attachedTo !== null) {
+                const clock = state.clocks.find(c => c.id === state.pig.attachedTo);
+                if (!clock) return;
+                
+                let force = JUMP_SPEED;
+                if (state.selectedSkinId === 'void') force *= 1.2;
+                if (state.selectedSkinId === 'panda') force *= 1.1;
 
-            let force = JUMP_SPEED;
-            // Ability: Void warps jump speed
-            if (state.selectedSkinId === 'void') force *= 1.2;
-
-            state.pig.vx = Math.cos(clock.angle) * force;
-            state.pig.vy = Math.sin(clock.angle) * force;
-            state.pig.attachedTo = null;
-            state.pig.wallBounced = false; // Reset wall bounce on new jump
+                state.pig.vx = Math.cos(clock.angle) * force;
+                state.pig.vy = Math.sin(clock.angle) * force;
+                state.pig.attachedTo = null;
+                state.pig.flightTime = 0;
+            }
         }
 
         function update() {
             if (state.status !== 'PLAYING') return;
-
             state.clocks.forEach(c => c.angle += c.speed);
 
             if (state.pig.attachedTo !== null) {
@@ -311,53 +403,63 @@
                     state.pig.y = clock.y + Math.sin(clock.angle) * clock.radius;
                 }
             } else {
-                state.pig.x += state.pig.vx;
+                state.pig.flightTime++;
+                state.pig.x += state.pig.vx; 
                 state.pig.y += state.pig.vy;
-
-                // Wall bouncing for Slime
-                if (state.selectedSkinId === 'slime' && !state.pig.wallBounced) {
-                    if (state.pig.x < 15 || state.pig.x > WIDTH - 15) {
-                        state.pig.vx *= -1;
-                        state.pig.wallBounced = true;
-                    }
+                
+                let drag = 0.985;
+                if (state.selectedSkinId === 'lava') drag = 1.0;
+                else if (state.selectedSkinId === 'panda') drag = 0.95;
+                else if (state.selectedSkinId === 'angel') drag = 0.995;
+                
+                // Drift for Puffy
+                if (state.selectedSkinId === 'puffy') {
+                    state.pig.vx += Math.sin(Date.now() / 500) * 0.15;
                 }
 
-                // Collision detection
-                let grabRange = 5;
-                if (state.selectedSkinId === 'blueberry') grabRange = 12;
+                state.pig.vx *= drag;
+                state.pig.vy *= drag;
 
+                if (state.selectedSkinId === 'cyber') {
+                    state.pig.trail.push({x: state.pig.x, y: state.pig.y});
+                    if (state.pig.trail.length > 8) state.pig.trail.shift();
+                }
+
+                // Landing logic
+                let grabRange = state.selectedSkinId === 'blueberry' ? 24 : 18;
                 for (const clock of state.clocks) {
-                    const dx = state.pig.x - clock.x;
-                    const dy = state.pig.y - clock.y;
-                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    const dist = Math.hypot(state.pig.x - clock.x, state.pig.y - clock.y);
                     if (dist < clock.radius + grabRange) {
                         state.pig.attachedTo = clock.id;
-                        state.pig.vx = 0;
-                        state.pig.vy = 0;
-                        
-                        if (clock.id > state.score) {
-                            // Fixed Golden: Double the score you would have gotten
-                            let increment = (clock.id - (state.score || 0));
-                            if (state.selectedSkinId === 'golden') increment *= 2;
-                            if (state.selectedSkinId === 'devil') increment *= 3;
-                            
-                            state.score += increment;
-                            scoreVal.innerText = state.score;
+                        state.pig.vx = 0; state.pig.vy = 0; state.pig.trail = [];
+                        let scoreAnchor = state.score / (state.selectedSkinId === 'golden' ? 2 : (state.selectedSkinId === 'devil' ? 3 : 1));
+                        if (clock.id > scoreAnchor) {
+                            let multiplier = (state.selectedSkinId === 'golden' ? 2 : (state.selectedSkinId === 'devil' ? 3 : 1));
+                            state.score += (clock.id - scoreAnchor) * multiplier;
+                            scoreVal.innerText = Math.floor(state.score);
                         }
                         break;
                     }
                 }
 
-                if (state.pig.y > state.cameraY + HEIGHT + 50 || state.pig.x < -50 || state.pig.x > WIDTH + 50) {
-                    gameOver();
+                // Death checks
+                const margin = state.selectedSkinId === 'ghost' ? 250 : 150;
+                const lowMomentum = state.pig.flightTime > 45 && Math.hypot(state.pig.vx, state.pig.vy) < 0.1;
+                if (state.pig.y > state.cameraY + HEIGHT + margin || state.pig.y < state.cameraY - margin * 3 || 
+                    state.pig.x < -margin || state.pig.x > WIDTH + margin || lowMomentum) {
+                    
+                    if (state.selectedSkinId === 'slime' && !state.pig.hasRevived) {
+                        state.pig.hasRevived = true;
+                        const last = state.clocks[0];
+                        state.pig.attachedTo = last.id;
+                        state.pig.vx = 0; state.pig.vy = 0;
+                    } else gameOver();
                 }
             }
 
             const targetY = state.pig.y - HEIGHT / 1.6;
-            if (targetY < state.cameraY) {
-                state.cameraY += (targetY - state.cameraY) * 0.1;
-            }
-
+            if (targetY < state.cameraY) state.cameraY += (targetY - state.cameraY) * 0.1;
+            
             const last = state.clocks[state.clocks.length - 1];
             if (last && last.y > state.cameraY - 400) {
                 const nextId = last.id + 1;
@@ -368,11 +470,14 @@
 
         function gameOver() {
             state.status = 'GAMEOVER';
-            if (state.score > state.best) {
-                state.best = state.score;
+            const final = Math.floor(state.score);
+            if (final > state.best) {
+                state.best = final;
                 localStorage.setItem('oinkBest', state.best);
-            }
-            finalScore.innerText = state.score;
+                document.getElementById('new-best-tag').classList.remove('hidden');
+            } else document.getElementById('new-best-tag').classList.add('hidden');
+            saveScoreToCloud(final);
+            finalScore.innerText = final;
             uiGameOver.classList.remove('hidden');
         }
 
@@ -380,143 +485,66 @@
             ctx.clearRect(0, 0, WIDTH, HEIGHT);
             ctx.save();
             ctx.translate(0, -state.cameraY);
-
             state.stars.forEach(s => {
                 let sy = s.y;
-                while(sy < state.cameraY) sy += HEIGHT * 2;
+                while(sy < state.cameraY - HEIGHT) sy += HEIGHT * 2;
                 while(sy > state.cameraY + HEIGHT * 2) sy -= HEIGHT * 2;
                 ctx.fillStyle = `rgba(255, 255, 255, ${s.opacity})`;
                 ctx.fillRect(s.x, sy, s.size, s.size);
             });
-
-            // Ability: Cyber laser sight
-            if (state.status === 'PLAYING' && state.selectedSkinId === 'cyber' && state.pig.attachedTo !== null) {
-                const clock = state.clocks.find(c => c.id === state.pig.attachedTo);
-                if (clock) {
-                    ctx.beginPath();
-                    ctx.setLineDash([5, 10]);
-                    ctx.moveTo(state.pig.x, state.pig.y);
-                    ctx.lineTo(state.pig.x + Math.cos(clock.angle) * 350, state.pig.y + Math.sin(clock.angle) * 350);
-                    ctx.strokeStyle = 'rgba(167, 139, 250, 0.4)';
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-                    ctx.setLineDash([]);
-                }
-            }
-
             state.clocks.forEach(c => {
-                ctx.beginPath();
-                ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2);
-                ctx.strokeStyle = c.color;
-                ctx.lineWidth = 6;
-                ctx.stroke();
-                
-                ctx.fillStyle = 'rgba(30, 27, 75, 0.8)';
-                ctx.fill();
-
-                ctx.fillStyle = c.color;
-                ctx.globalAlpha = 0.3;
-                const ticks = Math.floor(c.radius / 5);
-                for(let i=0; i<ticks; i++) {
-                    const tx = c.x + Math.cos(i * (Math.PI*2/ticks)) * (c.radius - 12);
-                    const ty = c.y + Math.sin(i * (Math.PI*2/ticks)) * (c.radius - 12);
-                    ctx.beginPath();
-                    ctx.arc(tx, ty, 2, 0, Math.PI*2);
-                    ctx.fill();
-                }
-                ctx.globalAlpha = 1.0;
-
-                ctx.beginPath();
-                ctx.moveTo(c.x, c.y);
+                ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2);
+                ctx.strokeStyle = c.color; ctx.lineWidth = 6; ctx.stroke();
+                ctx.fillStyle = '#1e1b4b'; ctx.fill();
+                ctx.beginPath(); ctx.moveTo(c.x, c.y);
                 ctx.lineTo(c.x + Math.cos(c.angle) * c.radius, c.y + Math.sin(c.angle) * c.radius);
-                ctx.strokeStyle = c.color;
-                ctx.lineWidth = 8;
-                ctx.lineCap = 'round';
-                ctx.stroke();
-
-                ctx.beginPath();
-                ctx.arc(c.x, c.y, 6, 0, Math.PI*2);
-                ctx.fill();
+                ctx.strokeStyle = c.color; ctx.lineWidth = 8; ctx.lineCap = 'round'; ctx.stroke();
+                ctx.fillStyle = c.color; ctx.beginPath(); ctx.arc(c.x, c.y, 6, 0, Math.PI*2); ctx.fill();
             });
-
             if (state.status !== 'HOME') {
                 const skin = SKINS.find(s => s.id === state.selectedSkinId) || SKINS[0];
                 const p = state.pig;
-                ctx.save();
-                ctx.translate(p.x, p.y);
+                p.trail.forEach((t, i) => {
+                    ctx.globalAlpha = i / p.trail.length * 0.4;
+                    ctx.fillStyle = skin.body; ctx.beginPath(); ctx.arc(t.x, t.y, 14, 0, Math.PI*2); ctx.fill();
+                });
+                ctx.globalAlpha = 1; ctx.save(); ctx.translate(p.x, p.y);
                 const rot = p.attachedTo !== null ? 0 : Math.atan2(p.vy, p.vx) + Math.PI/2;
                 ctx.rotate(rot);
                 
-                // Body
-                ctx.fillStyle = skin.body;
-                ctx.beginPath();
-                ctx.ellipse(0, 0, 18, 16, 0, 0, Math.PI*2);
-                ctx.fill();
-
-                // Ears
-                ctx.fillStyle = skin.ears;
-                ctx.beginPath();
-                ctx.moveTo(-12, -12); ctx.lineTo(-18, -20); ctx.lineTo(-6, -14); ctx.fill();
-                ctx.beginPath();
-                ctx.moveTo(12, -12); ctx.lineTo(18, -20); ctx.lineTo(6, -14); ctx.fill();
-
-                // Snout
-                ctx.fillStyle = skin.snout;
-                ctx.beginPath();
-                ctx.ellipse(0, 4, 8, 6, 0, 0, Math.PI*2);
-                ctx.fill();
-                ctx.fillStyle = skin.snoutDots;
-                ctx.beginPath(); ctx.arc(-3, 4, 1.5, 0, Math.PI*2); ctx.fill();
-                ctx.beginPath(); ctx.arc(3, 4, 1.5, 0, Math.PI*2); ctx.fill();
-
-                // Eyes
-                ctx.fillStyle = skin.id === 'void' ? 'white' : 'black';
-                if (state.selectedSkinId === 'robot') ctx.fillStyle = '#F87171';
-                ctx.beginPath(); ctx.arc(-6, -4, 2.5, 0, Math.PI*2); ctx.fill();
-                ctx.beginPath(); ctx.arc(6, -4, 2.5, 0, Math.PI*2); ctx.fill();
-                
-                // Devil Horns
-                if (state.selectedSkinId === 'devil') {
-                    ctx.fillStyle = '#991B1B';
-                    ctx.beginPath();
-                    ctx.moveTo(-8, -15); ctx.lineTo(-12, -25); ctx.lineTo(-4, -18); ctx.fill();
-                    ctx.beginPath();
-                    ctx.moveTo(8, -15); ctx.lineTo(12, -25); ctx.lineTo(4, -18); ctx.fill();
+                // Wings for Angel
+                if (state.selectedSkinId === 'angel') {
+                    ctx.fillStyle = 'white';
+                    ctx.beginPath(); ctx.ellipse(-20, 0, 15, 8, -0.4, 0, Math.PI*2); ctx.fill();
+                    ctx.beginPath(); ctx.ellipse(20, 0, 15, 8, 0.4, 0, Math.PI*2); ctx.fill();
                 }
 
+                ctx.fillStyle = skin.body;
+                ctx.beginPath(); ctx.ellipse(0, 0, 18, 16, 0, 0, Math.PI*2); ctx.fill();
+                
+                ctx.fillStyle = skin.ears;
+                ctx.beginPath(); ctx.moveTo(-12, -12); ctx.lineTo(-18, -20); ctx.lineTo(-6, -14); ctx.fill();
+                ctx.beginPath(); ctx.moveTo(12, -12); ctx.lineTo(18, -20); ctx.lineTo(6, -14); ctx.fill();
+                
+                ctx.fillStyle = skin.snout; ctx.beginPath(); ctx.ellipse(0, 4, 8, 6, 0, 0, Math.PI*2); ctx.fill();
+                
+                ctx.fillStyle = skin.eye; ctx.beginPath(); ctx.arc(-6, -4, 2.5, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.arc(6, -4, 2.5, 0, Math.PI*2); ctx.fill();
                 ctx.restore();
             }
-
             ctx.restore();
         }
 
-        function loop() {
-            update();
-            draw();
-            requestAnimationFrame(loop);
-        }
-
+        function loop() { update(); draw(); requestAnimationFrame(loop); }
         window.addEventListener('keydown', (e) => {
             if (e.code === 'Space') {
                 e.preventDefault();
-                if (state.status === 'PLAYING') {
-                    jump();
-                } else if (state.status === 'HOME' || state.status === 'GAMEOVER') {
-                    if (uiSkins.classList.contains('hidden')) {
-                        startGame();
-                    }
-                }
+                if (state.status === 'PLAYING') jump();
+                else if (state.status !== 'PLAYING' && uiSkins.classList.contains('hidden') && uiLeaderboard.classList.contains('hidden')) startGame();
             }
         });
-
-        canvas.addEventListener('mousedown', (e) => {
-            if (state.status === 'PLAYING') jump();
-        });
-        canvas.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            if (state.status === 'PLAYING') jump();
-        });
-
+        canvas.addEventListener('mousedown', () => { if (state.status === 'PLAYING') jump(); });
+        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); if (state.status === 'PLAYING') jump(); });
         loop();
     </script>
 </body>
