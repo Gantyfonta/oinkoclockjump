@@ -115,6 +115,7 @@
             <div class="flex flex-col gap-3 w-64 items-center">
                 <button onclick="startGame()" class="bg-white text-indigo-900 font-black py-4 px-12 rounded-full text-2xl transition-transform active:scale-95 w-full">RETRY</button>
                 <button onclick="backToHome()" class="bg-transparent border-2 border-white/20 hover:border-white/40 text-white font-bold py-2 px-12 rounded-full text-sm transition-transform active:scale-95 w-full">HOME</button>
+                <div id="save-hint" class="text-xs font-bold text-green-400 mt-2 hidden">Slime Save Available!</div>
                 <div class="mt-4 text-[10px] opacity-40 font-bold uppercase tracking-widest">or Press [SPACE] to Retry</div>
             </div>
         </div>
@@ -150,9 +151,13 @@
             { id: 'golden', name: 'Golden', ability: 'Greed', desc: 'Earn DOUBLE score per jump.', body: '#FBBF24', ears: '#D97706', snout: '#FDE68A', snoutDots: '#78350F' },
             { id: 'void', name: 'Void', ability: 'Warp', desc: '+20% Jump speed.', body: '#4B5563', ears: '#1F2937', snout: '#9CA3AF', snoutDots: '#000000' },
             { id: 'cyber', name: 'Cyber', ability: 'Laser', desc: 'Shows jump trajectory line.', body: '#A78BFA', ears: '#7C3AED', snout: '#C4B5FD', snoutDots: '#4C1D95' },
-            { id: 'slime', name: 'Slime', ability: 'Bouncy', desc: 'Can bounce off walls once.', body: '#10B981', ears: '#064E3B', snout: '#D1FAE5', snoutDots: '#059669' },
+            { id: 'slime', name: 'Slime', ability: 'Life Saver', desc: 'Revives ONCE per game if you fall.', body: '#10B981', ears: '#064E3B', snout: '#D1FAE5', snoutDots: '#059669' },
             { id: 'robot', name: 'Robot', ability: 'Sync', desc: 'Clock speeds are normalized.', body: '#94A3B8', ears: '#475569', snout: '#CBD5E1', snoutDots: '#1E293B' },
-            { id: 'devil', name: 'Devil', ability: 'Inferno', desc: 'Tiny clocks, but triple score!', body: '#EF4444', ears: '#7F1D1D', snout: '#FCA5A5', snoutDots: '#991B1B' }
+            { id: 'devil', name: 'Devil', ability: 'Inferno', desc: 'Tiny clocks, but triple score!', body: '#EF4444', ears: '#7F1D1D', snout: '#FCA5A5', snoutDots: '#991B1B' },
+            { id: 'ninja', name: 'Ninja', ability: 'Double Jump', desc: 'Can jump a second time in mid-air.', body: '#1F2937', ears: '#111827', snout: '#374151', snoutDots: '#000000' },
+            { id: 'angel', name: 'Angel', ability: 'Feather', desc: 'Significantly lower gravity.', body: '#FEF3C7', ears: '#FDE68A', snout: '#FFFBEB', snoutDots: '#F59E0B' },
+            { id: 'ghost', name: 'Ghost', ability: 'Blink', desc: 'Dash forward while in the air.', body: '#F1F5F9', ears: '#E2E8F0', snout: '#F8FAFC', snoutDots: '#64748B' },
+            { id: 'alien', name: 'Alien', ability: 'Magnet', desc: 'Clocks are pulled towards you.', body: '#A7F3D0', ears: '#059669', snout: '#D1FAE5', snoutDots: '#064E3B' }
         ];
 
         let state = {
@@ -161,7 +166,7 @@
             best: parseInt(localStorage.getItem('oinkBest') || '0'),
             selectedSkinId: localStorage.getItem('oinkSkin') || 'classic',
             cameraY: 0,
-            pig: { x: 200, y: 550, vx: 0, vy: 0, attachedTo: null, wallBounced: false },
+            pig: { x: 200, y: 550, vx: 0, vy: 0, attachedTo: null, wallBounced: false, hasRevived: false, jumpCount: 0, lastClockId: 0, blinkUsed: false },
             clocks: [],
             stars: []
         };
@@ -183,8 +188,6 @@
                     <div class="w-14 h-14 relative flex-shrink-0">
                         <div class="absolute inset-0 rounded-full shadow-lg" style="background: ${skin.body}"></div>
                         <div class="absolute w-7 h-5 rounded-full bottom-2 left-3.5" style="background: ${skin.snout}"></div>
-                        <div class="absolute w-1.5 h-1.5 rounded-full bottom-3.5 left-5" style="background: ${skin.snoutDots}"></div>
-                        <div class="absolute w-1.5 h-1.5 rounded-full bottom-3.5 right-5" style="background: ${skin.snoutDots}"></div>
                     </div>
                     <div class="text-left flex-1">
                         <span class="text-sm font-black uppercase tracking-wider block">${skin.name}</span>
@@ -220,19 +223,10 @@
 
         function createClock(id, y, index) {
             let radius = MIN_CLOCK_RADIUS + Math.random() * (MAX_CLOCK_RADIUS - MIN_CLOCK_RADIUS);
-            
-            // Devil skin has tiny clocks
             if (state.selectedSkinId === 'devil') radius *= 0.6;
-
-            // Speed is inverse to size: Bigger = Slower
             let speedFactor = (0.04 + (index * 0.002));
-            
-            // Robot skin normalizes speeds
             if (state.selectedSkinId === 'robot') speedFactor = 0.06;
-            
             let speed = speedFactor * (BASE_CLOCK_RADIUS / radius) * (index % 2 === 0 ? 1 : -1);
-            
-            // Ability: Matcha slows clocks
             if (state.selectedSkinId === 'matcha') speed *= 0.75;
 
             return {
@@ -252,7 +246,6 @@
             state.cameraY = 0;
             state.clocks = [];
             
-            // Initial clock
             state.clocks.push({
                 id: 0,
                 x: WIDTH / 2,
@@ -269,7 +262,11 @@
                 vx: 0,
                 vy: 0,
                 attachedTo: 0,
-                wallBounced: false
+                wallBounced: false,
+                hasRevived: false,
+                jumpCount: 0,
+                lastClockId: 0,
+                blinkUsed: false
             };
 
             for(let i=1; i<6; i++) {
@@ -284,19 +281,34 @@
         };
 
         function jump() {
-            if (state.status !== 'PLAYING' || state.pig.attachedTo === null) return;
+            if (state.status !== 'PLAYING') return;
             
-            const clock = state.clocks.find(c => c.id === state.pig.attachedTo);
-            if (!clock) return;
+            if (state.pig.attachedTo !== null) {
+                const clock = state.clocks.find(c => c.id === state.pig.attachedTo);
+                if (!clock) return;
 
-            let force = JUMP_SPEED;
-            // Ability: Void warps jump speed
-            if (state.selectedSkinId === 'void') force *= 1.2;
+                let force = JUMP_SPEED;
+                if (state.selectedSkinId === 'void') force *= 1.2;
 
-            state.pig.vx = Math.cos(clock.angle) * force;
-            state.pig.vy = Math.sin(clock.angle) * force;
-            state.pig.attachedTo = null;
-            state.pig.wallBounced = false; // Reset wall bounce on new jump
+                state.pig.vx = Math.cos(clock.angle) * force;
+                state.pig.vy = Math.sin(clock.angle) * force;
+                state.pig.attachedTo = null;
+                state.pig.jumpCount = 1;
+                state.pig.blinkUsed = false;
+            } else {
+                // Ninja Double Jump
+                if (state.selectedSkinId === 'ninja' && state.pig.jumpCount < 2) {
+                    state.pig.vy = -JUMP_SPEED * 0.7; // Vertical pop
+                    state.pig.jumpCount = 2;
+                }
+                // Ghost Blink
+                else if (state.selectedSkinId === 'ghost' && !state.pig.blinkUsed) {
+                    const angle = Math.atan2(state.pig.vy, state.pig.vx);
+                    state.pig.x += Math.cos(angle) * 60;
+                    state.pig.y += Math.sin(angle) * 60;
+                    state.pig.blinkUsed = true;
+                }
+            }
         }
 
         function update() {
@@ -311,14 +323,22 @@
                     state.pig.y = clock.y + Math.sin(clock.angle) * clock.radius;
                 }
             } else {
+                // Gravity
+                let gravity = 0.4;
+                if (state.selectedSkinId === 'angel') gravity = 0.2;
+
+                state.pig.vy += gravity;
                 state.pig.x += state.pig.vx;
                 state.pig.y += state.pig.vy;
 
-                // Wall bouncing for Slime
-                if (state.selectedSkinId === 'slime' && !state.pig.wallBounced) {
-                    if (state.pig.x < 15 || state.pig.x > WIDTH - 15) {
-                        state.pig.vx *= -1;
-                        state.pig.wallBounced = true;
+                // Alien Magnet Ability
+                if (state.selectedSkinId === 'alien') {
+                    for (const clock of state.clocks) {
+                        const dist = Math.hypot(state.pig.x - clock.x, state.pig.y - clock.y);
+                        if (dist < 200) {
+                            clock.x += (state.pig.x - clock.x) * 0.01;
+                            clock.y += (state.pig.y - clock.y) * 0.01;
+                        }
                     }
                 }
 
@@ -332,15 +352,15 @@
                     const dist = Math.sqrt(dx*dx + dy*dy);
                     if (dist < clock.radius + grabRange) {
                         state.pig.attachedTo = clock.id;
+                        state.pig.lastClockId = clock.id;
                         state.pig.vx = 0;
                         state.pig.vy = 0;
+                        state.pig.jumpCount = 0;
                         
                         if (clock.id > state.score) {
-                            // Fixed Golden: Double the score you would have gotten
                             let increment = (clock.id - (state.score || 0));
                             if (state.selectedSkinId === 'golden') increment *= 2;
                             if (state.selectedSkinId === 'devil') increment *= 3;
-                            
                             state.score += increment;
                             scoreVal.innerText = state.score;
                         }
@@ -348,8 +368,20 @@
                     }
                 }
 
+                // Death Check
                 if (state.pig.y > state.cameraY + HEIGHT + 50 || state.pig.x < -50 || state.pig.x > WIDTH + 50) {
-                    gameOver();
+                    if (state.selectedSkinId === 'slime' && !state.pig.hasRevived) {
+                        // Slime Revive
+                        state.pig.hasRevived = true;
+                        const last = state.clocks.find(c => c.id === state.pig.lastClockId) || state.clocks[0];
+                        state.pig.attachedTo = last.id;
+                        state.pig.vx = 0;
+                        state.pig.vy = 0;
+                        state.pig.x = last.x;
+                        state.pig.y = last.y - last.radius;
+                    } else {
+                        gameOver();
+                    }
                 }
             }
 
@@ -389,7 +421,7 @@
                 ctx.fillRect(s.x, sy, s.size, s.size);
             });
 
-            // Ability: Cyber laser sight
+            // Ability visuals
             if (state.status === 'PLAYING' && state.selectedSkinId === 'cyber' && state.pig.attachedTo !== null) {
                 const clock = state.clocks.find(c => c.id === state.pig.attachedTo);
                 if (clock) {
@@ -410,10 +442,8 @@
                 ctx.strokeStyle = c.color;
                 ctx.lineWidth = 6;
                 ctx.stroke();
-                
                 ctx.fillStyle = 'rgba(30, 27, 75, 0.8)';
                 ctx.fill();
-
                 ctx.fillStyle = c.color;
                 ctx.globalAlpha = 0.3;
                 const ticks = Math.floor(c.radius / 5);
@@ -425,7 +455,6 @@
                     ctx.fill();
                 }
                 ctx.globalAlpha = 1.0;
-
                 ctx.beginPath();
                 ctx.moveTo(c.x, c.y);
                 ctx.lineTo(c.x + Math.cos(c.angle) * c.radius, c.y + Math.sin(c.angle) * c.radius);
@@ -433,7 +462,6 @@
                 ctx.lineWidth = 8;
                 ctx.lineCap = 'round';
                 ctx.stroke();
-
                 ctx.beginPath();
                 ctx.arc(c.x, c.y, 6, 0, Math.PI*2);
                 ctx.fill();
@@ -447,11 +475,33 @@
                 const rot = p.attachedTo !== null ? 0 : Math.atan2(p.vy, p.vx) + Math.PI/2;
                 ctx.rotate(rot);
                 
+                if (state.selectedSkinId === 'ghost') ctx.globalAlpha = 0.6;
+
+                // Features: Angel Wings
+                if (state.selectedSkinId === 'angel') {
+                    ctx.fillStyle = 'white';
+                    ctx.beginPath();
+                    ctx.ellipse(-20, 0, 15, 8, -0.4, 0, Math.PI*2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.ellipse(20, 0, 15, 8, 0.4, 0, Math.PI*2);
+                    ctx.fill();
+                }
+
                 // Body
                 ctx.fillStyle = skin.body;
                 ctx.beginPath();
                 ctx.ellipse(0, 0, 18, 16, 0, 0, Math.PI*2);
                 ctx.fill();
+
+                // Halo
+                if (state.selectedSkinId === 'angel') {
+                    ctx.strokeStyle = '#FDE68A';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.ellipse(0, -22, 10, 3, 0, 0, Math.PI*2);
+                    ctx.stroke();
+                }
 
                 // Ears
                 ctx.fillStyle = skin.ears;
@@ -470,11 +520,17 @@
                 ctx.beginPath(); ctx.arc(3, 4, 1.5, 0, Math.PI*2); ctx.fill();
 
                 // Eyes
-                ctx.fillStyle = skin.id === 'void' ? 'white' : 'black';
+                ctx.fillStyle = (skin.id === 'void' || skin.id === 'ninja') ? 'white' : 'black';
                 if (state.selectedSkinId === 'robot') ctx.fillStyle = '#F87171';
                 ctx.beginPath(); ctx.arc(-6, -4, 2.5, 0, Math.PI*2); ctx.fill();
                 ctx.beginPath(); ctx.arc(6, -4, 2.5, 0, Math.PI*2); ctx.fill();
                 
+                // Alien Eyes
+                if (state.selectedSkinId === 'alien') {
+                    ctx.fillStyle = 'black';
+                    ctx.beginPath(); ctx.ellipse(0, -6, 4, 6, 0, 0, Math.PI*2); ctx.fill();
+                }
+
                 // Devil Horns
                 if (state.selectedSkinId === 'devil') {
                     ctx.fillStyle = '#991B1B';
