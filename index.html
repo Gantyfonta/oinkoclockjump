@@ -24,28 +24,59 @@
         .ui-layer {
             pointer-events: none;
         }
-        .ui-layer button {
+        .ui-layer button, .ui-layer .clickable {
             pointer-events: auto;
         }
+        .skin-card {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .skin-card:hover {
+            transform: scale(1.05);
+        }
+        .skin-card.selected {
+            border-color: #F472B6;
+            background: rgba(244, 114, 182, 0.2);
+        }
     </style>
-<script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@^19.2.4",
-    "react/": "https://esm.sh/react@^19.2.4/"
-  }
-}
-</script>
 </head>
 <body class="flex items-center justify-center min-h-screen">
     <div id="game-container" class="relative shadow-2xl overflow-hidden border-4 border-indigo-800 rounded-2xl bg-indigo-950" style="width: 400px; height: 700px;">
         <canvas id="gameCanvas" width="400" height="700"></canvas>
         
-        <!-- UI Overlay -->
-        <div id="ui-start" class="absolute inset-0 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm z-20 text-white p-6 text-center">
-            <h1 class="text-5xl font-black mb-4 tracking-tighter text-pink-400 drop-shadow-lg">OINK-O-CLOCK</h1>
-            <p class="text-xl mb-8 bg-white/10 p-3 rounded-lg">Time your leaps between clocks!</p>
-            <button onclick="startGame()" class="bg-pink-500 hover:bg-pink-400 text-white font-bold py-4 px-12 rounded-full text-2xl transition-transform active:scale-95">START</button>
+        <!-- Home Screen -->
+        <div id="ui-home" class="absolute inset-0 flex flex-col items-center justify-center bg-indigo-950 z-40 text-white p-6 text-center">
+            <div class="mb-8">
+                <h1 class="text-5xl font-black mb-1 tracking-tighter text-pink-400 drop-shadow-lg">OINK-O-CLOCK</h1>
+                <p class="text-pink-300/60 font-bold tracking-widest text-xs uppercase">Jump Through Time</p>
+            </div>
+            
+            <div class="flex flex-col gap-4 w-64">
+                <button onclick="startGame()" class="bg-pink-500 hover:bg-pink-400 text-white font-black py-4 px-12 rounded-full text-2xl transition-transform active:scale-95 shadow-lg shadow-pink-500/20">
+                    PLAY
+                </button>
+                <button onclick="openSkins()" class="bg-indigo-800 hover:bg-indigo-700 text-white font-bold py-3 px-12 rounded-full text-lg transition-transform active:scale-95">
+                    SKINS
+                </button>
+            </div>
+
+            <div class="mt-12 text-indigo-300/40 text-[10px] font-bold uppercase tracking-widest">
+                High Score: <span id="home-best-val">0</span>
+            </div>
+        </div>
+
+        <!-- Skins Menu -->
+        <div id="ui-skins" class="absolute inset-0 flex flex-col bg-indigo-900 z-50 text-white p-6 hidden">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-black italic">SKINS</h2>
+                <button onclick="closeSkins()" class="bg-white/10 hover:bg-white/20 p-2 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            
+            <div id="skins-grid" class="grid grid-cols-2 gap-4 overflow-y-auto pb-6">
+                <!-- Skins injected by JS -->
+            </div>
         </div>
 
         <div id="ui-hud" class="absolute top-0 left-0 right-0 p-4 flex justify-between ui-layer text-white hidden">
@@ -63,19 +94,25 @@
             <h2 class="text-4xl font-black mb-2">BACON BITS!</h2>
             <p class="mb-8 opacity-80">You fell out of time...</p>
             <div class="text-6xl font-black mb-8" id="final-score">0</div>
-            <button onclick="startGame()" class="bg-white text-indigo-900 font-black py-4 px-12 rounded-full text-2xl transition-transform active:scale-95">RETRY</button>
+            <div class="flex flex-col gap-3 w-64">
+                <button onclick="startGame()" class="bg-white text-indigo-900 font-black py-4 px-12 rounded-full text-2xl transition-transform active:scale-95">RETRY</button>
+                <button onclick="backToHome()" class="bg-transparent border-2 border-white/20 hover:border-white/40 text-white font-bold py-2 px-12 rounded-full text-sm transition-transform active:scale-95">HOME</button>
+            </div>
         </div>
     </div>
 
     <script type="module">
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        const uiStart = document.getElementById('ui-start');
+        const uiHome = document.getElementById('ui-home');
+        const uiSkins = document.getElementById('ui-skins');
         const uiHUD = document.getElementById('ui-hud');
         const uiGameOver = document.getElementById('ui-gameover');
         const scoreVal = document.getElementById('score-val');
         const bestVal = document.getElementById('best-val');
+        const homeBestVal = document.getElementById('home-best-val');
         const finalScore = document.getElementById('final-score');
+        const skinsGrid = document.getElementById('skins-grid');
 
         const WIDTH = 400;
         const HEIGHT = 700;
@@ -83,20 +120,33 @@
         const JUMP_SPEED = 14;
         const CLOCK_RADIUS = 60;
         const CLOCK_SPACING = 260;
-        const COLORS = ['#F472B6', '#60A5FA', '#34D399', '#FBBF24', '#A78BFA', '#FB923C'];
+        const CLOCK_COLORS = ['#F472B6', '#60A5FA', '#34D399', '#FBBF24', '#A78BFA', '#FB923C'];
+
+        const SKINS = [
+            { id: 'classic', name: 'Classic', body: '#F472B6', ears: '#EC4899', snout: '#F9A8D4', snoutDots: '#BE185D' },
+            { id: 'blueberry', name: 'Blueberry', body: '#60A5FA', ears: '#2563EB', snout: '#93C5FD', snoutDots: '#1E40AF' },
+            { id: 'matcha', name: 'Matcha', body: '#34D399', ears: '#059669', snout: '#6EE7B7', snoutDots: '#064E3B' },
+            { id: 'golden', name: 'Golden', body: '#FBBF24', ears: '#D97706', snout: '#FDE68A', snoutDots: '#78350F' },
+            { id: 'void', name: 'Void', body: '#4B5563', ears: '#1F2937', snout: '#9CA3AF', snoutDots: '#000000' },
+            { id: 'cyber', name: 'Cyber', body: '#A78BFA', ears: '#7C3AED', snout: '#C4B5FD', snoutDots: '#4C1D95' }
+        ];
 
         let state = {
-            status: 'START',
+            status: 'HOME',
             score: 0,
             best: parseInt(localStorage.getItem('oinkBest') || '0'),
+            selectedSkinId: localStorage.getItem('oinkSkin') || 'classic',
             cameraY: 0,
             pig: { x: 200, y: 550, vx: 0, vy: 0, attachedTo: null },
             clocks: [],
             stars: []
         };
 
+        // Initialize UI values
+        homeBestVal.innerText = state.best;
+
         // Initialize stars for background
-        for(let i=0; i<50; i++) {
+        for(let i=0; i<60; i++) {
             state.stars.push({
                 x: Math.random() * WIDTH,
                 y: Math.random() * HEIGHT * 2,
@@ -104,6 +154,42 @@
                 opacity: Math.random()
             });
         }
+
+        function renderSkins() {
+            skinsGrid.innerHTML = SKINS.map(skin => `
+                <div onclick="selectSkin('${skin.id}')" class="skin-card border-2 border-white/10 bg-indigo-800/50 p-4 rounded-xl flex flex-col items-center ${state.selectedSkinId === skin.id ? 'selected' : ''}">
+                    <div class="w-12 h-12 mb-2 relative">
+                        <!-- Tiny Preview of Pig -->
+                        <div class="absolute inset-0 rounded-full" style="background: ${skin.body}"></div>
+                        <div class="absolute w-6 h-4 rounded-full bottom-2 left-3" style="background: ${skin.snout}"></div>
+                    </div>
+                    <span class="text-xs font-black uppercase tracking-wider">${skin.name}</span>
+                </div>
+            `).join('');
+        }
+
+        window.openSkins = () => {
+            renderSkins();
+            uiSkins.classList.remove('hidden');
+        };
+
+        window.closeSkins = () => {
+            uiSkins.classList.add('hidden');
+        };
+
+        window.selectSkin = (id) => {
+            state.selectedSkinId = id;
+            localStorage.setItem('oinkSkin', id);
+            renderSkins();
+        };
+
+        window.backToHome = () => {
+            state.status = 'HOME';
+            uiGameOver.classList.add('hidden');
+            uiHUD.classList.add('hidden');
+            uiHome.classList.remove('hidden');
+            homeBestVal.innerText = state.best;
+        };
 
         function createClock(id, y, index) {
             const speed = (0.04 + (index * 0.002)) * (index % 2 === 0 ? 1 : -1);
@@ -114,7 +200,7 @@
                 radius: CLOCK_RADIUS,
                 angle: Math.random() * Math.PI * 2,
                 speed,
-                color: COLORS[index % COLORS.length]
+                color: CLOCK_COLORS[index % CLOCK_COLORS.length]
             };
         }
 
@@ -132,7 +218,7 @@
                 radius: CLOCK_RADIUS,
                 angle: -Math.PI / 2,
                 speed: 0.04,
-                color: COLORS[0]
+                color: CLOCK_COLORS[0]
             });
             
             // Setup pig
@@ -149,9 +235,11 @@
                 state.clocks.push(createClock(i, HEIGHT - 150 - i * CLOCK_SPACING, i));
             }
 
-            uiStart.classList.add('hidden');
+            uiHome.classList.add('hidden');
+            uiStart.classList.add('hidden'); // Legacy if exists
             uiGameOver.classList.add('hidden');
             uiHUD.classList.remove('hidden');
+            scoreVal.innerText = "0";
             bestVal.innerText = state.best;
         };
 
@@ -238,7 +326,6 @@
             // Stars
             state.stars.forEach(s => {
                 let sy = s.y;
-                // Simple parallax wrap
                 while(sy < state.cameraY) sy += HEIGHT * 2;
                 while(sy > state.cameraY + HEIGHT * 2) sy -= HEIGHT * 2;
                 ctx.fillStyle = `rgba(255, 255, 255, ${s.opacity})`;
@@ -247,7 +334,6 @@
 
             // Clocks
             state.clocks.forEach(c => {
-                // Ring
                 ctx.beginPath();
                 ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2);
                 ctx.strokeStyle = c.color;
@@ -257,7 +343,6 @@
                 ctx.fillStyle = 'rgba(30, 27, 75, 0.8)';
                 ctx.fill();
 
-                // Ticks
                 ctx.fillStyle = c.color;
                 ctx.globalAlpha = 0.3;
                 for(let i=0; i<12; i++) {
@@ -269,7 +354,6 @@
                 }
                 ctx.globalAlpha = 1.0;
 
-                // Hand
                 ctx.beginPath();
                 ctx.moveTo(c.x, c.y);
                 ctx.lineTo(c.x + Math.cos(c.angle) * c.radius, c.y + Math.sin(c.angle) * c.radius);
@@ -283,37 +367,40 @@
                 ctx.fill();
             });
 
-            // Pig
-            const p = state.pig;
-            ctx.save();
-            ctx.translate(p.x, p.y);
-            const rot = p.attachedTo !== null ? 0 : Math.atan2(p.vy, p.vx) + Math.PI/2;
-            ctx.rotate(rot);
-            
-            // Body
-            ctx.fillStyle = '#F472B6';
-            ctx.beginPath();
-            ctx.ellipse(0, 0, 18, 16, 0, 0, Math.PI*2);
-            ctx.fill();
-            // Ears
-            ctx.fillStyle = '#EC4899';
-            ctx.beginPath();
-            ctx.moveTo(-12, -12); ctx.lineTo(-18, -20); ctx.lineTo(-6, -14); ctx.fill();
-            ctx.beginPath();
-            ctx.moveTo(12, -12); ctx.lineTo(18, -20); ctx.lineTo(6, -14); ctx.fill();
-            // Snout
-            ctx.fillStyle = '#F9A8D4';
-            ctx.beginPath();
-            ctx.ellipse(0, 4, 8, 6, 0, 0, Math.PI*2);
-            ctx.fill();
-            ctx.fillStyle = '#BE185D';
-            ctx.beginPath(); ctx.arc(-3, 4, 1.5, 0, Math.PI*2); ctx.fill();
-            ctx.beginPath(); ctx.arc(3, 4, 1.5, 0, Math.PI*2); ctx.fill();
-            // Eyes
-            ctx.fillStyle = 'black';
-            ctx.beginPath(); ctx.arc(-6, -4, 2.5, 0, Math.PI*2); ctx.fill();
-            ctx.beginPath(); ctx.arc(6, -4, 2.5, 0, Math.PI*2); ctx.fill();
-            ctx.restore();
+            // Pig (Dynamic Skins)
+            if (state.status !== 'HOME') {
+                const skin = SKINS.find(s => s.id === state.selectedSkinId) || SKINS[0];
+                const p = state.pig;
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                const rot = p.attachedTo !== null ? 0 : Math.atan2(p.vy, p.vx) + Math.PI/2;
+                ctx.rotate(rot);
+                
+                // Body
+                ctx.fillStyle = skin.body;
+                ctx.beginPath();
+                ctx.ellipse(0, 0, 18, 16, 0, 0, Math.PI*2);
+                ctx.fill();
+                // Ears
+                ctx.fillStyle = skin.ears;
+                ctx.beginPath();
+                ctx.moveTo(-12, -12); ctx.lineTo(-18, -20); ctx.lineTo(-6, -14); ctx.fill();
+                ctx.beginPath();
+                ctx.moveTo(12, -12); ctx.lineTo(18, -20); ctx.lineTo(6, -14); ctx.fill();
+                // Snout
+                ctx.fillStyle = skin.snout;
+                ctx.beginPath();
+                ctx.ellipse(0, 4, 8, 6, 0, 0, Math.PI*2);
+                ctx.fill();
+                ctx.fillStyle = skin.snoutDots;
+                ctx.beginPath(); ctx.arc(-3, 4, 1.5, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.arc(3, 4, 1.5, 0, Math.PI*2); ctx.fill();
+                // Eyes
+                ctx.fillStyle = skin.id === 'void' ? 'white' : 'black';
+                ctx.beginPath(); ctx.arc(-6, -4, 2.5, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.arc(6, -4, 2.5, 0, Math.PI*2); ctx.fill();
+                ctx.restore();
+            }
 
             ctx.restore();
         }
@@ -327,7 +414,7 @@
         window.addEventListener('keydown', (e) => {
             if (e.code === 'Space') {
                 if(state.status === 'PLAYING') jump();
-                else if(state.status !== 'PLAYING') startGame();
+                else if(state.status === 'HOME' || state.status === 'GAMEOVER') startGame();
             }
         });
 
