@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -70,6 +69,14 @@
             50% { box-shadow: inset 0 0 100px 50px rgba(16, 185, 129, 0.5); }
             100% { box-shadow: inset 0 0 0 0 rgba(16, 185, 129, 0); }
         }
+        .gold-flash {
+            animation: gold-pulse 0.3s ease-out;
+        }
+        @keyframes gold-pulse {
+            0% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.2); filter: brightness(1.5); }
+            100% { transform: scale(1); filter: brightness(1); }
+        }
         .toast {
             animation: slide-in-top 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
@@ -88,8 +95,8 @@
             filter: grayscale(100%) contrast(120%);
         }
         .pig-preview-canvas {
-            width: 60px;
-            height: 60px;
+            width: 64px;
+            height: 64px;
             display: block;
         }
     </style>
@@ -177,7 +184,9 @@
 
         <div id="ui-hud" class="absolute top-0 left-0 right-0 p-4 flex justify-between ui-layer text-white hidden">
             <div class="bg-black/20 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/5">
-                <div id="score-val" class="text-3xl font-black text-pink-400 leading-none">0</div>
+                <div id="score-container">
+                    <div id="score-val" class="text-3xl font-black text-pink-400 leading-none">0</div>
+                </div>
             </div>
             <div class="text-right bg-black/20 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/5">
                 <div class="flex items-center gap-2 mb-1 justify-end">
@@ -299,7 +308,7 @@
         const hudCoins = document.getElementById('hud-coins');
         const earnedCoinsText = document.getElementById('earned-coins');
         const gameoverTotalCoins = document.getElementById('gameover-total-coins');
-        const finalScore = document.getElementById('final-score');
+        const finalScoreLabel = document.getElementById('final-score');
         const homeBestVal = document.getElementById('home-best-val');
 
         const WIDTH = 400;
@@ -350,7 +359,7 @@
             pctx.scale(scale, scale);
             pctx.rotate(rotation);
 
-            // Curly Tail
+            // Tail
             pctx.strokeStyle = skin.ears;
             pctx.lineWidth = 2;
             pctx.beginPath();
@@ -373,7 +382,7 @@
             pctx.fillStyle = skin.snout;
             pctx.beginPath(); pctx.ellipse(0, 4, 8, 6, 0, 0, Math.PI * 2); pctx.fill();
 
-            // Snout Dots
+            // Nostrils
             pctx.fillStyle = skin.snoutDots || 'rgba(0,0,0,0.3)';
             pctx.beginPath(); pctx.arc(-3, 4, 1.5, 0, Math.PI * 2); pctx.fill();
             pctx.beginPath(); pctx.arc(3, 4, 1.5, 0, Math.PI * 2); pctx.fill();
@@ -384,11 +393,11 @@
             pctx.beginPath(); pctx.arc(-7, -4, 2.5, 0, Math.PI * 2); pctx.fill();
             pctx.beginPath(); pctx.arc(7, -4, 2.5, 0, Math.PI * 2); pctx.fill();
 
-            // Skin Details
+            // Specialty Overlays
             if (skin.id === 'devil') {
                 pctx.fillStyle = '#991B1B';
-                pctx.beginPath(); pctx.moveTo(-10, -18); pctx.lineTo(-15, -28); pctx.lineTo(-4, -20); pctx.fill();
-                pctx.beginPath(); pctx.moveTo(10, -18); pctx.lineTo(15, -28); pctx.lineTo(4, -20); pctx.fill();
+                pctx.beginPath(); pctx.moveTo(-8, -18); pctx.lineTo(-12, -26); pctx.lineTo(-4, -20); pctx.fill();
+                pctx.beginPath(); pctx.moveTo(8, -18); pctx.lineTo(12, -26); pctx.lineTo(4, -20); pctx.fill();
             } else if (skin.id === 'cyber') {
                 pctx.fillStyle = 'rgba(0, 255, 255, 0.4)';
                 pctx.fillRect(-10, -6, 20, 4);
@@ -401,6 +410,9 @@
                     const sy = Math.cos(time + i) * 15;
                     pctx.beginPath(); pctx.arc(sx, sy, 1.5, 0, Math.PI * 2); pctx.fill();
                 }
+            } else if (skin.id === 'matcha') {
+                 pctx.fillStyle = '#065f46';
+                 pctx.beginPath(); pctx.ellipse(12, -10, 4, 2, Math.PI/4, 0, Math.PI*2); pctx.fill();
             }
             pctx.restore();
         }
@@ -448,12 +460,12 @@
                 return `
                 <div onclick="${unlocked?`selectSkin('${skin.id}')`:''}" class="card-item border-2 border-white/10 bg-white/5 p-4 rounded-2xl flex items-center gap-4 ${isSelected?'selected':''} ${!unlocked?'locked':''}">
                     <div class="w-16 h-16 relative flex items-center justify-center bg-indigo-900/50 rounded-xl overflow-hidden">
-                         <canvas class="pig-preview-canvas" id="preview-${skin.id}" width="60" height="60"></canvas>
+                         <canvas class="pig-preview-canvas" id="preview-${skin.id}" width="64" height="64"></canvas>
                          ${!unlocked?'<div class="absolute inset-0 flex items-center justify-center bg-black/40 text-xl">🔒</div>':''}
                     </div>
                     <div class="text-left flex-1">
                         <span class="text-sm font-black uppercase tracking-tight">${unlocked?skin.name:'Locked Pig'}</span>
-                        <div class="text-[9px] text-pink-400 font-bold uppercase">${unlocked?skin.ability:'???'}</div>
+                        <div class="text-[9px] text-pink-400 font-bold uppercase">${unlocked?skin.ability:'Unlock for 100'}</div>
                     </div>
                 </div>`;
             }).join('');
@@ -462,7 +474,8 @@
                 const pcanv = document.getElementById(`preview-${skin.id}`);
                 if (pcanv) {
                     const pctx = pcanv.getContext('2d');
-                    drawPigAvatar(pctx, skin, 30, 30, 1.2, -0.2);
+                    pctx.clearRect(0,0,64,64);
+                    drawPigAvatar(pctx, skin, 32, 32, 1.2, -0.2);
                 }
             });
             document.getElementById('ui-skins').classList.remove('hidden');
@@ -524,7 +537,7 @@
 
         function createClock(id, y, index) {
             let radius = 35 + Math.random() * 50;
-            if (state.selectedSkinId === 'devil') radius *= 0.6;
+            if (state.selectedSkinId === 'devil') radius *= 0.65;
             let speed = (0.04 + (index * 0.0015)) * (60 / radius) * (index % 2 === 0 ? 1 : -1);
             if (state.selectedSkinId === 'matcha') speed *= 0.75;
             return { id, x: radius + 20 + Math.random() * (WIDTH - (radius * 2 + 40)), y, radius, angle: Math.random() * Math.PI * 2, speed, color: CLOCK_COLORS[index % CLOCK_COLORS.length] };
@@ -544,7 +557,7 @@
         function jump() {
             if (state.status !== 'PLAYING' || state.pig.attachedTo === null) return;
             const clock = state.clocks.find(c => c.id === state.pig.attachedTo);
-            let force = JUMP_SPEED * (state.selectedSkinId === 'void' ? 1.2 : 1);
+            let force = JUMP_SPEED * (state.selectedSkinId === 'void' ? 1.25 : 1);
             state.pig.vx = Math.cos(clock.angle) * force;
             state.pig.vy = Math.sin(clock.angle) * force;
             state.pig.attachedTo = null;
@@ -566,10 +579,17 @@
                     if (d < clock.radius + grabRange) {
                         state.pig.attachedTo = clock.id; state.pig.vx = 0; state.pig.vy = 0;
                         if (clock.id > state.lastClockId) {
-                            let step = clock.id - state.lastClockId;
+                            let multiplier = 1;
+                            if (state.selectedSkinId === 'golden') {
+                                multiplier = 2;
+                                document.getElementById('score-container').classList.add('gold-flash');
+                                setTimeout(() => document.getElementById('score-container').classList.remove('gold-flash'), 300);
+                            }
+                            if (state.selectedSkinId === 'devil') multiplier = 3;
+                            
+                            state.score += (clock.id - state.lastClockId) * multiplier;
                             state.lastClockId = clock.id;
-                            let gain = step * (state.selectedSkinId === 'golden' ? 2 : (state.selectedSkinId === 'devil' ? 3 : 1));
-                            state.score += gain; scoreVal.innerText = state.score;
+                            scoreVal.innerText = state.score;
                             playSound('coin');
                         }
                         playSound('land'); break;
@@ -577,7 +597,7 @@
                 }
                 if (state.pig.y > state.cameraY + HEIGHT + 100 || state.pig.x < -100 || state.pig.x > WIDTH + 100) {
                     if (state.selectedSkinId === 'slime' && !state.pig.slimeUsed) {
-                        state.pig.slimeUsed = true; state.pig.vy = -18; state.pig.x = WIDTH/2;
+                        state.pig.slimeUsed = true; state.pig.vy = -18; state.pig.vx = 0;
                         gameContainer.classList.add('slime-flash'); playSound('unlock');
                         setTimeout(() => gameContainer.classList.remove('slime-flash'), 500);
                     } else gameOver();
@@ -600,7 +620,7 @@
                 state.best = state.score; localStorage.setItem('oinkBest', state.best); 
                 document.getElementById('new-best-tag').classList.remove('hidden'); 
             } else document.getElementById('new-best-tag').classList.add('hidden'); 
-            earnedCoinsText.innerText = `+${earned}`; finalScore.innerText = state.score;
+            earnedCoinsText.innerText = `+${earned}`; finalScoreLabel.innerText = state.score;
             gameoverTotalCoins.innerText = state.coins; uiGameOver.classList.remove('hidden'); refreshUI();
             if (state.username) db.ref('leaderboard/'+state.username.toLowerCase()).set({ name: state.username, score: state.best }).catch(()=>{});
         }
@@ -635,10 +655,20 @@
                     ctx.lineWidth = 6; ctx.stroke();
                 }
             });
-            if (state.status !== 'HOME') {
+            if (state.status === 'PLAYING') {
                 const skin = SKINS.find(s => s.id === state.selectedSkinId) || SKINS[0];
                 const p = state.pig;
                 const rot = p.attachedTo !== null ? 0 : Math.atan2(p.vy, p.vx) + Math.PI/2;
+                
+                // Cyber Trajectory Laser
+                if (skin.id === 'cyber' && p.attachedTo !== null) {
+                    const clock = state.clocks.find(c => c.id === p.attachedTo);
+                    ctx.setLineDash([10, 5]); ctx.strokeStyle = 'rgba(0, 255, 255, 0.4)'; ctx.lineWidth = 2;
+                    ctx.beginPath(); ctx.moveTo(p.x, p.y); 
+                    ctx.lineTo(p.x + Math.cos(clock.angle) * 300, p.y + Math.sin(clock.angle) * 300);
+                    ctx.stroke(); ctx.setLineDash([]);
+                }
+
                 drawPigAvatar(ctx, skin, p.x, p.y, 1, rot);
             }
             ctx.restore();
