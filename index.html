@@ -153,7 +153,7 @@
                 <h2 class="text-3xl font-black italic uppercase tracking-tighter">Legends</h2>
                 <button onclick="closeLeaderboard()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
             </div>
-            <div id="leaderboard-list" class="flex-1 overflow-y-auto space-y-1"></div>
+            <div id="leaderboard-list" class="flex-1 overflow-y-auto space-y-1 pr-1"></div>
         </div>
 
         <!-- Skins Menu -->
@@ -325,14 +325,21 @@
             { id: 'void', name: 'Void Walker', ability: 'Warp', desc: '+20% Jump velocity.', body: '#4B5563', ears: '#1F2937', snout: '#9CA3AF', snoutDots: '#000000' },
             { id: 'cyber', name: 'Cyber Ham', ability: 'Laser', desc: 'Shows trajectory line.', body: '#A78BFA', ears: '#7C3AED', snout: '#C4B5FD', snoutDots: '#4C1D95' },
             { id: 'slime', name: 'Slime Pig', ability: 'Resilient', desc: 'Bounces once from void.', body: '#10B981', ears: '#064E3B', snout: '#D1FAE5', snoutDots: '#059669' },
-            { id: 'devil', name: 'Hell Hog', ability: 'Inferno', desc: 'Triple score, small clocks.', body: '#EF4444', ears: '#7F1D1D', snout: '#FCA5A5', snoutDots: '#991B1B' }
+            { id: 'devil', name: 'Hell Hog', ability: 'Inferno', desc: 'Triple score, small clocks.', body: '#EF4444', ears: '#7F1D1D', snout: '#FCA5A5', snoutDots: '#991B1B' },
+            { id: 'ninja', name: 'Shadow Swine', ability: 'Ninja', desc: 'Fast jumps & big grab range.', body: '#1E293B', ears: '#0F172A', snout: '#334155', snoutDots: '#000000' },
+            { id: 'zombie', name: 'Undead Hog', ability: 'Unending', desc: 'Revives once (Keep score).', body: '#4D7C0F', ears: '#365314', snout: '#84CC16', snoutDots: '#14532D' },
+            { id: 'ice', name: 'Frost Piglet', ability: 'Freeze', desc: 'Stops clocks when touched.', body: '#BAE6FD', ears: '#0EA5E9', snout: '#E0F2FE', snoutDots: '#0369A1' },
+            { id: 'rainbow', name: 'Prism Pig', ability: 'Fortune', desc: '+5 Coins every successful jump.', body: '#FFFFFF', ears: '#FF0000', snout: '#FF00FF', snoutDots: '#000000' }
         ];
 
         const THEMES = [
             { id: 'classic', name: 'Neon Night', bg: '#0f172a', type: 'CLOCK' },
             { id: 'planets', name: 'Deep Space', bg: '#020617', type: 'PLANET' },
             { id: 'gold', name: 'Golden Vault', bg: '#1c1917', type: 'COIN' },
-            { id: 'noir', name: 'Old Cinema', bg: '#000000', type: 'NOIR' }
+            { id: 'noir', name: 'Old Cinema', bg: '#000000', type: 'NOIR' },
+            { id: 'synthwave', name: 'Retro Grid', bg: '#2e1065', type: 'GRID' },
+            { id: 'candy', name: 'Sugar Rush', bg: '#fdf2f8', type: 'CANDY' },
+            { id: 'ocean', name: 'Abyss', bg: '#082f49', type: 'CORAL' }
         ];
 
         let state = {
@@ -346,11 +353,12 @@
             selectedThemeId: localStorage.getItem('oinkTheme') || 'classic',
             username: localStorage.getItem('oinkUser') || '',
             cameraY: 0,
-            pig: { x: 200, y: 550, vx: 0, vy: 0, attachedTo: null, slimeUsed: false },
+            pig: { x: 200, y: 550, vx: 0, vy: 0, attachedTo: null, slimeUsed: false, zombieUsed: false },
             clocks: [],
             stars: [],
             localScores: JSON.parse(localStorage.getItem('oinkLocalLeaderboard') || '[]'),
-            lastClockId: -1
+            lastClockId: -1,
+            rainbowHue: 0
         };
 
         function drawPigAvatar(pctx, skin, x, y, scale = 1, rotation = 0) {
@@ -359,8 +367,18 @@
             pctx.scale(scale, scale);
             pctx.rotate(rotation);
 
+            let bodyColor = skin.body;
+            let earColor = skin.ears;
+            let snoutColor = skin.snout;
+
+            if (skin.id === 'rainbow') {
+                bodyColor = `hsl(${state.rainbowHue}, 80%, 70%)`;
+                earColor = `hsl(${state.rainbowHue + 30}, 80%, 40%)`;
+                snoutColor = `hsl(${state.rainbowHue + 60}, 80%, 80%)`;
+            }
+
             // Tail
-            pctx.strokeStyle = skin.ears;
+            pctx.strokeStyle = earColor;
             pctx.lineWidth = 2;
             pctx.beginPath();
             pctx.moveTo(-18, 0);
@@ -368,18 +386,18 @@
             pctx.stroke();
 
             // Body
-            pctx.fillStyle = skin.body;
+            pctx.fillStyle = bodyColor;
             pctx.beginPath();
             pctx.ellipse(0, 0, 18, 16, 0, 0, Math.PI * 2);
             pctx.fill();
 
             // Ears
-            pctx.fillStyle = skin.ears;
+            pctx.fillStyle = earColor;
             pctx.beginPath(); pctx.moveTo(-14, -10); pctx.lineTo(-18, -20); pctx.lineTo(-6, -14); pctx.fill();
             pctx.beginPath(); pctx.moveTo(14, -10); pctx.lineTo(18, -20); pctx.lineTo(6, -14); pctx.fill();
 
             // Snout
-            pctx.fillStyle = skin.snout;
+            pctx.fillStyle = snoutColor;
             pctx.beginPath(); pctx.ellipse(0, 4, 8, 6, 0, 0, Math.PI * 2); pctx.fill();
 
             // Nostrils
@@ -393,26 +411,16 @@
             pctx.beginPath(); pctx.arc(-7, -4, 2.5, 0, Math.PI * 2); pctx.fill();
             pctx.beginPath(); pctx.arc(7, -4, 2.5, 0, Math.PI * 2); pctx.fill();
 
-            // Specialty Overlays
-            if (skin.id === 'devil') {
-                pctx.fillStyle = '#991B1B';
-                pctx.beginPath(); pctx.moveTo(-8, -18); pctx.lineTo(-12, -26); pctx.lineTo(-4, -20); pctx.fill();
-                pctx.beginPath(); pctx.moveTo(8, -18); pctx.lineTo(12, -26); pctx.lineTo(4, -20); pctx.fill();
-            } else if (skin.id === 'cyber') {
-                pctx.fillStyle = 'rgba(0, 255, 255, 0.4)';
-                pctx.fillRect(-10, -6, 20, 4);
-                pctx.strokeStyle = '#00ffff'; pctx.lineWidth = 1; pctx.strokeRect(-10, -6, 20, 4);
-            } else if (skin.id === 'golden') {
-                const time = Date.now() / 200;
-                pctx.fillStyle = 'white';
-                for (let i = 0; i < 3; i++) {
-                    const sx = Math.sin(time + i) * 15;
-                    const sy = Math.cos(time + i) * 15;
-                    pctx.beginPath(); pctx.arc(sx, sy, 1.5, 0, Math.PI * 2); pctx.fill();
-                }
-            } else if (skin.id === 'matcha') {
-                 pctx.fillStyle = '#065f46';
-                 pctx.beginPath(); pctx.ellipse(12, -10, 4, 2, Math.PI/4, 0, Math.PI*2); pctx.fill();
+            // Overlay logic
+            if (skin.id === 'ninja') {
+                pctx.fillStyle = 'rgba(0,0,0,0.7)';
+                pctx.fillRect(-18, -8, 36, 4); // Bandana
+            } else if (skin.id === 'zombie') {
+                pctx.fillStyle = 'rgba(255,255,255,0.2)';
+                pctx.beginPath(); pctx.arc(7, -4, 4, 0, Math.PI*2); pctx.fill(); // Clouded eye
+            } else if (skin.id === 'ice') {
+                pctx.fillStyle = 'rgba(255,255,255,0.4)';
+                pctx.beginPath(); pctx.moveTo(0, -18); pctx.lineTo(5, -25); pctx.lineTo(-5, -25); pctx.fill(); // Ice shard
             }
             pctx.restore();
         }
@@ -446,6 +454,8 @@
             state.username = val; localStorage.setItem('oinkUser', val);
             document.getElementById('ui-username').classList.add('hidden');
             refreshUI();
+            // Try to sync score immediately upon naming
+            if(state.best > 0) db.ref('leaderboard/'+state.username.toLowerCase()).set({ name: state.username, score: state.best }).catch(()=>{});
         };
 
         window.showUsernameEntry = () => {
@@ -525,13 +535,25 @@
 
         window.openLeaderboard = async () => {
             uiLeaderboard.classList.remove('hidden');
-            leaderboardList.innerHTML = '<div class="text-center py-10 opacity-50 animate-pulse">SYNCING...</div>';
+            leaderboardList.innerHTML = '<div class="text-center py-10 opacity-50 animate-pulse">SYNCING LEGENDS...</div>';
             try {
                 const snap = await db.ref('leaderboard').orderByChild('score').limitToLast(10).once('value');
                 const data = []; snap.forEach(c => data.push(c.val()));
-                leaderboardList.innerHTML = data.reverse().map((e, i) => `<div class="flex justify-between p-3 rounded-xl border border-white/5 bg-white/5"><span class="font-bold">${i+1}. ${e.name}</span><span class="font-black text-pink-400">${e.score}</span></div>`).join('');
-            } catch {
-                leaderboardList.innerHTML = '<div class="text-center opacity-30">OFFLINE MODE</div>';
+                if (data.length === 0) {
+                    leaderboardList.innerHTML = '<div class="text-center py-10 opacity-30">NO RECORDED LEGENDS YET.</div>';
+                } else {
+                    leaderboardList.innerHTML = data.reverse().map((e, i) => `
+                    <div class="flex justify-between items-center p-3 rounded-xl border border-white/5 bg-white/5">
+                        <div class="flex items-center gap-3">
+                            <span class="font-black text-white/20 text-xl italic">${i+1}</span>
+                            <span class="font-bold text-sm">${e.name}</span>
+                        </div>
+                        <span class="font-black text-pink-400 text-lg">${e.score}</span>
+                    </div>`).join('');
+                }
+            } catch (err) {
+                console.error(err);
+                leaderboardList.innerHTML = '<div class="text-center py-10 opacity-30">CONNECTION INTERRUPTED.</div>';
             }
         };
 
@@ -540,15 +562,15 @@
             if (state.selectedSkinId === 'devil') radius *= 0.65;
             let speed = (0.04 + (index * 0.0015)) * (60 / radius) * (index % 2 === 0 ? 1 : -1);
             if (state.selectedSkinId === 'matcha') speed *= 0.75;
-            return { id, x: radius + 20 + Math.random() * (WIDTH - (radius * 2 + 40)), y, radius, angle: Math.random() * Math.PI * 2, speed, color: CLOCK_COLORS[index % CLOCK_COLORS.length] };
+            return { id, x: radius + 20 + Math.random() * (WIDTH - (radius * 2 + 40)), y, radius, angle: Math.random() * Math.PI * 2, speed, color: CLOCK_COLORS[index % CLOCK_COLORS.length], isFrozen: false };
         }
 
         window.startGame = () => {
             initAudio();
             if (!state.username) return showUsernameEntry();
             state.status = 'PLAYING'; state.score = 0; state.cameraY = 0; state.clocks = []; state.lastClockId = 0;
-            state.pig = { x: WIDTH/2, y: HEIGHT-150-60, vx: 0, vy: 0, attachedTo: 0, slimeUsed: false };
-            state.clocks.push({ id: 0, x: WIDTH/2, y: HEIGHT-150, radius: 60, angle: -Math.PI/2, speed: state.selectedSkinId==='matcha'?0.03:0.04, color: CLOCK_COLORS[0] });
+            state.pig = { x: WIDTH/2, y: HEIGHT-150-60, vx: 0, vy: 0, attachedTo: 0, slimeUsed: false, zombieUsed: false };
+            state.clocks.push({ id: 0, x: WIDTH/2, y: HEIGHT-150, radius: 60, angle: -Math.PI/2, speed: state.selectedSkinId==='matcha'?0.03:0.04, color: CLOCK_COLORS[0], isFrozen: false });
             for(let i=1; i<6; i++) state.clocks.push(createClock(i, HEIGHT-150-i*CLOCK_SPACING, i));
             uiHome.classList.add('hidden'); uiGameOver.classList.add('hidden'); uiHUD.classList.remove('hidden');
             scoreVal.innerText = "0"; bestVal.innerText = state.best; refreshUI();
@@ -557,7 +579,10 @@
         function jump() {
             if (state.status !== 'PLAYING' || state.pig.attachedTo === null) return;
             const clock = state.clocks.find(c => c.id === state.pig.attachedTo);
-            let force = JUMP_SPEED * (state.selectedSkinId === 'void' ? 1.25 : 1);
+            let force = JUMP_SPEED;
+            if (state.selectedSkinId === 'void') force *= 1.25;
+            if (state.selectedSkinId === 'ninja') force *= 1.4;
+
             state.pig.vx = Math.cos(clock.angle) * force;
             state.pig.vy = Math.sin(clock.angle) * force;
             state.pig.attachedTo = null;
@@ -566,14 +591,23 @@
 
         function update() {
             if (state.status !== 'PLAYING') return;
-            state.clocks.forEach(c => c.angle += c.speed);
+            state.rainbowHue = (state.rainbowHue + 2) % 360;
+            
+            state.clocks.forEach(c => {
+                if (!c.isFrozen) c.angle += c.speed;
+            });
+
             if (state.pig.attachedTo !== null) {
                 const clock = state.clocks.find(c => c.id === state.pig.attachedTo);
+                if (state.selectedSkinId === 'ice') clock.isFrozen = true;
                 state.pig.x = clock.x + Math.cos(clock.angle) * clock.radius;
                 state.pig.y = clock.y + Math.sin(clock.angle) * clock.radius;
             } else {
                 state.pig.x += state.pig.vx; state.pig.y += state.pig.vy;
-                const grabRange = state.selectedSkinId === 'blueberry' ? 12 : 5;
+                let grabRange = 5;
+                if (state.selectedSkinId === 'blueberry') grabRange = 12;
+                if (state.selectedSkinId === 'ninja') grabRange = 15;
+
                 for (const clock of state.clocks) {
                     const d = Math.sqrt((state.pig.x-clock.x)**2 + (state.pig.y-clock.y)**2);
                     if (d < clock.radius + grabRange) {
@@ -586,6 +620,10 @@
                                 setTimeout(() => document.getElementById('score-container').classList.remove('gold-flash'), 300);
                             }
                             if (state.selectedSkinId === 'devil') multiplier = 3;
+                            if (state.selectedSkinId === 'rainbow') {
+                                state.coins += 5;
+                                refreshUI();
+                            }
                             
                             state.score += (clock.id - state.lastClockId) * multiplier;
                             state.lastClockId = clock.id;
@@ -598,6 +636,10 @@
                 if (state.pig.y > state.cameraY + HEIGHT + 100 || state.pig.x < -100 || state.pig.x > WIDTH + 100) {
                     if (state.selectedSkinId === 'slime' && !state.pig.slimeUsed) {
                         state.pig.slimeUsed = true; state.pig.vy = -18; state.pig.vx = 0;
+                        gameContainer.classList.add('slime-flash'); playSound('unlock');
+                        setTimeout(() => gameContainer.classList.remove('slime-flash'), 500);
+                    } else if (state.selectedSkinId === 'zombie' && !state.pig.zombieUsed) {
+                        state.pig.zombieUsed = true; state.pig.vy = -18; state.pig.vx = 0; state.pig.x = WIDTH/2;
                         gameContainer.classList.add('slime-flash'); playSound('unlock');
                         setTimeout(() => gameContainer.classList.remove('slime-flash'), 500);
                     } else gameOver();
@@ -629,10 +671,28 @@
             const theme = THEMES.find(t => t.id === state.selectedThemeId) || THEMES[0];
             ctx.fillStyle = theme.bg; ctx.fillRect(0,0,WIDTH,HEIGHT);
             ctx.save(); ctx.translate(0, -state.cameraY);
+            
+            // Draw Stars / Background Elements
             state.stars.forEach(s => {
                 let sy = s.y; while(sy < state.cameraY) sy += HEIGHT*2; while(sy > state.cameraY + HEIGHT*2) sy -= HEIGHT*2;
-                ctx.fillStyle = `rgba(255,255,255,${s.opacity})`; ctx.fillRect(s.x, sy, s.size, s.size);
+                if (theme.type === 'CORAL') {
+                    ctx.fillStyle = `rgba(255,255,255,${s.opacity * 0.4})`;
+                    ctx.beginPath(); ctx.arc(s.x, sy, s.size * 2, 0, Math.PI*2); ctx.fill();
+                } else if (theme.type === 'GRID') {
+                    ctx.fillStyle = `rgba(244,114,182,${s.opacity * 0.2})`;
+                    ctx.fillRect(s.x, sy, s.size * 4, s.size);
+                } else {
+                    ctx.fillStyle = `rgba(255,255,255,${s.opacity})`;
+                    ctx.fillRect(s.x, sy, s.size, s.size);
+                }
             });
+
+            // Grid line for Synthwave
+            if (theme.type === 'GRID') {
+                ctx.strokeStyle = 'rgba(244,114,182,0.1)'; ctx.lineWidth = 1;
+                for (let i = 0; i < WIDTH; i += 40) { ctx.beginPath(); ctx.moveTo(i, state.cameraY); ctx.lineTo(i, state.cameraY + HEIGHT); ctx.stroke(); }
+            }
+
             state.clocks.forEach(c => {
                 ctx.globalAlpha = 1.0;
                 if (theme.type === 'CLOCK') {
@@ -653,8 +713,28 @@
                     ctx.strokeStyle = theme.type==='COIN'?'#78350f':'#000000'; ctx.lineWidth = 4; ctx.stroke();
                     ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius);
                     ctx.lineWidth = 6; ctx.stroke();
+                } else if (theme.type === 'GRID') {
+                    ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2);
+                    ctx.strokeStyle = '#00ffff'; ctx.lineWidth = 4; ctx.setLineDash([5, 5]); ctx.stroke(); ctx.setLineDash([]);
+                    ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius);
+                    ctx.strokeStyle = '#ff00ff'; ctx.lineWidth = 6; ctx.stroke();
+                } else if (theme.type === 'CANDY') {
+                    ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2);
+                    ctx.fillStyle = '#f9a8d4'; ctx.fill();
+                    ctx.strokeStyle = '#f472b6'; ctx.lineWidth = 8; ctx.stroke();
+                    ctx.beginPath(); ctx.arc(c.x, c.y, c.radius * 0.4, 0, Math.PI*2);
+                    ctx.fillStyle = '#ffffff'; ctx.fill();
+                    ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius);
+                    ctx.strokeStyle = '#be185d'; ctx.lineWidth = 6; ctx.stroke();
+                } else if (theme.type === 'CORAL') {
+                    ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2);
+                    ctx.fillStyle = 'rgba(0,0,0,0.4)'; ctx.fill();
+                    ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 4; ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius);
+                    ctx.strokeStyle = '#0ea5e9'; ctx.lineWidth = 6; ctx.stroke();
                 }
             });
+
             if (state.status === 'PLAYING') {
                 const skin = SKINS.find(s => s.id === state.selectedSkinId) || SKINS[0];
                 const p = state.pig;
