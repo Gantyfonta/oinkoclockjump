@@ -3,20 +3,341 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Oink-O-Clock Jump</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            touch-action: manipulation;
+            background: #1e1b4b;
+            margin: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+            max-width: 100%;
+            max-height: 100vh;
+            image-rendering: antialiased;
+        }
+        .ui-layer {
+            pointer-events: none;
+        }
+        .ui-layer button {
+            pointer-events: auto;
+        }
+    </style>
 <script type="importmap">
 {
   "imports": {
-    "react/": "https://esm.sh/react@^19.2.4/",
     "react": "https://esm.sh/react@^19.2.4",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.4/"
+    "react/": "https://esm.sh/react@^19.2.4/"
   }
 }
 </script>
 </head>
-<body class="bg-indigo-900 overflow-hidden">
-    <div id="root"></div>
+<body class="flex items-center justify-center min-h-screen">
+    <div id="game-container" class="relative shadow-2xl overflow-hidden border-4 border-indigo-800 rounded-2xl bg-indigo-950" style="width: 400px; height: 700px;">
+        <canvas id="gameCanvas" width="400" height="700"></canvas>
+        
+        <!-- UI Overlay -->
+        <div id="ui-start" class="absolute inset-0 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm z-20 text-white p-6 text-center">
+            <h1 class="text-5xl font-black mb-4 tracking-tighter text-pink-400 drop-shadow-lg">OINK-O-CLOCK</h1>
+            <p class="text-xl mb-8 bg-white/10 p-3 rounded-lg">Time your leaps between clocks!</p>
+            <button onclick="startGame()" class="bg-pink-500 hover:bg-pink-400 text-white font-bold py-4 px-12 rounded-full text-2xl transition-transform active:scale-95">START</button>
+        </div>
+
+        <div id="ui-hud" class="absolute top-0 left-0 right-0 p-4 flex justify-between ui-layer text-white hidden">
+            <div>
+                <div class="text-[10px] uppercase font-bold opacity-60">Score</div>
+                <div id="score-val" class="text-3xl font-black">0</div>
+            </div>
+            <div class="text-right">
+                <div class="text-[10px] uppercase font-bold opacity-60">Best</div>
+                <div id="best-val" class="text-xl font-black">0</div>
+            </div>
+        </div>
+
+        <div id="ui-gameover" class="absolute inset-0 flex flex-col items-center justify-center bg-red-950/90 backdrop-blur-md z-30 text-white p-6 text-center hidden">
+            <h2 class="text-4xl font-black mb-2">BACON BITS!</h2>
+            <p class="mb-8 opacity-80">You fell out of time...</p>
+            <div class="text-6xl font-black mb-8" id="final-score">0</div>
+            <button onclick="startGame()" class="bg-white text-indigo-900 font-black py-4 px-12 rounded-full text-2xl transition-transform active:scale-95">RETRY</button>
+        </div>
+    </div>
+
+    <script type="module">
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const uiStart = document.getElementById('ui-start');
+        const uiHUD = document.getElementById('ui-hud');
+        const uiGameOver = document.getElementById('ui-gameover');
+        const scoreVal = document.getElementById('score-val');
+        const bestVal = document.getElementById('best-val');
+        const finalScore = document.getElementById('final-score');
+
+        const WIDTH = 400;
+        const HEIGHT = 700;
+        const PIG_RADIUS = 18;
+        const JUMP_SPEED = 14;
+        const CLOCK_RADIUS = 60;
+        const CLOCK_SPACING = 260;
+        const COLORS = ['#F472B6', '#60A5FA', '#34D399', '#FBBF24', '#A78BFA', '#FB923C'];
+
+        let state = {
+            status: 'START',
+            score: 0,
+            best: parseInt(localStorage.getItem('oinkBest') || '0'),
+            cameraY: 0,
+            pig: { x: 200, y: 550, vx: 0, vy: 0, attachedTo: null },
+            clocks: [],
+            stars: []
+        };
+
+        // Initialize stars for background
+        for(let i=0; i<50; i++) {
+            state.stars.push({
+                x: Math.random() * WIDTH,
+                y: Math.random() * HEIGHT * 2,
+                size: Math.random() * 2,
+                opacity: Math.random()
+            });
+        }
+
+        function createClock(id, y, index) {
+            const speed = (0.04 + (index * 0.002)) * (index % 2 === 0 ? 1 : -1);
+            return {
+                id,
+                x: 60 + Math.random() * (WIDTH - 120),
+                y,
+                radius: CLOCK_RADIUS,
+                angle: Math.random() * Math.PI * 2,
+                speed,
+                color: COLORS[index % COLORS.length]
+            };
+        }
+
+        window.startGame = () => {
+            state.status = 'PLAYING';
+            state.score = 0;
+            state.cameraY = 0;
+            state.clocks = [];
+            
+            // Initial clock
+            state.clocks.push({
+                id: 0,
+                x: WIDTH / 2,
+                y: HEIGHT - 150,
+                radius: CLOCK_RADIUS,
+                angle: -Math.PI / 2,
+                speed: 0.04,
+                color: COLORS[0]
+            });
+            
+            // Setup pig
+            state.pig = {
+                x: WIDTH / 2,
+                y: HEIGHT - 150 - CLOCK_RADIUS,
+                vx: 0,
+                vy: 0,
+                attachedTo: 0
+            };
+
+            // Prep ahead
+            for(let i=1; i<6; i++) {
+                state.clocks.push(createClock(i, HEIGHT - 150 - i * CLOCK_SPACING, i));
+            }
+
+            uiStart.classList.add('hidden');
+            uiGameOver.classList.add('hidden');
+            uiHUD.classList.remove('hidden');
+            bestVal.innerText = state.best;
+        };
+
+        function jump() {
+            if (state.status !== 'PLAYING' || state.pig.attachedTo === null) return;
+            
+            const clock = state.clocks.find(c => c.id === state.pig.attachedTo);
+            if (!clock) return;
+
+            state.pig.vx = Math.cos(clock.angle) * JUMP_SPEED;
+            state.pig.vy = Math.sin(clock.angle) * JUMP_SPEED;
+            state.pig.attachedTo = null;
+        }
+
+        function update() {
+            if (state.status !== 'PLAYING') return;
+
+            // Clocks rotation
+            state.clocks.forEach(c => c.angle += c.speed);
+
+            if (state.pig.attachedTo !== null) {
+                const clock = state.clocks.find(c => c.id === state.pig.attachedTo);
+                if (clock) {
+                    state.pig.x = clock.x + Math.cos(clock.angle) * clock.radius;
+                    state.pig.y = clock.y + Math.sin(clock.angle) * clock.radius;
+                }
+            } else {
+                state.pig.x += state.pig.vx;
+                state.pig.y += state.pig.vy;
+
+                // Collision
+                for (const clock of state.clocks) {
+                    const dx = state.pig.x - clock.x;
+                    const dy = state.pig.y - clock.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < clock.radius + 5) {
+                        state.pig.attachedTo = clock.id;
+                        state.pig.vx = 0;
+                        state.pig.vy = 0;
+                        if (clock.id > state.score) {
+                            state.score = clock.id;
+                            scoreVal.innerText = state.score;
+                        }
+                        break;
+                    }
+                }
+
+                // Bounds
+                if (state.pig.y > state.cameraY + HEIGHT + 50 || state.pig.x < -50 || state.pig.x > WIDTH + 50) {
+                    gameOver();
+                }
+            }
+
+            // Camera
+            const targetY = state.pig.y - HEIGHT / 1.6;
+            if (targetY < state.cameraY) {
+                state.cameraY += (targetY - state.cameraY) * 0.1;
+            }
+
+            // Infinite gen
+            const last = state.clocks[state.clocks.length - 1];
+            if (last.y > state.cameraY - 400) {
+                const nextId = last.id + 1;
+                state.clocks.push(createClock(nextId, last.y - CLOCK_SPACING, nextId));
+            }
+            if (state.clocks.length > 15) state.clocks.shift();
+        }
+
+        function gameOver() {
+            state.status = 'GAMEOVER';
+            if (state.score > state.best) {
+                state.best = state.score;
+                localStorage.setItem('oinkBest', state.best);
+            }
+            finalScore.innerText = state.score;
+            uiGameOver.classList.remove('hidden');
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, WIDTH, HEIGHT);
+            ctx.save();
+            ctx.translate(0, -state.cameraY);
+
+            // Stars
+            state.stars.forEach(s => {
+                let sy = s.y;
+                // Simple parallax wrap
+                while(sy < state.cameraY) sy += HEIGHT * 2;
+                while(sy > state.cameraY + HEIGHT * 2) sy -= HEIGHT * 2;
+                ctx.fillStyle = `rgba(255, 255, 255, ${s.opacity})`;
+                ctx.fillRect(s.x, sy, s.size, s.size);
+            });
+
+            // Clocks
+            state.clocks.forEach(c => {
+                // Ring
+                ctx.beginPath();
+                ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2);
+                ctx.strokeStyle = c.color;
+                ctx.lineWidth = 6;
+                ctx.stroke();
+                
+                ctx.fillStyle = 'rgba(30, 27, 75, 0.8)';
+                ctx.fill();
+
+                // Ticks
+                ctx.fillStyle = c.color;
+                ctx.globalAlpha = 0.3;
+                for(let i=0; i<12; i++) {
+                    const tx = c.x + Math.cos(i * Math.PI/6) * (c.radius - 12);
+                    const ty = c.y + Math.sin(i * Math.PI/6) * (c.radius - 12);
+                    ctx.beginPath();
+                    ctx.arc(tx, ty, 2, 0, Math.PI*2);
+                    ctx.fill();
+                }
+                ctx.globalAlpha = 1.0;
+
+                // Hand
+                ctx.beginPath();
+                ctx.moveTo(c.x, c.y);
+                ctx.lineTo(c.x + Math.cos(c.angle) * c.radius, c.y + Math.sin(c.angle) * c.radius);
+                ctx.strokeStyle = c.color;
+                ctx.lineWidth = 8;
+                ctx.lineCap = 'round';
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(c.x, c.y, 6, 0, Math.PI*2);
+                ctx.fill();
+            });
+
+            // Pig
+            const p = state.pig;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            const rot = p.attachedTo !== null ? 0 : Math.atan2(p.vy, p.vx) + Math.PI/2;
+            ctx.rotate(rot);
+            
+            // Body
+            ctx.fillStyle = '#F472B6';
+            ctx.beginPath();
+            ctx.ellipse(0, 0, 18, 16, 0, 0, Math.PI*2);
+            ctx.fill();
+            // Ears
+            ctx.fillStyle = '#EC4899';
+            ctx.beginPath();
+            ctx.moveTo(-12, -12); ctx.lineTo(-18, -20); ctx.lineTo(-6, -14); ctx.fill();
+            ctx.beginPath();
+            ctx.moveTo(12, -12); ctx.lineTo(18, -20); ctx.lineTo(6, -14); ctx.fill();
+            // Snout
+            ctx.fillStyle = '#F9A8D4';
+            ctx.beginPath();
+            ctx.ellipse(0, 4, 8, 6, 0, 0, Math.PI*2);
+            ctx.fill();
+            ctx.fillStyle = '#BE185D';
+            ctx.beginPath(); ctx.arc(-3, 4, 1.5, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(3, 4, 1.5, 0, Math.PI*2); ctx.fill();
+            // Eyes
+            ctx.fillStyle = 'black';
+            ctx.beginPath(); ctx.arc(-6, -4, 2.5, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(6, -4, 2.5, 0, Math.PI*2); ctx.fill();
+            ctx.restore();
+
+            ctx.restore();
+        }
+
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                if(state.status === 'PLAYING') jump();
+                else if(state.status !== 'PLAYING') startGame();
+            }
+        });
+
+        canvas.addEventListener('mousedown', jump);
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            jump();
+        });
+
+        loop();
+    </script>
 </body>
 </html>
