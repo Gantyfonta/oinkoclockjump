@@ -52,15 +52,6 @@
             opacity: 0.6;
             cursor: not-allowed;
         }
-        .lock-overlay {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(15, 23, 42, 0.4);
-            pointer-events: none;
-        }
         ::-webkit-scrollbar {
             width: 4px;
         }
@@ -95,6 +86,11 @@
         }
         .noir-mode {
             filter: grayscale(100%) contrast(120%);
+        }
+        .pig-preview-canvas {
+            width: 60px;
+            height: 60px;
+            display: block;
         }
     </style>
 </head>
@@ -229,12 +225,8 @@
         let audioCtx;
         
         function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new AudioContextClass();
-            }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
+            if (!audioCtx) audioCtx = new AudioContextClass();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
         }
 
         function playSound(type) {
@@ -243,7 +235,6 @@
             const gain = audioCtx.createGain();
             osc.connect(gain);
             gain.connect(audioCtx.destination);
-
             const now = audioCtx.currentTime;
             switch(type) {
                 case 'jump':
@@ -252,16 +243,14 @@
                     osc.frequency.exponentialRampToValueAtTime(600, now + 0.1);
                     gain.gain.setValueAtTime(0.08, now);
                     gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-                    osc.start(now);
-                    osc.stop(now + 0.1);
+                    osc.start(now); osc.stop(now + 0.1);
                     break;
                 case 'land':
                     osc.type = 'sine';
                     osc.frequency.setValueAtTime(220, now);
                     gain.gain.setValueAtTime(0.12, now);
                     gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
-                    osc.start(now);
-                    osc.stop(now + 0.08);
+                    osc.start(now); osc.stop(now + 0.08);
                     break;
                 case 'coin':
                     osc.type = 'square';
@@ -269,8 +258,7 @@
                     osc.frequency.exponentialRampToValueAtTime(1320, now + 0.05);
                     gain.gain.setValueAtTime(0.04, now);
                     gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
-                    osc.start(now);
-                    osc.stop(now + 0.15);
+                    osc.start(now); osc.stop(now + 0.15);
                     break;
                 case 'gameover':
                     osc.type = 'sawtooth';
@@ -278,16 +266,13 @@
                     osc.frequency.linearRampToValueAtTime(60, now + 0.6);
                     gain.gain.setValueAtTime(0.1, now);
                     gain.gain.linearRampToValueAtTime(0, now + 0.6);
-                    osc.start(now);
-                    osc.stop(now + 0.6);
+                    osc.start(now); osc.stop(now + 0.6);
                     break;
                 case 'unlock':
                     const osc2 = audioCtx.createOscillator();
                     osc2.connect(gain);
-                    osc.type = 'triangle';
-                    osc2.type = 'triangle';
-                    osc.frequency.setValueAtTime(523.25, now); // C5
-                    osc2.frequency.setValueAtTime(659.25, now); // E5
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc2.frequency.setValueAtTime(659.25, now);
                     gain.gain.setValueAtTime(0.1, now);
                     gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
                     osc.start(now); osc2.start(now);
@@ -314,6 +299,8 @@
         const hudCoins = document.getElementById('hud-coins');
         const earnedCoinsText = document.getElementById('earned-coins');
         const gameoverTotalCoins = document.getElementById('gameover-total-coins');
+        const finalScore = document.getElementById('final-score');
+        const homeBestVal = document.getElementById('home-best-val');
 
         const WIDTH = 400;
         const HEIGHT = 700;
@@ -357,26 +344,80 @@
             lastClockId: -1
         };
 
+        function drawPigAvatar(pctx, skin, x, y, scale = 1, rotation = 0) {
+            pctx.save();
+            pctx.translate(x, y);
+            pctx.scale(scale, scale);
+            pctx.rotate(rotation);
+
+            // Curly Tail
+            pctx.strokeStyle = skin.ears;
+            pctx.lineWidth = 2;
+            pctx.beginPath();
+            pctx.moveTo(-18, 0);
+            pctx.bezierCurveTo(-25, -10, -25, 10, -20, 5);
+            pctx.stroke();
+
+            // Body
+            pctx.fillStyle = skin.body;
+            pctx.beginPath();
+            pctx.ellipse(0, 0, 18, 16, 0, 0, Math.PI * 2);
+            pctx.fill();
+
+            // Ears
+            pctx.fillStyle = skin.ears;
+            pctx.beginPath(); pctx.moveTo(-14, -10); pctx.lineTo(-18, -20); pctx.lineTo(-6, -14); pctx.fill();
+            pctx.beginPath(); pctx.moveTo(14, -10); pctx.lineTo(18, -20); pctx.lineTo(6, -14); pctx.fill();
+
+            // Snout
+            pctx.fillStyle = skin.snout;
+            pctx.beginPath(); pctx.ellipse(0, 4, 8, 6, 0, 0, Math.PI * 2); pctx.fill();
+
+            // Snout Dots
+            pctx.fillStyle = skin.snoutDots || 'rgba(0,0,0,0.3)';
+            pctx.beginPath(); pctx.arc(-3, 4, 1.5, 0, Math.PI * 2); pctx.fill();
+            pctx.beginPath(); pctx.arc(3, 4, 1.5, 0, Math.PI * 2); pctx.fill();
+
+            // Eyes
+            const eyeColor = skin.id === 'void' ? 'white' : 'black';
+            pctx.fillStyle = eyeColor;
+            pctx.beginPath(); pctx.arc(-7, -4, 2.5, 0, Math.PI * 2); pctx.fill();
+            pctx.beginPath(); pctx.arc(7, -4, 2.5, 0, Math.PI * 2); pctx.fill();
+
+            // Skin Details
+            if (skin.id === 'devil') {
+                pctx.fillStyle = '#991B1B';
+                pctx.beginPath(); pctx.moveTo(-10, -18); pctx.lineTo(-15, -28); pctx.lineTo(-4, -20); pctx.fill();
+                pctx.beginPath(); pctx.moveTo(10, -18); pctx.lineTo(15, -28); pctx.lineTo(4, -20); pctx.fill();
+            } else if (skin.id === 'cyber') {
+                pctx.fillStyle = 'rgba(0, 255, 255, 0.4)';
+                pctx.fillRect(-10, -6, 20, 4);
+                pctx.strokeStyle = '#00ffff'; pctx.lineWidth = 1; pctx.strokeRect(-10, -6, 20, 4);
+            } else if (skin.id === 'golden') {
+                const time = Date.now() / 200;
+                pctx.fillStyle = 'white';
+                for (let i = 0; i < 3; i++) {
+                    const sx = Math.sin(time + i) * 15;
+                    const sy = Math.cos(time + i) * 15;
+                    pctx.beginPath(); pctx.arc(sx, sy, 1.5, 0, Math.PI * 2); pctx.fill();
+                }
+            }
+            pctx.restore();
+        }
+
         function refreshUI() {
             homeCoins.innerText = state.coins;
             hudCoins.innerText = state.coins;
+            homeBestVal.innerText = state.best;
             document.getElementById('display-username').innerText = state.username || "Set Your Identity";
-            document.getElementById('home-best-val').innerText = state.best;
-            
             const lockedSkins = SKINS.filter(s => !state.unlockedSkins.includes(s.id)).length;
             document.getElementById('buy-skin-btn').disabled = state.coins < 100 || lockedSkins === 0;
-            
             const lockedThemes = THEMES.filter(t => !state.unlockedThemes.includes(t.id)).length;
             document.getElementById('buy-theme-btn').disabled = state.coins < 250 || lockedThemes === 0;
-
-            if (state.selectedThemeId === 'noir') {
-                gameContainer.classList.add('noir-mode');
-            } else {
-                gameContainer.classList.remove('noir-mode');
-            }
+            if (state.selectedThemeId === 'noir') gameContainer.classList.add('noir-mode');
+            else gameContainer.classList.remove('noir-mode');
         }
 
-        // Initialize stars
         for(let i=0; i<60; i++) state.stars.push({ x: Math.random() * WIDTH, y: Math.random() * HEIGHT * 2, size: Math.random() * 2, opacity: Math.random() * 0.5 + 0.2 });
 
         function showToast(msg, type='info') {
@@ -403,17 +444,27 @@
         window.openSkins = () => {
             skinsGrid.innerHTML = SKINS.map(skin => {
                 const unlocked = state.unlockedSkins.includes(skin.id);
+                const isSelected = state.selectedSkinId === skin.id;
                 return `
-                <div onclick="${unlocked?`selectSkin('${skin.id}')`:''}" class="card-item border-2 border-white/10 bg-white/5 p-4 rounded-2xl flex items-center gap-4 ${state.selectedSkinId===skin.id?'selected':''} ${!unlocked?'locked':''}">
-                    <div class="w-12 h-12 relative rounded-full" style="background:${skin.body}">
-                        <div class="absolute inset-0 flex items-center justify-center">${!unlocked?'🔒':''}</div>
+                <div onclick="${unlocked?`selectSkin('${skin.id}')`:''}" class="card-item border-2 border-white/10 bg-white/5 p-4 rounded-2xl flex items-center gap-4 ${isSelected?'selected':''} ${!unlocked?'locked':''}">
+                    <div class="w-16 h-16 relative flex items-center justify-center bg-indigo-900/50 rounded-xl overflow-hidden">
+                         <canvas class="pig-preview-canvas" id="preview-${skin.id}" width="60" height="60"></canvas>
+                         ${!unlocked?'<div class="absolute inset-0 flex items-center justify-center bg-black/40 text-xl">🔒</div>':''}
                     </div>
                     <div class="text-left flex-1">
-                        <span class="text-sm font-black uppercase">${unlocked?skin.name:'Locked Pig'}</span>
-                        <div class="text-[9px] text-pink-400 font-bold">${unlocked?skin.ability:'???'}</div>
+                        <span class="text-sm font-black uppercase tracking-tight">${unlocked?skin.name:'Locked Pig'}</span>
+                        <div class="text-[9px] text-pink-400 font-bold uppercase">${unlocked?skin.ability:'???'}</div>
                     </div>
                 </div>`;
             }).join('');
+            
+            SKINS.forEach(skin => {
+                const pcanv = document.getElementById(`preview-${skin.id}`);
+                if (pcanv) {
+                    const pctx = pcanv.getContext('2d');
+                    drawPigAvatar(pctx, skin, 30, 30, 1.2, -0.2);
+                }
+            });
             document.getElementById('ui-skins').classList.remove('hidden');
         };
 
@@ -543,141 +594,64 @@
 
         function gameOver() {
             state.status = 'GAMEOVER'; playSound('gameover');
-            // 1:1 Conversion: 1 point = 1 coin
             const earned = state.score;
             state.coins += earned; localStorage.setItem('oinkCoins', state.coins);
             if (state.score > state.best) { 
-                state.best = state.score; 
-                localStorage.setItem('oinkBest', state.best); 
+                state.best = state.score; localStorage.setItem('oinkBest', state.best); 
                 document.getElementById('new-best-tag').classList.remove('hidden'); 
-            } else {
-                document.getElementById('new-best-tag').classList.add('hidden'); 
-            }
+            } else document.getElementById('new-best-tag').classList.add('hidden'); 
             earnedCoinsText.innerText = `+${earned}`; finalScore.innerText = state.score;
             gameoverTotalCoins.innerText = state.coins; uiGameOver.classList.remove('hidden'); refreshUI();
-            if (state.username) {
-                db.ref('leaderboard/'+state.username.toLowerCase()).set({ name: state.username, score: state.best }).catch(()=>{});
-            }
+            if (state.username) db.ref('leaderboard/'+state.username.toLowerCase()).set({ name: state.username, score: state.best }).catch(()=>{});
         }
 
         function draw() {
             const theme = THEMES.find(t => t.id === state.selectedThemeId) || THEMES[0];
             ctx.fillStyle = theme.bg; ctx.fillRect(0,0,WIDTH,HEIGHT);
             ctx.save(); ctx.translate(0, -state.cameraY);
-            
             state.stars.forEach(s => {
                 let sy = s.y; while(sy < state.cameraY) sy += HEIGHT*2; while(sy > state.cameraY + HEIGHT*2) sy -= HEIGHT*2;
                 ctx.fillStyle = `rgba(255,255,255,${s.opacity})`; ctx.fillRect(s.x, sy, s.size, s.size);
             });
-
             state.clocks.forEach(c => {
                 ctx.globalAlpha = 1.0;
                 if (theme.type === 'CLOCK') {
-                    // Default Neon Style
                     ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2);
                     ctx.strokeStyle = c.color; ctx.lineWidth = 6; ctx.stroke();
                     ctx.fillStyle = 'rgba(15,23,42,0.9)'; ctx.fill();
-                    
                     ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius);
                     ctx.strokeStyle = c.color; ctx.lineWidth = 8; ctx.lineCap='round'; ctx.stroke();
                 } else if (theme.type === 'PLANET') {
-                    // Deep Space Planet Style
                     const gradient = ctx.createRadialGradient(c.x-c.radius/3, c.y-c.radius/3, 5, c.x, c.y, c.radius);
                     gradient.addColorStop(0, '#94a3b8'); gradient.addColorStop(1, c.color);
                     ctx.fillStyle = gradient; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2); ctx.fill();
-                    
-                    // Add some "craters"
-                    ctx.fillStyle = 'rgba(0,0,0,0.1)';
-                    ctx.beginPath(); ctx.arc(c.x + c.radius*0.3, c.y - c.radius*0.2, c.radius*0.2, 0, Math.PI*2); ctx.fill();
-                    ctx.beginPath(); ctx.arc(c.x - c.radius*0.4, c.y + c.radius*0.3, c.radius*0.15, 0, Math.PI*2); ctx.fill();
-
-                    // Planet Ring
                     ctx.beginPath(); ctx.ellipse(c.x, c.y, c.radius*1.4, c.radius*0.3, c.angle, 0, Math.PI*2);
                     ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 3; ctx.stroke();
-                } else if (theme.type === 'COIN') {
-                    // Golden Vault Style
+                } else if (theme.type === 'COIN' || theme.type === 'NOIR') {
                     ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2);
-                    ctx.fillStyle = '#fbbf24'; ctx.fill();
-                    ctx.strokeStyle = '#78350f'; ctx.lineWidth = 4; ctx.stroke();
-                    
-                    ctx.beginPath(); ctx.arc(c.x, c.y, c.radius*0.8, 0, Math.PI*2); ctx.stroke();
-                    
-                    // Spinning Coin Face
+                    ctx.fillStyle = theme.type==='COIN'?'#fbbf24':'#ffffff'; ctx.fill();
+                    ctx.strokeStyle = theme.type==='COIN'?'#78350f':'#000000'; ctx.lineWidth = 4; ctx.stroke();
                     ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius);
                     ctx.lineWidth = 6; ctx.stroke();
-                    
-                    ctx.font = 'bold 20px Inter'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                    ctx.fillStyle = '#78350f'; ctx.fillText('₵', c.x, c.y);
-                } else if (theme.type === 'NOIR') {
-                    // Old Cinema Noir Style
-                    ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2);
-                    ctx.fillStyle = '#ffffff'; ctx.fill();
-                    ctx.strokeStyle = '#000000'; ctx.lineWidth = 5; ctx.stroke();
-                    
-                    // Hand
-                    ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius);
-                    ctx.lineWidth = 6; ctx.stroke();
-                    
-                    // Ticks
-                    for(let i=0; i<12; i++) {
-                        const a = i * (Math.PI/6);
-                        ctx.beginPath(); ctx.moveTo(c.x + Math.cos(a)*(c.radius-8), c.y + Math.sin(a)*(c.radius-8));
-                        ctx.lineTo(c.x + Math.cos(a)*c.radius, c.y + Math.sin(a)*c.radius);
-                        ctx.stroke();
-                    }
                 }
             });
-
             if (state.status !== 'HOME') {
                 const skin = SKINS.find(s => s.id === state.selectedSkinId) || SKINS[0];
-                const p = state.pig; ctx.save(); ctx.translate(p.x, p.y);
-                const rot = p.attachedTo !== null ? 0 : Math.atan2(p.vy, p.vx) + Math.PI/2; ctx.rotate(rot);
-                
-                // Body
-                ctx.fillStyle = skin.body; ctx.beginPath(); ctx.ellipse(0,0,18,16,0,0,Math.PI*2); ctx.fill();
-                // Snout
-                ctx.fillStyle = skin.snout; ctx.beginPath(); ctx.ellipse(0,4,8,6,0,0,Math.PI*2); ctx.fill();
-                // Eyes
-                ctx.fillStyle = skin.id==='void'?'white':'black'; ctx.beginPath(); ctx.arc(-6,-4,2.5,0,Math.PI*2); ctx.fill();
-                ctx.beginPath(); ctx.arc(6,-4,2.5,0,Math.PI*2); ctx.fill();
-                ctx.restore();
+                const p = state.pig;
+                const rot = p.attachedTo !== null ? 0 : Math.atan2(p.vy, p.vx) + Math.PI/2;
+                drawPigAvatar(ctx, skin, p.x, p.y, 1, rot);
             }
             ctx.restore();
         }
 
         function loop() { update(); draw(); requestAnimationFrame(loop); }
-        
         window.addEventListener('keydown', (e) => { 
-            if (e.code === 'Space') { 
-                e.preventDefault(); 
-                if (state.status === 'PLAYING') jump(); 
-                else if (state.status === 'HOME' || state.status === 'GAMEOVER') {
-                    const modals = ['ui-skins', 'ui-themes', 'ui-leaderboard', 'ui-username'];
-                    if (modals.every(m => document.getElementById(m).classList.contains('hidden'))) startGame();
-                }
-            }
+            if (e.code === 'Space') { e.preventDefault(); if (state.status === 'PLAYING') jump(); else if (state.status === 'HOME' || state.status === 'GAMEOVER') startGame(); }
         });
-        
-        canvas.addEventListener('mousedown', (e) => {
-            initAudio();
-            if (state.status === 'PLAYING') jump();
-        });
-        
-        canvas.addEventListener('touchstart', (e) => { 
-            e.preventDefault(); 
-            initAudio();
-            if (state.status === 'PLAYING') jump(); 
-        });
-
+        canvas.addEventListener('mousedown', () => { initAudio(); if (state.status === 'PLAYING') jump(); });
+        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); initAudio(); if (state.status === 'PLAYING') jump(); });
         loop();
-        
-        window.backToHome = () => { 
-            state.status='HOME'; 
-            uiGameOver.classList.add('hidden'); 
-            uiHUD.classList.add('hidden'); 
-            uiHome.classList.remove('hidden'); 
-            refreshUI(); 
-        };
+        window.backToHome = () => { state.status='HOME'; uiGameOver.classList.add('hidden'); uiHUD.classList.add('hidden'); uiHome.classList.remove('hidden'); refreshUI(); };
     </script>
 </body>
 </html>
