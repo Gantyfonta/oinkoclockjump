@@ -333,7 +333,7 @@
             { id: 'classic', name: 'Classic Oink', ability: 'Standard', desc: 'A well-rounded pig.', body: '#F472B6', ears: '#EC4899', snout: '#F9A8D4', snoutDots: '#BE185D' },
             { id: 'frog', name: 'Leap Frog', ability: 'Aqua', desc: 'Slightly higher mid-air jumps.', body: '#22C55E', ears: '#166534', snout: '#86EFAC', snoutDots: '#064E3B' },
             { id: 'ghost', name: 'Spectral Pig', ability: 'Phaze', desc: 'Cumulative Score Reward. Translucent.', body: 'rgba(255,255,255,0.35)', ears: 'rgba(200,200,255,0.3)', snout: 'rgba(255,255,255,0.5)', snoutDots: 'rgba(0,0,0,0.1)', isAchievement: true },
-            { id: 'lava', name: 'Magma Boar', ability: 'Burn', desc: 'Clocks 50% faster. 3x Coins!', body: '#991B1B', ears: '#7F1D1D', snout: '#F97316', snoutDots: '#78350F' },
+            { id: 'lava', name: 'Magma Boar', ability: 'Burn', desc: 'Clocks 50% faster. 2x Total Coins!', body: '#991B1B', ears: '#7F1D1D', snout: '#F97316', snoutDots: '#78350F' },
             { id: 'steampunk', name: 'Steampunk Pig', ability: 'Torque', desc: '2x Speed clocks. 3x Score!', body: '#A8A29E', ears: '#78350F', snout: '#D6D3D1', snoutDots: '#451A03' },
             { id: 'neon', name: 'Neon Hog', ability: 'Pulse', desc: 'High Score Reward (1000). +20% Jump Speed.', body: '#000000', ears: '#3B82F6', snout: '#60A5FA', snoutDots: '#1E40AF', isAchievement: true },
             { id: 'blueberry', name: 'Time Jam', ability: 'Sticky', desc: '+15% Grab range.', body: '#60A5FA', ears: '#2563EB', snout: '#93C5FD', snoutDots: '#1E40AF' },
@@ -346,12 +346,12 @@
             { id: 'ninja', name: 'Shadow Swine', ability: 'Ninja', desc: 'Precision Reward. High grab range.', body: '#1E293B', ears: '#0F172A', snout: '#334155', snoutDots: '#000000', isAchievement: true },
             { id: 'zombie', name: 'Undead Hog', ability: 'Unending', desc: 'Revives once (Keep score).', body: '#4D7C0F', ears: '#365314', snout: '#84CC16', snoutDots: '#14532D' },
             { id: 'ice', name: 'Frost Piglet', ability: 'Freeze', desc: 'Stops clocks when touched.', body: '#BAE6FD', ears: '#0EA5E9', snout: '#E0F2FE', snoutDots: '#0369A1' },
-            { id: 'rainbow', name: 'Prism Pig', ability: 'Fortune', desc: '+5 Coins every successful jump.', body: '#FFFFFF', ears: '#FF0000', snout: '#FF00FF', snoutDots: '#000000' },
+            { id: 'rainbow', name: 'Prism Pig', ability: 'Fortune', desc: '+8 Coins every successful jump.', body: '#FFFFFF', ears: '#FF0000', snout: '#FF00FF', snoutDots: '#000000' },
             { id: 'angel', name: 'Angel Pig', ability: 'Glory', desc: 'Score 50 Reward. Floaty.', body: '#FFFBEB', ears: '#FEF3C7', snout: '#FDE68A', snoutDots: '#F59E0B', isAchievement: true },
             { id: 'space', name: 'Space Cadet', ability: 'Helmet', desc: 'Score 300 Reward. Huge magnet.', body: '#334155', ears: '#475569', snout: '#94A3B8', snoutDots: '#F1F5F9', isAchievement: true },
-            { id: 'bank', name: 'Piggy Bank', ability: 'Wealth', desc: 'Total Coins Reward. +10 Coins/Jump.', body: '#FCD34D', ears: '#F59E0B', snout: '#FEF3C7', snoutDots: '#D97706', isAchievement: true },
-            { id: 'king', name: 'King Swine', ability: 'Royalty', desc: 'Normal Skins Completion Reward.', body: '#7C3AED', ears: '#C084FC', snout: '#DDD6FE', snoutDots: '#4C1D95', isAchievement: true },
-            { id: 'omega', name: 'Omega Hog', ability: 'Omni', desc: 'Ultimate Master Reward. 2x Coins + Laser.', body: '#FFFFFF', ears: '#000000', snout: '#F472B6', snoutDots: '#000000', isAchievement: true }
+            { id: 'bank', name: 'Piggy Bank', ability: 'Wealth', desc: 'Total Coins Reward. +20 Coins/Jump.', body: '#FCD34D', ears: '#F59E0B', snout: '#FEF3C7', snoutDots: '#D97706', isAchievement: true },
+            { id: 'king', name: 'King Swine', ability: 'Royalty', desc: 'Completion Reward. +20 Coins/Jump.', body: '#7C3AED', ears: '#C084FC', snout: '#DDD6FE', snoutDots: '#4C1D95', isAchievement: true },
+            { id: 'omega', name: 'Omega Hog', ability: 'Omni', desc: 'Ultimate Reward. +35 Coins/Jump.', body: '#FFFFFF', ears: '#000000', snout: '#F472B6', snoutDots: '#000000', isAchievement: true }
         ];
 
         const THEMES = [
@@ -774,10 +774,17 @@
             
             leaderboardList.innerHTML = `<div class="text-center py-10 opacity-50 animate-pulse">Scanning ${tab} legends...</div>`;
             try {
-                const snap = await db.ref(path).orderByChild('score').limitToLast(20).once('value');
+                // Fetch more and manually sort to ensure the HIGHEST scores are on top
+                const snap = await db.ref(path).orderByChild('score').limitToLast(10).once('value');
                 const data = []; 
-                snap.forEach(c => { const val = c.val(); if (val && val.name && typeof val.score === 'number') data.push(val); });
+                snap.forEach(c => { 
+                    const val = c.val(); 
+                    if (val && val.name && typeof val.score === 'number') data.push(val); 
+                });
+                
+                // limitToLast fetches from the end, so we reverse to show 1st at the top
                 data.sort((a, b) => b.score - a.score);
+                
                 if (data.length === 0) { 
                     leaderboardList.innerHTML = `<div class="text-center py-10 opacity-30 uppercase font-black tracking-widest text-sm">No entries in ${tab} yet.</div>`; 
                 } else { 
@@ -1031,14 +1038,22 @@
                         if (d < clock.radius + grabRange) {
                             state.pig.attachedTo = clock.id; state.pig.vx = 0; state.pig.vy = 0;
                             if (clock.id > state.lastClockId && state.gameMode !== 'sandbox') {
+                                // Scoring & Coin Rebalance
                                 let multiplier = (skinId === 'golden' || skinId === 'king') ? 2 : (skinId === 'devil' || skinId === 'steampunk' ? 3 : 1);
                                 if (state.gameMode === 'hard') multiplier *= 2;
                                 
-                                let reward = 1 + (skinId === 'rainbow' ? 5 : 0) + (skinId === 'bank' || skinId === 'king' ? 10 : 0);
-                                if (skinId === 'lava') reward *= 3;
-                                if (skinId === 'omega') reward *= 2;
+                                // Rebalanced Rewards
+                                let baseReward = (state.gameMode === 'hard') ? 5 : 2;
+                                let bonus = 0;
+                                if (skinId === 'rainbow') bonus += 8;
+                                if (skinId === 'bank' || skinId === 'king') bonus += 20;
+                                if (skinId === 'omega') bonus += 35;
                                 
-                                state.coins += reward; state.totalCoinsEarned += reward;
+                                let reward = (baseReward + bonus);
+                                if (skinId === 'lava') reward *= 2; // Lava is now a multiplier
+                                
+                                state.coins += Math.floor(reward); 
+                                state.totalCoinsEarned += Math.floor(reward);
                                 state.score += (clock.id - state.lastClockId) * multiplier; 
                                 state.lastClockId = clock.id; 
                                 state.consecutiveJumps++;
