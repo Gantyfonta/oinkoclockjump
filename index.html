@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -665,8 +666,25 @@
             skinsGrid.innerHTML = SKINS.map(skin => {
                 const unlocked = state.unlockedSkins.includes(skin.id);
                 const isSelected = state.selectedSkinId === skin.id;
-                return `<div onclick="${unlocked?`selectSkin('${skin.id}')`:''}" class="card-item border-2 border-white/10 bg-white/5 p-4 rounded-2xl flex items-center gap-4 ${isSelected?'selected':''} ${!unlocked?'locked':''}"><div class="w-16 h-16 relative flex items-center justify-center bg-indigo-900/50 rounded-xl overflow-hidden"><canvas class="pig-preview-canvas" id="preview-${skin.id}" width="64" height="64"></canvas>${!unlocked?'<div class="absolute inset-0 flex items-center justify-center bg-black/40 text-xl">🔒</div>':''}</div><div class="text-left flex-1"><span class="text-sm font-black uppercase tracking-tight">${unlocked?skin.name:'Locked Pig'}</span><div class="text-[9px] text-pink-400 font-bold uppercase">${unlocked?skin.ability:(skin.isAchievement ? 'Milestone Reward' : 'Unlock for 100')}</div></div></div>`;
+                
+                return `
+                <div onclick="${unlocked ? `selectSkin('${skin.id}')` : ''}" class="card-item border-2 border-white/10 bg-white/5 p-4 rounded-2xl flex items-center gap-4 ${isSelected ? 'selected' : ''} ${!unlocked ? 'locked' : ''}">
+                    <div class="w-16 h-16 relative flex items-center justify-center bg-indigo-900/50 rounded-xl overflow-hidden shrink-0">
+                        <canvas class="pig-preview-canvas" id="preview-${skin.id}" width="64" height="64"></canvas>
+                        ${!unlocked ? '<div class="absolute inset-0 flex items-center justify-center bg-black/40 text-xl">🔒</div>' : ''}
+                    </div>
+                    <div class="text-left flex-1 min-w-0">
+                        <div class="flex justify-between items-start gap-2">
+                            <span class="text-sm font-black uppercase tracking-tight truncate">${unlocked ? skin.name : 'Locked Pig'}</span>
+                            ${unlocked ? `<span class="text-[8px] bg-pink-500/20 text-pink-400 px-1.5 py-0.5 rounded border border-pink-500/30 whitespace-nowrap font-black uppercase tracking-widest">${skin.ability}</span>` : ''}
+                        </div>
+                        <p class="text-[10px] text-white/60 mt-1 leading-tight font-medium">
+                            ${unlocked ? skin.desc : (skin.isAchievement ? 'Milestone Reward (Locked)' : 'Unlock for 100 Coins')}
+                        </p>
+                    </div>
+                </div>`;
             }).join('');
+            
             SKINS.forEach(skin => {
                 const pcanv = document.getElementById(`preview-${skin.id}`);
                 if (pcanv) { const pctx = pcanv.getContext('2d'); pctx.clearRect(0,0,64,64); drawPigAvatar(pctx, skin, 32, 32, 1.2, -0.2); }
