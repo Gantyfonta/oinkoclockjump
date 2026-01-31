@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -672,7 +671,7 @@
             document.getElementById('ui-skins').classList.remove('hidden');
         };
 
-        window.openAchievements = () => {
+        function openAchievements() {
             achievementsList.innerHTML = ACHIEVEMENTS.map(ach => {
                 const unlocked = state.unlockedAchievements.includes(ach.id);
                 let progress = unlocked ? 100 : (ach.type === 'score' ? Math.min(100, (state.best / ach.goal) * 100) : (ach.type === 'coins' ? Math.min(100, (state.totalCoinsEarned / ach.goal) * 100) : Math.min(100, (state.unlockedSkins.filter(id => !SKINS.find(s => s.id === id)?.isAchievement).length / ach.goal) * 100)));
@@ -817,7 +816,7 @@
             }
             uiHome.classList.add('hidden'); uiGameOver.classList.add('hidden'); uiHUD.classList.remove('hidden');
             scoreVal.innerText = "0"; bestVal.innerText = "FREE"; 
-            showToast("Sandbox: Exploring the infinite!", "sandbox");
+            showToast("Sandbox: Infinite momentum enabled!", "sandbox");
             refreshUI();
         };
 
@@ -834,13 +833,27 @@
                 const dx = (state.mouse.x + state.cameraX) - state.pig.x;
                 const dy = (state.mouse.y + state.cameraY) - state.pig.y;
                 const angle = Math.atan2(dy, dx);
-                state.pig.vx = Math.cos(angle) * force;
-                state.pig.vy = Math.sin(angle) * force;
+                
+                if (state.pig.attachedTo !== null) {
+                    const clock = state.clocks.find(c => c.id === state.pig.attachedTo);
+                    // ADD TANGENTIAL VELOCITY (v = omega * r)
+                    // The vector perpendicular to the radius is (-sin(angle), cos(angle))
+                    const tx = -Math.sin(clock.angle) * (clock.speed * clock.radius);
+                    const ty = Math.cos(clock.angle) * (clock.speed * clock.radius);
+                    
+                    state.pig.vx = Math.cos(angle) * force + tx;
+                    state.pig.vy = Math.sin(angle) * force + ty;
+                } else {
+                    // Mid-air ADDITIVE jump (preserves current speed)
+                    state.pig.vx += Math.cos(angle) * force * 0.7;
+                    state.pig.vy += Math.sin(angle) * force * 0.7;
+                }
+                
                 // Move out immediately so we don't re-stick
                 state.pig.x += state.pig.vx * 1.2;
                 state.pig.y += state.pig.vy * 1.2;
                 state.pig.attachedTo = null;
-                state.pig.jumpCooldown = 15; // Small grace period
+                state.pig.jumpCooldown = 15;
                 playSound('jump');
                 return;
             }
@@ -853,7 +866,7 @@
             state.pig.x += state.pig.vx * 1.2;
             state.pig.y += state.pig.vy * 1.2;
             state.pig.attachedTo = null;
-            state.pig.jumpCooldown = 15; // Grace period to prevent instant re-stick
+            state.pig.jumpCooldown = 15; 
             playSound('jump');
         }
 
@@ -873,6 +886,12 @@
             } else {
                 state.pig.x += state.pig.vx * timeScale; 
                 state.pig.y += state.pig.vy * timeScale;
+                
+                // Air resistance for Sandbox only
+                if (state.isSandbox) {
+                    state.pig.vx *= Math.pow(0.99, timeScale);
+                    state.pig.vy *= Math.pow(0.99, timeScale);
+                }
                 
                 let grabRange = 5;
                 if (state.selectedSkinId === 'blueberry') grabRange = 12;
@@ -1069,7 +1088,19 @@
             state.mouse.x = (e.clientX - rect.left) * (WIDTH / rect.width);
             state.mouse.y = (e.clientY - rect.top) * (HEIGHT / rect.height);
         });
-        window.addEventListener('keydown', (e) => { if (e.code === 'Space') { e.preventDefault(); if (state.status === 'PLAYING') jump(); else if (state.status === 'HOME') startGame(); } });
+        
+        window.addEventListener('keydown', (e) => { 
+            if (document.activeElement.tagName === 'INPUT') return;
+            if (e.code === 'Space') { 
+                e.preventDefault(); 
+                if (state.status === 'PLAYING') {
+                    jump(); 
+                } else if (state.status === 'HOME' || state.status === 'GAMEOVER') {
+                    startGame(); 
+                }
+            } 
+        });
+
         canvas.addEventListener('mousedown', () => { initAudio(); jump(); });
         canvas.addEventListener('touchstart', (e) => { 
             e.preventDefault(); initAudio(); 
