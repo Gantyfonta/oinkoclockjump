@@ -377,8 +377,8 @@
             { id: 'blueberry', name: 'Time Jam', ability: 'Sticky', desc: '+15% Grab range.', body: '#60A5FA', ears: '#2563EB', snout: '#93C5FD', snoutDots: '#1E40AF' },
             { id: 'matcha', name: 'Matcha Zen', ability: 'Focus', desc: '25% Slower rotation.', body: '#34D399', ears: '#059669', snout: '#6EE7B7', snoutDots: '#064E3B' },
             { id: 'golden', name: 'Wealthy Swine', ability: 'Greed', desc: 'Double score per jump.', body: '#FBBF24', ears: '#D97706', snout: '#FDE68A', snoutDots: '#78350F' },
-            { id: 'void', name: 'Void Walker', ability: 'Warp', desc: '+20% Jump velocity.', body: '#4B5563', ears: '#1F2937', snout: '#9CA3AF', snoutDots: '#000000' },
-            { id: 'cyber', name: 'Cyber Ham', ability: 'Laser', desc: 'Shows trajectory line.', body: '#A78BFA', ears: '#7C3AED', snout: '#C4B5FD', snoutDots: '#4C1D95' },
+            { id: 'void', name: 'Void Walker', ability: 'Warp', desc: '+25% Jump velocity.', body: '#4B5563', ears: '#1F2937', snout: '#9CA3AF', snoutDots: '#000000' },
+            { id: 'cyber', name: 'Cyber Ham', ability: 'Laser', desc: 'Shows jump trajectory.', body: '#A78BFA', ears: '#7C3AED', snout: '#C4B5FD', snoutDots: '#4C1D95' },
             { id: 'slime', name: 'Slime Pig', ability: 'Resilient', desc: 'Bounces once from void.', body: '#10B981', ears: '#064E3B', snout: '#D1FAE5', snoutDots: '#059669' },
             { id: 'devil', name: 'Hell Hog', ability: 'Inferno', desc: 'Triple score, small clocks.', body: '#EF4444', ears: '#7F1D1D', snout: '#FCA5A5', snoutDots: '#991B1B' },
             { id: 'ninja', name: 'Shadow Swine', ability: 'Ninja', desc: 'Fast jumps & big grab range.', body: '#1E293B', ears: '#0F172A', snout: '#334155', snoutDots: '#000000' },
@@ -386,10 +386,10 @@
             { id: 'ice', name: 'Frost Piglet', ability: 'Freeze', desc: 'Stops clocks when touched.', body: '#BAE6FD', ears: '#0EA5E9', snout: '#E0F2FE', snoutDots: '#0369A1' },
             { id: 'rainbow', name: 'Prism Pig', ability: 'Fortune', desc: '+5 Coins every successful jump.', body: '#FFFFFF', ears: '#FF0000', snout: '#FF00FF', snoutDots: '#000000' },
             // Achievement Only Skins
-            { id: 'angel', name: 'Angel Pig', ability: 'Glory', desc: 'Graceful jumper.', body: '#FFFBEB', ears: '#FEF3C7', snout: '#FDE68A', snoutDots: '#F59E0B', isAchievement: true },
-            { id: 'space', name: 'Space Cadet', ability: 'Helmet', desc: 'Anti-gravity field.', body: '#334155', ears: '#475569', snout: '#94A3B8', snoutDots: '#F1F5F9', isAchievement: true },
-            { id: 'bank', name: 'Piggy Bank', ability: 'Wealth', desc: 'Golden coins magnet.', body: '#FCD34D', ears: '#F59E0B', snout: '#FEF3C7', snoutDots: '#D97706', isAchievement: true },
-            { id: 'king', name: 'King Swine', ability: 'Royalty', desc: 'The absolute ruler.', body: '#7C3AED', ears: '#C084FC', snout: '#DDD6FE', snoutDots: '#4C1D95', isAchievement: true }
+            { id: 'angel', name: 'Angel Pig', ability: 'Glory', desc: 'Moves 40% slower (easier control).', body: '#FFFBEB', ears: '#FEF3C7', snout: '#FDE68A', snoutDots: '#F59E0B', isAchievement: true },
+            { id: 'space', name: 'Space Cadet', ability: 'Helmet', desc: 'Huge magnet range.', body: '#334155', ears: '#475569', snout: '#94A3B8', snoutDots: '#F1F5F9', isAchievement: true },
+            { id: 'bank', name: 'Piggy Bank', ability: 'Wealth', desc: '+10 Coins every jump.', body: '#FCD34D', ears: '#F59E0B', snout: '#FEF3C7', snoutDots: '#D97706', isAchievement: true },
+            { id: 'king', name: 'King Swine', ability: 'Royalty', desc: '2x Score, Laser, +10 Coins.', body: '#7C3AED', ears: '#C084FC', snout: '#DDD6FE', snoutDots: '#4C1D95', isAchievement: true }
         ];
 
         const THEMES = [
@@ -406,7 +406,7 @@
             { id: 'height_50', name: 'High Flyer', desc: 'Reach a score of 50.', goal: 50, type: 'score', rewardSkin: 'angel' },
             { id: 'height_300', name: 'Space Voyager', desc: 'Reach a score of 300.', goal: 300, type: 'score', rewardSkin: 'space' },
             { id: 'coins_2000', name: 'Piggy Bank', desc: 'Earn a total of 2000 coins.', goal: 2000, type: 'coins', rewardSkin: 'bank' },
-            { id: 'skins_all', name: 'Absolute Legend', desc: 'Unlock all available skins.', goal: SKINS.filter(s => !s.isAchievement).length, type: 'skins', rewardSkin: 'king' }
+            { id: 'skins_all', name: 'Absolute Legend', desc: 'Unlock all normal skins.', goal: SKINS.filter(s => !s.isAchievement).length, type: 'skins', rewardSkin: 'king' }
         ];
 
         let state = {
@@ -475,33 +475,66 @@
                 snoutColor = `hsl(${state.rainbowHue + 60}, 80%, 80%)`;
             }
 
+            // Ears
             pctx.strokeStyle = earColor;
             pctx.lineWidth = 2;
             pctx.beginPath(); pctx.moveTo(-18, 0); pctx.bezierCurveTo(-25, -10, -25, 10, -20, 5); pctx.stroke();
 
+            // Main Body
             pctx.fillStyle = bodyColor;
             pctx.beginPath(); pctx.ellipse(0, 0, 18, 16, 0, 0, Math.PI * 2); pctx.fill();
 
+            // Ear triangles
             pctx.fillStyle = earColor;
             pctx.beginPath(); pctx.moveTo(-14, -10); pctx.lineTo(-18, -20); pctx.lineTo(-6, -14); pctx.fill();
             pctx.beginPath(); pctx.moveTo(14, -10); pctx.lineTo(18, -20); pctx.lineTo(6, -14); pctx.fill();
 
+            // Snout
             pctx.fillStyle = snoutColor;
             pctx.beginPath(); pctx.ellipse(0, 4, 8, 6, 0, 0, Math.PI * 2); pctx.fill();
 
+            // Snout Dots
             pctx.fillStyle = skin.snoutDots || 'rgba(0,0,0,0.3)';
             pctx.beginPath(); pctx.arc(-3, 4, 1.5, 0, Math.PI * 2); pctx.fill();
             pctx.beginPath(); pctx.arc(3, 4, 1.5, 0, Math.PI * 2); pctx.fill();
 
+            // Eyes
             const eyeColor = skin.id === 'void' ? 'white' : 'black';
             pctx.fillStyle = eyeColor;
             pctx.beginPath(); pctx.arc(-7, -4, 2.5, 0, Math.PI * 2); pctx.fill();
             pctx.beginPath(); pctx.arc(7, -4, 2.5, 0, Math.PI * 2); pctx.fill();
 
-            if (skin.id === 'ninja') { pctx.fillStyle = 'rgba(0,0,0,0.7)'; pctx.fillRect(-18, -8, 36, 4); }
-            else if (skin.id === 'zombie') { pctx.fillStyle = 'rgba(255,255,255,0.2)'; pctx.beginPath(); pctx.arc(7, -4, 4, 0, Math.PI*2); pctx.fill(); }
-            else if (skin.id === 'ice') { pctx.fillStyle = 'rgba(255,255,255,0.4)'; pctx.beginPath(); pctx.moveTo(0, -18); pctx.lineTo(5, -25); pctx.lineTo(-5, -25); pctx.fill(); }
-            else if (skin.id === 'angel') { pctx.fillStyle = 'rgba(255,255,255,0.6)'; pctx.beginPath(); pctx.arc(0, -22, 10, 0, Math.PI*2); pctx.stroke(); }
+            // Specific Details
+            if (skin.id === 'ninja') { 
+                pctx.fillStyle = 'rgba(255,0,0,0.8)'; 
+                pctx.fillRect(-18, -8, 36, 4); 
+            }
+            else if (skin.id === 'zombie') { 
+                pctx.fillStyle = 'rgba(255,255,255,0.2)'; 
+                pctx.beginPath(); pctx.arc(7, -4, 4, 0, Math.PI*2); pctx.fill(); 
+            }
+            else if (skin.id === 'ice') { 
+                pctx.fillStyle = 'rgba(186,230,253,0.4)'; 
+                pctx.beginPath(); pctx.moveTo(0, -18); pctx.lineTo(5, -25); pctx.lineTo(-5, -25); pctx.fill(); 
+            }
+            else if (skin.id === 'angel') { 
+                pctx.strokeStyle = 'rgba(255,255,255,0.8)'; 
+                pctx.lineWidth = 2;
+                pctx.beginPath(); pctx.ellipse(0, -22, 10, 3, 0, 0, Math.PI*2); pctx.stroke(); 
+            }
+            else if (skin.id === 'space') {
+                pctx.fillStyle = 'rgba(255,255,255,0.2)';
+                pctx.beginPath(); pctx.arc(0, 0, 22, 0, Math.PI*2); pctx.fill();
+                pctx.strokeStyle = 'rgba(255,255,255,0.4)';
+                pctx.stroke();
+            }
+            else if (skin.id === 'king') {
+                pctx.fillStyle = '#FBBF24';
+                pctx.beginPath();
+                pctx.moveTo(-10, -16); pctx.lineTo(-14, -26); pctx.lineTo(-6, -20);
+                pctx.lineTo(0, -30); pctx.lineTo(6, -20); pctx.lineTo(14, -26); pctx.lineTo(10, -16);
+                pctx.fill();
+            }
             pctx.restore();
         }
 
@@ -668,7 +701,6 @@
             const isBezos = isBezosMode();
             if (!isBezos && state.coins < 100) return showToast("Not enough coins!", "error");
             
-            // Only buy normal skins
             const purchasable = SKINS.filter(s => !s.isAchievement);
             const locked = purchasable.filter(s => !state.unlockedSkins.includes(s.id));
             if (locked.length === 0) return showToast("All normal skins owned!");
@@ -779,6 +811,8 @@
             let force = JUMP_SPEED;
             if (state.selectedSkinId === 'void') force *= 1.25;
             if (state.selectedSkinId === 'ninja') force *= 1.4;
+            if (state.selectedSkinId === 'angel') force *= 0.6; // Angel moves slower for precision
+            
             state.pig.vx = Math.cos(clock.angle) * force;
             state.pig.vy = Math.sin(clock.angle) * force;
             state.pig.attachedTo = null;
@@ -798,22 +832,34 @@
             } else {
                 state.pig.x += state.pig.vx; 
                 state.pig.y += state.pig.vy;
+                
                 let grabRange = 5;
                 if (state.selectedSkinId === 'blueberry') grabRange = 12;
                 if (state.selectedSkinId === 'ninja') grabRange = 15;
+                if (state.selectedSkinId === 'space') grabRange = 25; // Massive magnet for space cadet
+                
                 for (const clock of state.clocks) {
                     const d = Math.sqrt((state.pig.x-clock.x)**2 + (state.pig.y-clock.y)**2);
                     if (d < clock.radius + grabRange) {
                         state.pig.attachedTo = clock.id; state.pig.vx = 0; state.pig.vy = 0;
                         if (clock.id > state.lastClockId) {
                             let multiplier = 1;
-                            if (state.selectedSkinId === 'golden') { 
+                            if (state.selectedSkinId === 'golden' || state.selectedSkinId === 'king') { 
                                 multiplier = 2; 
                                 document.getElementById('score-container').classList.add('gold-flash'); 
                                 setTimeout(() => document.getElementById('score-container').classList.remove('gold-flash'), 300); 
                             }
                             if (state.selectedSkinId === 'devil') multiplier = 3;
-                            if (state.selectedSkinId === 'rainbow') { state.coins += 5; state.totalCoinsEarned += 5; refreshUI(); }
+                            
+                            // Coin Rewards
+                            let jumpReward = 1;
+                            if (state.selectedSkinId === 'rainbow') jumpReward += 5;
+                            if (state.selectedSkinId === 'bank' || state.selectedSkinId === 'king') jumpReward += 10;
+                            
+                            state.coins += jumpReward;
+                            state.totalCoinsEarned += jumpReward;
+                            refreshUI();
+                            
                             state.score += (clock.id - state.lastClockId) * multiplier;
                             state.lastClockId = clock.id;
                             scoreVal.innerText = state.score;
@@ -847,7 +893,7 @@
         function gameOver() {
             state.status = 'GAMEOVER'; playSound('gameover');
             const earned = state.score;
-            state.coins += earned; state.totalCoinsEarned += earned;
+            // Balance already updated in jump logic
             localStorage.setItem('oinkCoins', state.coins);
             localStorage.setItem('oinkTotalCoins', state.totalCoinsEarned);
             if (state.score > state.best) { 
@@ -887,13 +933,28 @@
             });
             if (state.status === 'PLAYING') {
                 const skin = SKINS.find(s => s.id === state.selectedSkinId) || SKINS[0];
-                const rot = state.pig.attachedTo !== null ? 0 : Math.atan2(state.pig.vy, state.pig.vx) + Math.PI/2;
-                if (state.isTutorial && state.pig.attachedTo !== null && state.tutorialStep === 2) {
+                const p = state.pig;
+                const rot = p.attachedTo !== null ? 0 : Math.atan2(p.vy, p.vx) + Math.PI/2;
+                
+                // Trajectory Laser for Cyber and King
+                if (p.attachedTo !== null && (skin.id === 'cyber' || skin.id === 'king')) {
+                    const clock = state.clocks.find(c => c.id === p.attachedTo);
+                    ctx.setLineDash([5, 10]);
+                    ctx.strokeStyle = skin.id === 'king' ? 'rgba(251, 191, 36, 0.4)' : 'rgba(167, 139, 250, 0.4)';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(p.x, p.y);
+                    ctx.lineTo(p.x + Math.cos(clock.angle) * 400, p.y + Math.sin(clock.angle) * 400);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+                
+                if (state.isTutorial && p.attachedTo !== null && state.tutorialStep === 2) {
                     const target = state.clocks.find(c => c.id === 1);
                     ctx.setLineDash([5, 5]); ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-                    ctx.beginPath(); ctx.moveTo(state.pig.x, state.pig.y); ctx.lineTo(target.x, target.y); ctx.stroke(); ctx.setLineDash([]);
+                    ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(target.x, target.y); ctx.stroke(); ctx.setLineDash([]);
                 }
-                drawPigAvatar(ctx, skin, state.pig.x, state.pig.y, 1, rot);
+                drawPigAvatar(ctx, skin, p.x, p.y, 1, rot);
             }
             ctx.restore();
         }
