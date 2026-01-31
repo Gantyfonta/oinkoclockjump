@@ -302,7 +302,7 @@
             { id: 'ghost', name: 'Spectral Pig', ability: 'Phaze', desc: 'Huge magnet range. Translucent.', body: 'rgba(255,255,255,0.35)', ears: 'rgba(200,200,255,0.3)', snout: 'rgba(255,255,255,0.5)', snoutDots: 'rgba(0,0,0,0.1)' },
             { id: 'lava', name: 'Magma Boar', ability: 'Burn', desc: 'Clocks 50% faster. 3x Coins!', body: '#991B1B', ears: '#7F1D1D', snout: '#F97316', snoutDots: '#78350F' },
             { id: 'steampunk', name: 'Steampunk Pig', ability: 'Torque', desc: '2x Speed clocks. 3x Score!', body: '#A8A29E', ears: '#78350F', snout: '#D6D3D1', snoutDots: '#451A03' },
-            { id: 'neon', name: 'Neon Hog', ability: 'Vapor', desc: '20% less gravity. Floatier.', body: '#000000', ears: '#3B82F6', snout: '#60A5FA', snoutDots: '#1E40AF' },
+            { id: 'neon', name: 'Neon Hog', ability: 'Pulse', desc: '+20% Jump speed and neon trails.', body: '#000000', ears: '#3B82F6', snout: '#60A5FA', snoutDots: '#1E40AF' },
             { id: 'blueberry', name: 'Time Jam', ability: 'Sticky', desc: '+15% Grab range.', body: '#60A5FA', ears: '#2563EB', snout: '#93C5FD', snoutDots: '#1E40AF' },
             { id: 'matcha', name: 'Matcha Zen', ability: 'Focus', desc: '25% Slower rotation.', body: '#34D399', ears: '#059669', snout: '#6EE7B7', snoutDots: '#064E3B' },
             { id: 'golden', name: 'Wealthy Swine', ability: 'Greed', desc: 'Double score per jump.', body: '#FBBF24', ears: '#D97706', snout: '#FDE68A', snoutDots: '#78350F' },
@@ -390,7 +390,7 @@
             hasSeenTutorial: localStorage.getItem('oinkTutorialSeen') === 'true',
             cameraY: 0,
             cameraX: 0,
-            pig: { x: 200, y: 550, vx: 0, vy: 0, attachedTo: null, slimeUsed: false, zombieUsed: false, jumpCooldown: 0 },
+            pig: { x: 200, y: 550, vx: 0, vy: 0, attachedTo: null, slimeUsed: false, zombieUsed: false, jumpCooldown: 0, trail: [] },
             clocks: [],
             stars: [],
             lastClockId: -1,
@@ -602,7 +602,7 @@
             state.cameraX = 0; 
             state.clocks = []; 
             state.lastClockId = 0;
-            state.pig = { x: WIDTH/2, y: HEIGHT-150-60, vx: 0, vy: 0, attachedTo: 0, slimeUsed: false, zombieUsed: false, jumpCooldown: 0 };
+            state.pig = { x: WIDTH/2, y: HEIGHT-150-60, vx: 0, vy: 0, attachedTo: 0, slimeUsed: false, zombieUsed: false, jumpCooldown: 0, trail: [] };
             state.clocks.push({ id: 0, x: WIDTH/2, y: HEIGHT-150, radius: 60, angle: -Math.PI/2, speed: 0.04, color: CLOCK_COLORS[0], isFrozen: false, features: [] });
             for(let i=1; i<6; i++) state.clocks.push(createClock(i, HEIGHT-150-i*CLOCK_SPACING, i));
             uiHome.classList.add('hidden'); 
@@ -623,7 +623,7 @@
             state.cameraX = 0; 
             state.clocks = []; 
             state.lastClockId = 0;
-            state.pig = { x: WIDTH/2, y: HEIGHT-150-60, vx: 0, vy: 0, attachedTo: 0, slimeUsed: false, zombieUsed: false, jumpCooldown: 0 };
+            state.pig = { x: WIDTH/2, y: HEIGHT-150-60, vx: 0, vy: 0, attachedTo: 0, slimeUsed: false, zombieUsed: false, jumpCooldown: 0, trail: [] };
             state.clocks.push({ id: 0, x: WIDTH/2, y: HEIGHT-150, radius: 60, angle: -Math.PI/2, speed: 0.04, color: CLOCK_COLORS[0], isFrozen: false, features: [] });
             for(let i=1; i<15; i++) {
                 const angle = Math.random() * Math.PI * 2; 
@@ -842,6 +842,7 @@
             if (skin.id === 'void') force *= 1.25; 
             if (skin.id === 'ninja') force *= 1.4; 
             if (skin.id === 'angel') force *= 0.6;
+            if (skin.id === 'neon') force *= 1.25;
             
             if (state.isSandbox) {
                 const dx = (state.mouse.x + state.cameraX) - state.pig.x; 
@@ -891,12 +892,17 @@
                 if (skinId === 'ice') clock.isFrozen = true;
                 state.pig.x = clock.x + Math.cos(clock.angle) * clock.radius; 
                 state.pig.y = clock.y + Math.sin(clock.angle) * clock.radius;
+                state.pig.trail = [];
             } else {
-                let grav = 0.5 * timeScale;
-                if (skinId === 'neon') grav *= 0.8;
-                state.pig.vy += grav;
                 state.pig.x += state.pig.vx * timeScale; 
                 state.pig.y += state.pig.vy * timeScale;
+                
+                if (skinId === 'neon') {
+                    state.pig.trail.unshift({ x: state.pig.x, y: state.pig.y, life: 1 });
+                    if (state.pig.trail.length > 10) state.pig.trail.pop();
+                    state.pig.trail.forEach(t => t.life -= 0.1 * timeScale);
+                }
+
                 if (state.isSandbox) { state.pig.vx *= Math.pow(0.99, timeScale); state.pig.vy *= Math.pow(0.99, timeScale); }
                 let grabRange = 5; 
                 if (skinId === 'blueberry') grabRange = 12; 
@@ -992,6 +998,7 @@
             const eyeColor = (skin.id === 'void' || skin.id === 'neon') ? 'white' : 'black'; pctx.fillStyle = eyeColor; pctx.beginPath(); pctx.arc(-7, -4, 2.5, 0, Math.PI * 2); pctx.fill(); pctx.beginPath(); pctx.arc(7, -4, 2.5, 0, Math.PI * 2); pctx.fill();
             if (skin.id === 'lava') { pctx.shadowBlur = 10; pctx.shadowColor = '#F97316'; pctx.fillStyle = '#FB923C'; pctx.beginPath(); pctx.arc(0, 0, 12, 0, Math.PI*2); pctx.fill(); pctx.shadowBlur = 0; }
             if (skin.id === 'steampunk') { pctx.fillStyle = '#78350F'; pctx.fillRect(-10, -18, 20, 4); pctx.strokeStyle = '#D97706'; pctx.lineWidth = 1; pctx.strokeRect(-10, -18, 20, 4); }
+            if (skin.id === 'neon') { pctx.shadowBlur = 15; pctx.shadowColor = '#3B82F6'; pctx.strokeStyle = '#3B82F6'; pctx.lineWidth = 1; pctx.strokeRect(-18, -16, 36, 32); pctx.shadowBlur = 0; }
             if (skin.id === 'ninja') { pctx.fillStyle = 'rgba(255,0,0,0.8)'; pctx.fillRect(-18, -8, 36, 4); }
             else if (skin.id === 'frog') { pctx.fillStyle = 'white'; pctx.beginPath(); pctx.arc(-8, -6, 4, 0, Math.PI*2); pctx.fill(); pctx.beginPath(); pctx.arc(8, -6, 4, 0, Math.PI*2); pctx.fill(); pctx.fillStyle = 'black'; pctx.beginPath(); pctx.arc(-8, -6, 2, 0, Math.PI*2); pctx.fill(); pctx.beginPath(); pctx.arc(8, -6, 2, 0, Math.PI*2); pctx.fill(); }
             else if (skin.id === 'angel') { pctx.strokeStyle = 'rgba(255,255,255,0.8)'; pctx.lineWidth = 2; pctx.beginPath(); pctx.ellipse(0, -22, 10, 3, 0, 0, Math.PI*2); pctx.stroke(); }
@@ -1019,6 +1026,14 @@
                 const skin = SKINS.find(s => s.id === state.selectedSkinId) || SKINS[0]; 
                 const p = state.pig; 
                 const rot = p.attachedTo !== null ? 0 : Math.atan2(p.vy, p.vx) + Math.PI/2;
+                
+                if (skin.id === 'neon' && p.trail.length > 0) {
+                    p.trail.forEach(t => {
+                        ctx.fillStyle = `rgba(59, 130, 246, ${t.life * 0.5})`;
+                        ctx.beginPath(); ctx.arc(t.x, t.y, 8 * t.life, 0, Math.PI * 2); ctx.fill();
+                    });
+                }
+
                 const showTrajectory = state.isSandbox || skin.id === 'cyber' || skin.id === 'king';
                 if (showTrajectory) {
                     let trajAngle = null;
