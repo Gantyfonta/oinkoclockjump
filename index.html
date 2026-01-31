@@ -5,47 +5,132 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Oink-O-Clock Jump</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
-        body { font-family: 'Inter', sans-serif; touch-action: manipulation; background: #0f172a; margin: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-        canvas { display: block; image-rendering: antialiased; }
-        .ui-layer { pointer-events: none; }
-        .ui-layer button, .ui-layer .clickable { pointer-events: auto; }
-        .card-item { cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; }
-        .card-item:hover:not(.locked) { transform: scale(1.02); background: rgba(255, 255, 255, 0.05); }
-        .card-item.selected { border-color: #F472B6; background: rgba(244, 114, 182, 0.15); box-shadow: 0 0 20px rgba(244, 114, 182, 0.1); }
-        .card-item.locked { filter: grayscale(1) contrast(0.5); opacity: 0.6; cursor: not-allowed; }
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
-        .slime-flash { animation: slime-pulse 0.5s ease-out; }
+        body {
+            font-family: 'Inter', sans-serif;
+            touch-action: manipulation;
+            background: #0f172a;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        canvas {
+            display: block;
+            image-rendering: antialiased;
+        }
+        .ui-layer {
+            pointer-events: none;
+        }
+        .ui-layer button, .ui-layer .clickable {
+            pointer-events: auto;
+        }
+        .card-item {
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .card-item:hover:not(.locked) {
+            transform: scale(1.02);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .card-item.selected {
+            border-color: #F472B6;
+            background: rgba(244, 114, 182, 0.15);
+            box-shadow: 0 0 20px rgba(244, 114, 182, 0.1);
+        }
+        .card-item.locked {
+            filter: grayscale(1) contrast(0.5);
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.1);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+        }
+        .slime-flash {
+            animation: slime-pulse 0.5s ease-out;
+        }
         @keyframes slime-pulse {
             0% { box-shadow: inset 0 0 0 0 rgba(16, 185, 129, 0); }
             50% { box-shadow: inset 0 0 100px 50px rgba(16, 185, 129, 0.5); }
             100% { box-shadow: inset 0 0 0 0 rgba(16, 185, 129, 0); }
         }
-        .gold-flash { animation: gold-pulse 0.3s ease-out infinite alternate; }
-        @keyframes gold-pulse { 0% { transform: scale(1); filter: brightness(1); } 100% { transform: scale(1.05); filter: brightness(1.3); } }
-        .toast { animation: slide-in-top 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        @keyframes slide-in-top { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .coin-spin { animation: spin-coin 2s infinite linear; }
-        @keyframes spin-coin { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
-        .noir-mode { filter: grayscale(100%) contrast(120%); }
-        .pig-preview-canvas { width: 64px; height: 64px; display: block; }
-        .achievement-unlock { animation: achievement-anim 4s forwards cubic-bezier(0.18, 0.89, 0.32, 1.28); }
-        @keyframes achievement-anim { 0% { transform: translateY(100%); opacity: 0; } 10% { transform: translateY(0); opacity: 1; } 90% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-150%); opacity: 0; } }
-        .tutorial-pulse { animation: tut-pulse 1.5s infinite ease-in-out; }
-        @keyframes tut-pulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } }
-        .bezos-rainbow { background: linear-gradient(90deg, #fbbf24, #f59e0b, #facc15, #fbbf24); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: rainbow-scroll 2s linear infinite; }
-        @keyframes rainbow-scroll { to { background-position: 200% center; } }
+        .gold-flash {
+            animation: gold-pulse 0.3s ease-out infinite alternate;
+        }
+        @keyframes gold-pulse {
+            0% { transform: scale(1); filter: brightness(1); }
+            100% { transform: scale(1.05); filter: brightness(1.3); }
+        }
+        .toast {
+            animation: slide-in-top 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes slide-in-top {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .coin-spin {
+            animation: spin-coin 2s infinite linear;
+        }
+        @keyframes spin-coin {
+            from { transform: rotateY(0deg); }
+            to { transform: rotateY(360deg); }
+        }
+        .noir-mode {
+            filter: grayscale(100%) contrast(120%);
+        }
+        .pig-preview-canvas {
+            width: 64px;
+            height: 64px;
+            display: block;
+        }
+        .achievement-unlock {
+            animation: achievement-anim 4s forwards cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        }
+        @keyframes achievement-anim {
+            0% { transform: translateY(100%); opacity: 0; }
+            10% { transform: translateY(0); opacity: 1; }
+            90% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-150%); opacity: 0; }
+        }
+        .tutorial-pulse {
+            animation: tut-pulse 1.5s infinite ease-in-out;
+        }
+        @keyframes tut-pulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+        .bezos-rainbow {
+            background: linear-gradient(90deg, #fbbf24, #f59e0b, #facc15, #fbbf24);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: rainbow-scroll 2s linear infinite;
+        }
+        @keyframes rainbow-scroll {
+            to { background-position: 200% center; }
+        }
     </style>
 </head>
 <body>
     <div id="game-container" class="relative shadow-2xl overflow-hidden border-4 border-indigo-900 rounded-3xl bg-indigo-950" style="width: 400px; height: 700px;">
         <canvas id="gameCanvas" width="400" height="700"></canvas>
         
+        <!-- Notifications -->
         <div id="toast-container" class="absolute top-4 left-0 right-0 z-[100] px-4 flex flex-col items-center gap-2 pointer-events-none"></div>
         <div id="achievement-popup-container" class="absolute bottom-10 left-0 right-0 z-[100] px-6 pointer-events-none"></div>
 
@@ -71,127 +156,240 @@
                     <button onclick="openAchievements()" class="bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-3 rounded-xl text-xs transition-transform active:scale-95">GOALS</button>
                     <button onclick="openLeaderboard()" class="bg-indigo-800 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-xs transition-transform active:scale-95">RANKINGS</button>
                 </div>
+                <button onclick="startTutorial()" class="mt-2 text-[10px] font-black uppercase text-indigo-400 hover:text-white transition-colors tracking-widest">How to Play?</button>
             </div>
 
             <div class="mt-8 group cursor-pointer" onclick="showUsernameEntry()">
                 <div class="text-[10px] text-indigo-300/40 font-bold uppercase tracking-widest mb-1 group-hover:text-pink-300/60 transition-colors">Clock Identifier</div>
                 <div id="display-username" class="text-pink-400 font-black text-sm group-hover:underline">Setting name...</div>
             </div>
-            <div class="mt-6 text-indigo-300/40 text-[10px] font-bold uppercase tracking-widest">Personal Best: <span id="home-best-val" class="text-white">0</span></div>
+
+            <div class="mt-6 text-indigo-300/40 text-[10px] font-bold uppercase tracking-widest">
+                Personal Best Record: <span id="home-best-val" class="text-white">0</span>
+            </div>
+        </div>
+
+        <!-- Tutorial UI -->
+        <div id="ui-tutorial" class="absolute inset-0 flex flex-col items-center justify-end p-12 bg-black/40 backdrop-blur-[2px] z-[70] hidden pointer-events-none">
+            <div class="bg-indigo-900/90 border-2 border-pink-500 p-6 rounded-3xl shadow-2xl text-white text-center w-full tutorial-pulse pointer-events-auto">
+                <h3 id="tut-title" class="text-xl font-black italic uppercase mb-2">Tutorial</h3>
+                <p id="tut-desc" class="text-sm font-bold text-pink-200 mb-6">Instructions go here.</p>
+                <button id="tut-btn" onclick="advanceTutorial()" class="bg-pink-500 text-white font-black py-2 px-8 rounded-xl active:scale-95 transition-transform uppercase text-sm">Got it!</button>
+            </div>
+            <button onclick="skipTutorial()" class="mt-4 pointer-events-auto text-[10px] font-bold text-white/40 uppercase tracking-widest hover:text-white transition-colors">Skip Tutorial</button>
+        </div>
+
+        <!-- Username Entry -->
+        <div id="ui-username" class="absolute inset-0 flex flex-col items-center justify-center bg-indigo-950/95 backdrop-blur-md z-[60] text-white p-6 text-center hidden">
+            <h2 class="text-2xl font-black mb-2 uppercase italic">Identify Yourself</h2>
+            <input type="text" id="username-input" maxlength="15" placeholder="OinkMaster" class="w-64 bg-indigo-900 border-2 border-pink-500/30 text-white text-center py-3 rounded-xl font-bold focus:border-pink-500 focus:outline-none mb-4 transition-all">
+            <button onclick="saveUsername()" class="bg-pink-500 text-white font-black py-3 px-12 rounded-xl text-lg transition-transform active:scale-95 w-64">CONFIRM</button>
+        </div>
+
+        <!-- Leaderboard Menu -->
+        <div id="ui-leaderboard" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-3xl font-black italic uppercase tracking-tighter">Legends</h2>
+                <button onclick="closeLeaderboard()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            </div>
+            <div id="leaderboard-list" class="flex-1 overflow-y-auto space-y-1 pr-1"></div>
+        </div>
+
+        <!-- Achievements Menu -->
+        <div id="ui-achievements" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-3xl font-black italic uppercase tracking-tighter text-yellow-500">Milestones</h2>
+                <button onclick="closeAchievements()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            </div>
+            <div id="achievements-list" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
         </div>
 
         <!-- Skins Menu -->
-        <div id="ui-skins" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white hidden">
-            <div class="p-6 pb-2 flex justify-between items-center">
+        <div id="ui-skins" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
+            <div class="flex justify-between items-center mb-4">
                 <h2 class="text-3xl font-black italic uppercase tracking-tighter">Skins</h2>
                 <button onclick="closeSkins()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
             </div>
-            
-            <div id="skin-detail-panel" class="mx-6 p-4 bg-indigo-900/50 rounded-2xl border border-pink-500/30 mb-4">
-                <div class="flex gap-4 items-center">
-                    <div id="detail-pig-preview" class="w-16 h-16 bg-indigo-950 rounded-xl border border-white/5 flex items-center justify-center"></div>
-                    <div class="flex-1">
-                        <div id="detail-pig-name" class="font-black text-lg uppercase tracking-tight text-pink-400">Select a Pig</div>
-                        <div id="detail-pig-ability" class="text-[10px] font-bold text-yellow-400 uppercase tracking-widest mb-1">None</div>
-                    </div>
-                </div>
-                <p id="detail-pig-desc" class="text-[10px] text-white/60 font-medium leading-relaxed mt-2 italic">Tap a pig below to view its special time-bending properties and lore.</p>
-            </div>
-
-            <div id="skins-grid" class="flex-1 overflow-y-auto space-y-2 px-6 pb-24"></div>
-            
-            <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-indigo-950 via-indigo-950 to-transparent">
-                <button id="buy-skin-btn" onclick="buyRandomSkin()" class="w-full bg-pink-500 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 active:scale-95 transition-transform disabled:opacity-50">
-                    <div class="w-6 h-6 bg-yellow-400 rounded-full text-black font-black flex items-center justify-center text-xs">₵</div>
-                    <span>BUY RANDOM SKIN (100)</span>
-                </button>
-            </div>
+            <div id="skins-grid" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
+            <button id="buy-skin-btn" onclick="buyRandomSkin()" class="mt-4 w-full bg-pink-500 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 active:scale-95 transition-transform disabled:opacity-50">
+                <div class="w-6 h-6 bg-yellow-400 rounded-full text-black font-black flex items-center justify-center text-xs">₵</div>
+                <span>BUY RANDOM SKIN (100)</span>
+            </button>
         </div>
 
-        <!-- Generic Overlay Menus -->
-        <div id="ui-leaderboard" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
-            <div class="flex justify-between items-center mb-6"><h2 class="text-3xl font-black italic uppercase tracking-tighter">Legends</h2><button onclick="closeLeaderboard()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>
-            <div id="leaderboard-list" class="flex-1 overflow-y-auto space-y-1"></div>
-        </div>
-        <div id="ui-achievements" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
-            <div class="flex justify-between items-center mb-4"><h2 class="text-3xl font-black italic uppercase tracking-tighter text-yellow-500">Milestones</h2><button onclick="closeAchievements()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>
-            <div id="achievements-list" class="flex-1 overflow-y-auto space-y-2"></div>
-        </div>
+        <!-- Theme Shop Menu -->
         <div id="ui-themes" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
-            <div class="flex justify-between items-center mb-4"><h2 class="text-3xl font-black italic uppercase tracking-tighter">Themes</h2><button onclick="closeThemes()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>
-            <div id="themes-grid" class="flex-1 overflow-y-auto space-y-2"></div>
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-3xl font-black italic uppercase tracking-tighter">Themes</h2>
+                <button onclick="closeThemes()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            </div>
+            <div id="themes-grid" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
             <button id="buy-theme-btn" onclick="buyRandomTheme()" class="mt-4 w-full bg-indigo-500 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 active:scale-95 transition-transform disabled:opacity-50">
                 <div class="w-6 h-6 bg-yellow-400 rounded-full text-black font-black flex items-center justify-center text-xs">₵</div>
                 <span>UNLOCK THEME (250)</span>
             </button>
         </div>
 
-        <div id="ui-username" class="absolute inset-0 flex flex-col items-center justify-center bg-indigo-950/95 backdrop-blur-md z-[60] text-white p-6 text-center hidden">
-            <h2 class="text-2xl font-black mb-2 uppercase italic">Identify Yourself</h2>
-            <input type="text" id="username-input" maxlength="15" placeholder="OinkMaster" class="w-64 bg-indigo-900 border-2 border-pink-500/30 text-white text-center py-3 rounded-xl font-bold focus:border-pink-500 focus:outline-none mb-4">
-            <button onclick="saveUsername()" class="bg-pink-500 text-white font-black py-3 px-12 rounded-xl text-lg w-64">CONFIRM</button>
-        </div>
-
         <div id="ui-hud" class="absolute top-0 left-0 right-0 p-4 flex justify-between ui-layer text-white hidden">
-            <div class="bg-black/20 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/5"><div id="score-val" class="text-3xl font-black text-pink-400 leading-none">0</div></div>
+            <div class="bg-black/20 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/5">
+                <div id="score-container">
+                    <div id="score-val" class="text-3xl font-black text-pink-400 leading-none">0</div>
+                </div>
+            </div>
             <div class="text-right bg-black/20 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/5">
-                <div id="hud-coin-pill" class="flex items-center gap-2 mb-1 justify-end"><div class="w-3 h-3 bg-yellow-400 rounded-full flex items-center justify-center text-[8px] text-black font-black">₵</div><div id="hud-coins" class="text-xs font-black">0</div></div>
+                <div id="hud-coin-pill" class="flex items-center gap-2 mb-1 justify-end">
+                    <div class="w-3 h-3 bg-yellow-400 rounded-full flex items-center justify-center text-[8px] text-black font-black">₵</div>
+                    <div id="hud-coins" class="text-xs font-black">0</div>
+                </div>
                 <div id="best-val" class="text-xl font-black leading-none opacity-40">0</div>
             </div>
         </div>
 
         <div id="ui-gameover" class="absolute inset-0 flex flex-col items-center justify-center bg-red-950/90 backdrop-blur-md z-[55] text-white p-6 text-center hidden">
             <h2 class="text-4xl font-black mb-1 uppercase tracking-tighter text-white">TIME FRACTURED!</h2>
-            <div class="relative mb-8"><div id="new-best-tag" class="absolute -top-6 -right-10 bg-yellow-400 text-black text-[10px] font-black px-2 py-1 rounded rotate-12 hidden">NEW BEST!</div><div class="text-7xl font-black text-pink-400" id="final-score">0</div></div>
+            <div class="relative mb-8">
+                <div id="new-best-tag" class="absolute -top-6 -right-10 bg-yellow-400 text-black text-[10px] font-black px-2 py-1 rounded rotate-12 hidden">NEW BEST!</div>
+                <div class="text-7xl font-black text-pink-400" id="final-score">0</div>
+            </div>
             <div class="bg-indigo-900/40 border border-white/10 px-6 py-3 rounded-2xl mb-8 flex items-center gap-4">
                 <div><div class="text-[10px] uppercase font-bold opacity-40">Earned</div><div id="earned-coins" class="text-2xl font-black text-yellow-400">+0</div></div>
                 <div class="h-8 w-px bg-white/10"></div>
                 <div><div class="text-[10px] uppercase font-bold opacity-40">Total</div><div id="gameover-total-coins" class="text-2xl font-black text-white">0</div></div>
             </div>
-            <button onclick="startGame()" class="bg-white text-indigo-900 font-black py-4 px-12 rounded-xl text-2xl w-64 mb-3">RETRY</button>
-            <button onclick="backToHome()" class="text-white/60 font-bold text-sm">EXIT TO HOME</button>
+            <div class="flex flex-col gap-3 w-64 items-center">
+                <button onclick="startGame()" class="bg-white text-indigo-900 font-black py-4 px-12 rounded-xl text-2xl w-full active:scale-95 transition-transform">RETRY</button>
+                <button onclick="backToHome()" class="text-white/60 font-bold text-sm">EXIT TO HOME</button>
+            </div>
         </div>
     </div>
 
     <script>
-        const firebaseConfig = { apiKey: "AIzaSyCtj4LFJ7xSbRCGT4Ttc4GCEgQBYDJy4tY", authDomain: "gantymail-b5d24.firebaseapp.com", databaseURL: "https://gantymail-b5d24-default-rtdb.firebaseio.com", projectId: "gantymail-b5d24", storageBucket: "gantymail-b5d24.firebasestorage.app", messagingSenderId: "971596713126", appId: "1:971596713126:web:6c965864b0bdaeaf12b867" };
+        // Firebase init
+        const firebaseConfig = {
+            apiKey: "AIzaSyCtj4LFJ7xSbRCGT4Ttc4GCEgQBYDJy4tY",
+            authDomain: "gantymail-b5d24.firebaseapp.com",
+            databaseURL: "https://gantymail-b5d24-default-rtdb.firebaseio.com",
+            projectId: "gantymail-b5d24",
+            storageBucket: "gantymail-b5d24.firebasestorage.app",
+            messagingSenderId: "971596713126",
+            appId: "1:971596713126:web:6c965864b0bdaeaf12b867"
+        };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
+        // Audio System
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
         let audioCtx;
-        function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); }
+        
+        function initAudio() {
+            if (!audioCtx) audioCtx = new AudioContextClass();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
         function playSound(type) {
-            if (!audioCtx) return; const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.connect(gain); gain.connect(audioCtx.destination); const now = audioCtx.currentTime;
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
             switch(type) {
-                case 'jump': osc.type = 'triangle'; osc.frequency.setValueAtTime(300, now); osc.frequency.exponentialRampToValueAtTime(600, now + 0.1); gain.gain.setValueAtTime(0.08, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1); osc.start(now); osc.stop(now + 0.1); break;
-                case 'land': osc.type = 'sine'; osc.frequency.setValueAtTime(220, now); gain.gain.setValueAtTime(0.12, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08); osc.start(now); osc.stop(now + 0.08); break;
-                case 'coin': osc.type = 'square'; osc.frequency.setValueAtTime(880, now); osc.frequency.exponentialRampToValueAtTime(1320, now + 0.05); gain.gain.setValueAtTime(0.04, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15); osc.start(now); osc.stop(now + 0.15); break;
-                case 'gameover': osc.type = 'sawtooth'; osc.frequency.setValueAtTime(200, now); osc.frequency.linearRampToValueAtTime(60, now + 0.6); gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0, now + 0.6); osc.start(now); osc.stop(now + 0.6); break;
-                case 'unlock': const osc2 = audioCtx.createOscillator(); const gain2 = audioCtx.createGain(); osc2.connect(gain2); gain2.connect(audioCtx.destination); osc.frequency.setValueAtTime(523.25, now); osc2.frequency.setValueAtTime(659.25, now); gain.gain.setValueAtTime(0.1, now); gain2.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8); gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.8); osc.start(now); osc2.start(now); osc.stop(now + 0.8); osc2.stop(now + 0.8); break;
+                case 'jump':
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(300, now);
+                    osc.frequency.exponentialRampToValueAtTime(600, now + 0.1);
+                    gain.gain.setValueAtTime(0.08, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                    osc.start(now); osc.stop(now + 0.1);
+                    break;
+                case 'land':
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(220, now);
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+                    osc.start(now); osc.stop(now + 0.08);
+                    break;
+                case 'coin':
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(880, now);
+                    osc.frequency.exponentialRampToValueAtTime(1320, now + 0.05);
+                    gain.gain.setValueAtTime(0.04, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+                    osc.start(now); osc.stop(now + 0.15);
+                    break;
+                case 'gameover':
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(200, now);
+                    osc.frequency.linearRampToValueAtTime(60, now + 0.6);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.6);
+                    osc.start(now); osc.stop(now + 0.6);
+                    break;
+                case 'unlock':
+                    const osc2 = audioCtx.createOscillator();
+                    const gain2 = audioCtx.createGain();
+                    osc2.connect(gain2);
+                    gain2.connect(audioCtx.destination);
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc2.frequency.setValueAtTime(659.25, now);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain2.gain.setValueAtTime(0.1, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+                    gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+                    osc.start(now); osc2.start(now);
+                    osc.stop(now + 0.8); osc2.stop(now + 0.8);
+                    break;
             }
         }
 
-        const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d');
-        const WIDTH = 400, HEIGHT = 700;
-        const JUMP_SPEED = 14, CLOCK_SPACING = 260, CLOCK_COLORS = ['#F472B6', '#60A5FA', '#34D399', '#FBBF24', '#A78BFA', '#FB923C'];
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const uiHome = document.getElementById('ui-home');
+        const uiSkins = document.getElementById('ui-skins');
+        const uiHUD = document.getElementById('ui-hud');
+        const uiGameOver = document.getElementById('ui-gameover');
+        const uiLeaderboard = document.getElementById('ui-leaderboard');
+        const uiThemes = document.getElementById('ui-themes');
+        const uiAchievements = document.getElementById('ui-achievements');
+        const uiTutorial = document.getElementById('ui-tutorial');
+        const achievementsList = document.getElementById('achievements-list');
+        const leaderboardList = document.getElementById('leaderboard-list');
+        const skinsGrid = document.getElementById('skins-grid');
+        const themesGrid = document.getElementById('themes-grid');
+        const gameContainer = document.getElementById('game-container');
+        const scoreVal = document.getElementById('score-val');
+        const bestVal = document.getElementById('best-val');
+        const homeCoins = document.getElementById('home-coins');
+        const hudCoins = document.getElementById('hud-coins');
+        const earnedCoinsText = document.getElementById('earned-coins');
+        const gameoverTotalCoins = document.getElementById('gameover-total-coins');
+        const finalScoreLabel = document.getElementById('final-score');
+        const homeBestVal = document.getElementById('home-best-val');
+
+        const WIDTH = 400;
+        const HEIGHT = 700;
+        const JUMP_SPEED = 14;
+        const CLOCK_SPACING = 260;
+        const CLOCK_COLORS = ['#F472B6', '#60A5FA', '#34D399', '#FBBF24', '#A78BFA', '#FB923C'];
 
         const SKINS = [
-            { id: 'classic', name: 'Classic Oink', ability: 'Balanced', desc: 'The original leaper. Reliable, pink, and ready for any clock face.', body: '#F472B6', ears: '#EC4899', snout: '#F9A8D4', snoutDots: '#BE185D' },
-            { id: 'blueberry', name: 'Time Jam', ability: 'Sticky Feet', desc: 'Coated in temporal jam, this pig has a 15% larger grab range when nearing clocks.', body: '#60A5FA', ears: '#2563EB', snout: '#93C5FD', snoutDots: '#1E40AF' },
-            { id: 'matcha', name: 'Matcha Zen', ability: 'Slow Focus', desc: 'Inner peace slows all clock rotations by 25%, making every jump feel like a meditation.', body: '#34D399', ears: '#059669', snout: '#6EE7B7', snoutDots: '#064E3B' },
-            { id: 'golden', name: 'Wealthy Swine', ability: 'Greedy Score', desc: 'Money talks. Every successful leap grants double the points toward your record.', body: '#FBBF24', ears: '#D97706', snout: '#FDE68A', snoutDots: '#78350F' },
-            { id: 'void', name: 'Void Walker', ability: 'Hyper Jump', desc: 'Harnessing the emptiness of space, this pig launches with 25% more velocity.', body: '#4B5563', ears: '#1F2937', snout: '#9CA3AF', snoutDots: '#000000' },
-            { id: 'cyber', name: 'Cyber Ham', ability: 'Laser Sight', desc: 'Upgraded with optical sensors, a laser trajectory path guides every single launch.', body: '#A78BFA', ears: '#7C3AED', snout: '#C4B5FD', snoutDots: '#4C1D95' },
-            { id: 'slime', name: 'Slime Pig', ability: 'Rubberized', desc: 'If you fall, your sticky body will bounce you back into the air once per game.', body: '#10B981', ears: '#064E3B', snout: '#D1FAE5', snoutDots: '#059669' },
-            { id: 'devil', name: 'Hell Hog', ability: 'Chaos Mode', desc: 'Triple points, but clocks are much smaller. Only for true masters of the tick-tock.', body: '#EF4444', ears: '#7F1D1D', snout: '#FCA5A5', snoutDots: '#991B1B' },
-            { id: 'ninja', name: 'Shadow Swine', ability: 'Infiltrator', desc: 'Fast jumps and huge grab range. He moves through the gears like a ghost.', body: '#1E293B', ears: '#0F172A', snout: '#334155', snoutDots: '#000000' },
-            { id: 'zombie', name: 'Undead Hog', ability: 'Reanimation', desc: 'You cannot kill what is already dead. Revives once at half-height if you fail.', body: '#4D7C0F', ears: '#365314', snout: '#84CC16', snoutDots: '#14532D' },
-            { id: 'ice', name: 'Frost Piglet', ability: 'Zero Temp', desc: 'Absolute zero! Clocks freeze completely the moment you touch them.', body: '#BAE6FD', ears: '#0EA5E9', snout: '#E0F2FE', snoutDots: '#0369A1' },
-            { id: 'rainbow', name: 'Prism Pig', ability: 'Coin Luck', desc: 'A lucky charm. Every successful jump grants a bonus 5 coins to your wallet.', body: '#FFFFFF', ears: '#FF0000', snout: '#FF00FF', snoutDots: '#000000' },
-            { id: 'angel', name: 'Angel Pig', ability: 'Featherweight', desc: 'Moves 40% slower in the air, allowing for godly precision and mid-air corrections.', body: '#FFFBEB', ears: '#FEF3C7', snout: '#FDE68A', snoutDots: '#F59E0B', isAchievement: true },
-            { id: 'space', name: 'Space Cadet', ability: 'Singularity', desc: 'A massive gravity field pulls you toward clocks from a huge distance.', body: '#334155', ears: '#475569', snout: '#94A3B8', snoutDots: '#F1F5F9', isAchievement: true },
-            { id: 'bank', name: 'Piggy Bank', ability: 'Dividend', desc: 'A walking vault. Gain 10 extra coins for every jump, win or lose.', body: '#FCD34D', ears: '#F59E0B', snout: '#FEF3C7', snoutDots: '#D97706', isAchievement: true },
-            { id: 'king', name: 'King Swine', ability: 'Royal Decree', desc: 'The Ultimate. Laser sight, Double Score, and +10 Coins per leap. Long live the King.', body: '#7C3AED', ears: '#C084FC', snout: '#DDD6FE', snoutDots: '#4C1D95', isAchievement: true }
+            { id: 'classic', name: 'Classic Oink', ability: 'Standard', desc: 'A well-rounded pig.', body: '#F472B6', ears: '#EC4899', snout: '#F9A8D4', snoutDots: '#BE185D' },
+            { id: 'blueberry', name: 'Time Jam', ability: 'Sticky', desc: '+15% Grab range.', body: '#60A5FA', ears: '#2563EB', snout: '#93C5FD', snoutDots: '#1E40AF' },
+            { id: 'matcha', name: 'Matcha Zen', ability: 'Focus', desc: '25% Slower rotation.', body: '#34D399', ears: '#059669', snout: '#6EE7B7', snoutDots: '#064E3B' },
+            { id: 'golden', name: 'Wealthy Swine', ability: 'Greed', desc: 'Double score per jump.', body: '#FBBF24', ears: '#D97706', snout: '#FDE68A', snoutDots: '#78350F' },
+            { id: 'void', name: 'Void Walker', ability: 'Warp', desc: '+25% Jump velocity.', body: '#4B5563', ears: '#1F2937', snout: '#9CA3AF', snoutDots: '#000000' },
+            { id: 'cyber', name: 'Cyber Ham', ability: 'Laser', desc: 'Shows jump trajectory.', body: '#A78BFA', ears: '#7C3AED', snout: '#C4B5FD', snoutDots: '#4C1D95' },
+            { id: 'slime', name: 'Slime Pig', ability: 'Resilient', desc: 'Bounces once from void.', body: '#10B981', ears: '#064E3B', snout: '#D1FAE5', snoutDots: '#059669' },
+            { id: 'devil', name: 'Hell Hog', ability: 'Inferno', desc: 'Triple score, small clocks.', body: '#EF4444', ears: '#7F1D1D', snout: '#FCA5A5', snoutDots: '#991B1B' },
+            { id: 'ninja', name: 'Shadow Swine', ability: 'Ninja', desc: 'Fast jumps & big grab range.', body: '#1E293B', ears: '#0F172A', snout: '#334155', snoutDots: '#000000' },
+            { id: 'zombie', name: 'Undead Hog', ability: 'Unending', desc: 'Revives once (Keep score).', body: '#4D7C0F', ears: '#365314', snout: '#84CC16', snoutDots: '#14532D' },
+            { id: 'ice', name: 'Frost Piglet', ability: 'Freeze', desc: 'Stops clocks when touched.', body: '#BAE6FD', ears: '#0EA5E9', snout: '#E0F2FE', snoutDots: '#0369A1' },
+            { id: 'rainbow', name: 'Prism Pig', ability: 'Fortune', desc: '+5 Coins every successful jump.', body: '#FFFFFF', ears: '#FF0000', snout: '#FF00FF', snoutDots: '#000000' },
+            // Achievement Only Skins
+            { id: 'angel', name: 'Angel Pig', ability: 'Glory', desc: 'Moves 40% slower (easier control).', body: '#FFFBEB', ears: '#FEF3C7', snout: '#FDE68A', snoutDots: '#F59E0B', isAchievement: true },
+            { id: 'space', name: 'Space Cadet', ability: 'Helmet', desc: 'Huge magnet range.', body: '#334155', ears: '#475569', snout: '#94A3B8', snoutDots: '#F1F5F9', isAchievement: true },
+            { id: 'bank', name: 'Piggy Bank', ability: 'Wealth', desc: '+10 Coins every jump.', body: '#FCD34D', ears: '#F59E0B', snout: '#FEF3C7', snoutDots: '#D97706', isAchievement: true },
+            { id: 'king', name: 'King Swine', ability: 'Royalty', desc: '2x Score, Laser, +10 Coins.', body: '#7C3AED', ears: '#C084FC', snout: '#DDD6FE', snoutDots: '#4C1D95', isAchievement: true }
         ];
 
         const THEMES = [
@@ -207,237 +405,569 @@
         const ACHIEVEMENTS = [
             { id: 'height_50', name: 'High Flyer', desc: 'Reach a score of 50.', goal: 50, type: 'score', rewardSkin: 'angel' },
             { id: 'height_300', name: 'Space Voyager', desc: 'Reach a score of 300.', goal: 300, type: 'score', rewardSkin: 'space' },
-            { id: 'coins_2000', name: 'Piggy Bank', desc: 'Earn 2000 total coins.', goal: 2000, type: 'coins', rewardSkin: 'bank' },
+            { id: 'coins_2000', name: 'Piggy Bank', desc: 'Earn a total of 2000 coins.', goal: 2000, type: 'coins', rewardSkin: 'bank' },
             { id: 'skins_all', name: 'Absolute Legend', desc: 'Unlock all normal skins.', goal: SKINS.filter(s => !s.isAchievement).length, type: 'skins', rewardSkin: 'king' }
         ];
 
         let state = {
-            status: 'HOME', score: 0, best: parseInt(localStorage.getItem('oinkBest') || '0'), coins: parseInt(localStorage.getItem('oinkCoins') || '0'),
-            totalCoinsEarned: parseInt(localStorage.getItem('oinkTotalCoins') || '0'), unlockedSkins: JSON.parse(localStorage.getItem('oinkUnlocked') || '["classic"]'),
-            selectedSkinId: localStorage.getItem('oinkSkin') || 'classic', unlockedThemes: JSON.parse(localStorage.getItem('oinkThemesUnlocked') || '["classic"]'),
-            selectedThemeId: localStorage.getItem('oinkTheme') || 'classic', unlockedAchievements: JSON.parse(localStorage.getItem('oinkAchieved') || '[]'),
-            username: localStorage.getItem('oinkUser') || '', cameraY: 0, pig: { x: 200, y: 550, vx: 0, vy: 0, attachedTo: null, slimeUsed: false, zombieUsed: false },
-            clocks: [], stars: [], lastClockId: -1, rainbowHue: 0, gridScroll: 0
+            status: 'HOME',
+            score: 0,
+            best: parseInt(localStorage.getItem('oinkBest') || '0'),
+            coins: parseInt(localStorage.getItem('oinkCoins') || '0'),
+            totalCoinsEarned: parseInt(localStorage.getItem('oinkTotalCoins') || '0'),
+            unlockedSkins: JSON.parse(localStorage.getItem('oinkUnlocked') || '["classic"]'),
+            selectedSkinId: localStorage.getItem('oinkSkin') || 'classic',
+            unlockedThemes: JSON.parse(localStorage.getItem('oinkThemesUnlocked') || '["classic"]'),
+            selectedThemeId: localStorage.getItem('oinkTheme') || 'classic',
+            unlockedAchievements: JSON.parse(localStorage.getItem('oinkAchieved') || '[]'),
+            username: localStorage.getItem('oinkUser') || '',
+            hasSeenTutorial: localStorage.getItem('oinkTutorialSeen') === 'true',
+            cameraY: 0,
+            pig: { x: 200, y: 550, vx: 0, vy: 0, attachedTo: null, slimeUsed: false, zombieUsed: false },
+            clocks: [],
+            stars: [],
+            localScores: JSON.parse(localStorage.getItem('oinkLocalLeaderboard') || '[]'),
+            lastClockId: -1,
+            rainbowHue: 0,
+            isTutorial: false,
+            tutorialStep: 0
         };
 
-        function isBezosMode() { return state.username.toLowerCase() === 'bezos'; }
+        const TUTORIAL_STEPS = [
+            { title: "Welcome Piggy!", desc: "You are a brave pig leaping through time. Your goal is to jump on clocks to climb higher!", btn: "Let's Go!" },
+            { title: "Watch the Hand", desc: "The clock hand shows where you will jump. Wait for it to point towards the next clock above you.", btn: "Okay!" },
+            { title: "Take the Leap!", desc: "Click or press Space to jump! Try to land on the green clock above.", btn: "Jump!" },
+            { title: "Perfect!", desc: "Landing on clocks gives you points. Climbing higher increases your score. Collect coins to buy skins!", btn: "Start Playing!" }
+        ];
+
+        function isBezosMode() {
+            return state.username.toLowerCase() === 'bezos';
+        }
+
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bg = type === 'error' ? 'bg-red-500' : 'bg-pink-500';
+            toast.className = `toast ${bg} text-white px-6 py-2 rounded-full font-black text-xs shadow-xl flex items-center gap-2 pointer-events-auto`;
+            toast.innerHTML = `<span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-20px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
 
         function drawPigAvatar(pctx, skin, x, y, scale = 1, rotation = 0) {
-            if (!skin) return; pctx.save(); pctx.translate(x, y); pctx.scale(scale, scale); pctx.rotate(rotation);
-            let bodyColor = skin.body, earColor = skin.ears, snoutColor = skin.snout;
-            if (skin.id === 'rainbow') { bodyColor = `hsl(${state.rainbowHue}, 80%, 70%)`; earColor = `hsl(${state.rainbowHue+30}, 80%, 40%)`; snoutColor = `hsl(${state.rainbowHue+60}, 80%, 80%)`; }
-            pctx.strokeStyle = earColor; pctx.lineWidth = 2; pctx.beginPath(); pctx.moveTo(-18, 0); pctx.bezierCurveTo(-25, -10, -25, 10, -20, 5); pctx.stroke();
-            pctx.fillStyle = bodyColor; pctx.beginPath(); pctx.ellipse(0, 0, 18, 16, 0, 0, Math.PI * 2); pctx.fill();
-            pctx.fillStyle = earColor; pctx.beginPath(); pctx.moveTo(-14, -10); pctx.lineTo(-18, -20); pctx.lineTo(-6, -14); pctx.fill(); pctx.beginPath(); pctx.moveTo(14, -10); pctx.lineTo(18, -20); pctx.lineTo(6, -14); pctx.fill();
-            pctx.fillStyle = snoutColor; pctx.beginPath(); pctx.ellipse(0, 4, 8, 6, 0, 0, Math.PI * 2); pctx.fill();
-            pctx.fillStyle = skin.snoutDots || 'rgba(0,0,0,0.3)'; pctx.beginPath(); pctx.arc(-3, 4, 1.5, 0, Math.PI * 2); pctx.fill(); pctx.beginPath(); pctx.arc(3, 4, 1.5, 0, Math.PI * 2); pctx.fill();
-            pctx.fillStyle = skin.id === 'void' ? 'white' : 'black'; pctx.beginPath(); pctx.arc(-7, -4, 2.5, 0, Math.PI * 2); pctx.fill(); pctx.beginPath(); pctx.arc(7, -4, 2.5, 0, Math.PI * 2); pctx.fill();
-            if (skin.id === 'ninja') { pctx.fillStyle = 'rgba(255,0,0,0.8)'; pctx.fillRect(-18, -8, 36, 4); }
-            else if (skin.id === 'zombie') { pctx.fillStyle = 'rgba(255,255,255,0.2)'; pctx.beginPath(); pctx.arc(7, -4, 4, 0, Math.PI*2); pctx.fill(); }
-            else if (skin.id === 'ice') { pctx.fillStyle = 'rgba(186,230,253,0.4)'; pctx.beginPath(); pctx.moveTo(0, -18); pctx.lineTo(5, -25); pctx.lineTo(-5, -25); pctx.fill(); }
-            else if (skin.id === 'angel') { pctx.strokeStyle = 'white'; pctx.lineWidth = 2; pctx.beginPath(); pctx.ellipse(0, -22, 10, 3, 0, 0, Math.PI*2); pctx.stroke(); }
-            else if (skin.id === 'space') { pctx.fillStyle = 'rgba(255,255,255,0.1)'; pctx.beginPath(); pctx.arc(0, 0, 22, 0, Math.PI*2); pctx.fill(); pctx.strokeStyle = 'rgba(255,255,255,0.3)'; pctx.stroke(); }
-            else if (skin.id === 'king') { pctx.fillStyle = '#FBBF24'; pctx.beginPath(); pctx.moveTo(-10, -16); pctx.lineTo(-14, -26); pctx.lineTo(-6, -20); pctx.lineTo(0, -30); pctx.lineTo(6, -20); pctx.lineTo(14, -26); pctx.lineTo(10, -16); pctx.fill(); }
+            if (!skin) return;
+            pctx.save();
+            pctx.translate(x, y);
+            pctx.scale(scale, scale);
+            pctx.rotate(rotation);
+
+            let bodyColor = skin.body;
+            let earColor = skin.ears;
+            let snoutColor = skin.snout;
+
+            if (skin.id === 'rainbow') {
+                bodyColor = `hsl(${state.rainbowHue}, 80%, 70%)`;
+                earColor = `hsl(${state.rainbowHue + 30}, 80%, 40%)`;
+                snoutColor = `hsl(${state.rainbowHue + 60}, 80%, 80%)`;
+            }
+
+            // Ears
+            pctx.strokeStyle = earColor;
+            pctx.lineWidth = 2;
+            pctx.beginPath(); pctx.moveTo(-18, 0); pctx.bezierCurveTo(-25, -10, -25, 10, -20, 5); pctx.stroke();
+
+            // Main Body
+            pctx.fillStyle = bodyColor;
+            pctx.beginPath(); pctx.ellipse(0, 0, 18, 16, 0, 0, Math.PI * 2); pctx.fill();
+
+            // Ear triangles
+            pctx.fillStyle = earColor;
+            pctx.beginPath(); pctx.moveTo(-14, -10); pctx.lineTo(-18, -20); pctx.lineTo(-6, -14); pctx.fill();
+            pctx.beginPath(); pctx.moveTo(14, -10); pctx.lineTo(18, -20); pctx.lineTo(6, -14); pctx.fill();
+
+            // Snout
+            pctx.fillStyle = snoutColor;
+            pctx.beginPath(); pctx.ellipse(0, 4, 8, 6, 0, 0, Math.PI * 2); pctx.fill();
+
+            // Snout Dots
+            pctx.fillStyle = skin.snoutDots || 'rgba(0,0,0,0.3)';
+            pctx.beginPath(); pctx.arc(-3, 4, 1.5, 0, Math.PI * 2); pctx.fill();
+            pctx.beginPath(); pctx.arc(3, 4, 1.5, 0, Math.PI * 2); pctx.fill();
+
+            // Eyes
+            const eyeColor = skin.id === 'void' ? 'white' : 'black';
+            pctx.fillStyle = eyeColor;
+            pctx.beginPath(); pctx.arc(-7, -4, 2.5, 0, Math.PI * 2); pctx.fill();
+            pctx.beginPath(); pctx.arc(7, -4, 2.5, 0, Math.PI * 2); pctx.fill();
+
+            // Specific Details
+            if (skin.id === 'ninja') { 
+                pctx.fillStyle = 'rgba(255,0,0,0.8)'; 
+                pctx.fillRect(-18, -8, 36, 4); 
+            }
+            else if (skin.id === 'zombie') { 
+                pctx.fillStyle = 'rgba(255,255,255,0.2)'; 
+                pctx.beginPath(); pctx.arc(7, -4, 4, 0, Math.PI*2); pctx.fill(); 
+            }
+            else if (skin.id === 'ice') { 
+                pctx.fillStyle = 'rgba(186,230,253,0.4)'; 
+                pctx.beginPath(); pctx.moveTo(0, -18); pctx.lineTo(5, -25); pctx.lineTo(-5, -25); pctx.fill(); 
+            }
+            else if (skin.id === 'angel') { 
+                pctx.strokeStyle = 'rgba(255,255,255,0.8)'; 
+                pctx.lineWidth = 2;
+                pctx.beginPath(); pctx.ellipse(0, -22, 10, 3, 0, 0, Math.PI*2); pctx.stroke(); 
+            }
+            else if (skin.id === 'space') {
+                pctx.fillStyle = 'rgba(255,255,255,0.2)';
+                pctx.beginPath(); pctx.arc(0, 0, 22, 0, Math.PI*2); pctx.fill();
+                pctx.strokeStyle = 'rgba(255,255,255,0.4)';
+                pctx.stroke();
+            }
+            else if (skin.id === 'king') {
+                pctx.fillStyle = '#FBBF24';
+                pctx.beginPath();
+                pctx.moveTo(-10, -16); pctx.lineTo(-14, -26); pctx.lineTo(-6, -20);
+                pctx.lineTo(0, -30); pctx.lineTo(6, -20); pctx.lineTo(14, -26); pctx.lineTo(10, -16);
+                pctx.fill();
+            }
             pctx.restore();
         }
 
-        function refreshUI() {
-            const isBezos = isBezosMode(); const coins = isBezos ? "∞" : state.coins;
-            document.getElementById('home-coins').innerText = coins; document.getElementById('hud-coins').innerText = coins; document.getElementById('home-best-val').innerText = state.best;
-            const displayUser = document.getElementById('display-username'); displayUser.innerText = state.username || "Set Your Identity";
-            if (isBezos) { displayUser.classList.add('bezos-rainbow'); document.getElementById('home-coin-pill').classList.add('gold-flash'); document.getElementById('hud-coin-pill').classList.add('gold-flash'); }
-            else { displayUser.classList.remove('bezos-rainbow'); document.getElementById('home-coin-pill').classList.remove('gold-flash'); document.getElementById('hud-coin-pill').classList.remove('gold-flash'); }
-            const normalSkins = SKINS.filter(s => !s.isAchievement);
-            document.getElementById('buy-skin-btn').disabled = (!isBezos && state.coins < 100) || normalSkins.filter(s => !state.unlockedSkins.includes(s.id)).length === 0;
-            document.getElementById('buy-theme-btn').disabled = (!isBezos && state.coins < 250) || THEMES.filter(t => !state.unlockedThemes.includes(t.id)).length === 0;
-            gameContainer.classList.toggle('noir-mode', state.selectedThemeId === 'noir');
-        }
+        function unlockAchievement(id) {
+            if (state.unlockedAchievements.includes(id)) return;
+            const ach = ACHIEVEMENTS.find(a => a.id === id);
+            if (!ach) return;
+            state.unlockedAchievements.push(id);
+            localStorage.setItem('oinkAchieved', JSON.stringify(state.unlockedAchievements));
+            
+            const rewardSkin = SKINS.find(s => s.id === ach.rewardSkin);
+            if (rewardSkin && !state.unlockedSkins.includes(rewardSkin.id)) {
+                state.unlockedSkins.push(rewardSkin.id);
+                localStorage.setItem('oinkUnlocked', JSON.stringify(state.unlockedSkins));
+            }
 
-        for(let i=0; i<80; i++) state.stars.push({ x: Math.random() * WIDTH, y: Math.random() * HEIGHT * 2, size: 1 + Math.random() * 2, opacity: Math.random() * 0.5 + 0.2, speed: 0.2 + Math.random() * 0.8 });
-
-        window.saveUsername = () => { const v = document.getElementById('username-input').value.trim(); if (v.length < 2) return; state.username = v; localStorage.setItem('oinkUser', v); document.getElementById('ui-username').classList.add('hidden'); refreshUI(); if(state.best>0) db.ref('leaderboard/'+v.toLowerCase()).set({name:v, score:parseInt(state.best)}); };
-        window.showUsernameEntry = () => { document.getElementById('username-input').value = state.username; document.getElementById('ui-username').classList.remove('hidden'); };
-
-        window.openSkins = () => {
-            const grid = document.getElementById('skins-grid');
-            grid.innerHTML = SKINS.map(s => {
-                const u = state.unlockedSkins.includes(s.id);
-                return `<div onclick="selectSkin('${s.id}')" class="card-item border-2 border-white/10 bg-white/5 p-4 rounded-2xl flex items-center gap-4 ${state.selectedSkinId===s.id?'selected':''} ${!u?'locked':''}"><canvas id="prev-${s.id}" width="64" height="64" class="bg-indigo-900/50 rounded-xl"></canvas><div class="flex-1"><span class="text-sm font-black uppercase">${u?s.name:'Locked Pig'}</span><div class="text-[9px] text-pink-400 font-bold uppercase">${u?s.ability:(s.isAchievement?'Milestone':'100 Coins')}</div></div></div>`;
-            }).join('');
-            SKINS.forEach(s => { const c = document.getElementById(`prev-${s.id}`); if (c) drawPigAvatar(c.getContext('2d'), s, 32, 32, 1.2, -0.2); });
-            document.getElementById('ui-skins').classList.remove('hidden');
-            updateSkinDetails(state.selectedSkinId);
-        };
-
-        function updateSkinDetails(id) {
-            const s = SKINS.find(x => x.id === id); if (!s) return;
-            document.getElementById('detail-pig-name').innerText = state.unlockedSkins.includes(id) ? s.name : "???";
-            document.getElementById('detail-pig-ability').innerText = state.unlockedSkins.includes(id) ? s.ability : "Locked Potential";
-            document.getElementById('detail-pig-desc').innerText = state.unlockedSkins.includes(id) ? s.desc : "Complete milestones or spend coins to reveal this pig's secrets.";
-            const prev = document.getElementById('detail-pig-preview'); prev.innerHTML = '<canvas width="64" height="64"></canvas>';
-            drawPigAvatar(prev.querySelector('canvas').getContext('2d'), s, 32, 32, 1.3, 0);
-        }
-
-        window.selectSkin = (id) => { updateSkinDetails(id); if (state.unlockedSkins.includes(id)) { state.selectedSkinId = id; localStorage.setItem('oinkSkin', id); openSkins(); playSound('land'); } };
-        window.closeSkins = () => document.getElementById('ui-skins').classList.add('hidden');
-
-        window.openThemes = () => {
-            document.getElementById('themes-grid').innerHTML = THEMES.map(t => {
-                const u = state.unlockedThemes.includes(t.id);
-                return `<div onclick="${u?`selectTheme('${t.id}')`:''}" class="card-item border-2 border-white/10 bg-white/5 p-4 rounded-2xl flex items-center gap-4 ${state.selectedThemeId===t.id?'selected':''} ${!u?'locked':''}"><div class="w-12 h-12 rounded-lg border border-white/20" style="background:${t.bg}"></div><div class="flex-1"><span class="text-sm font-black uppercase">${u?t.name:'Locked'}</span><div class="text-[9px] text-indigo-400 font-bold uppercase">${t.type}</div></div></div>`;
-            }).join('');
-            document.getElementById('ui-themes').classList.remove('hidden');
-        };
-        window.selectTheme = (id) => { state.selectedThemeId = id; localStorage.setItem('oinkTheme', id); openThemes(); refreshUI(); playSound('land'); };
-        window.closeThemes = () => document.getElementById('ui-themes').classList.add('hidden');
-
-        window.openAchievements = () => {
-            document.getElementById('achievements-list').innerHTML = ACHIEVEMENTS.map(ach => {
-                const u = state.unlockedAchievements.includes(ach.id), reward = SKINS.find(s => s.id === ach.rewardSkin);
-                const prog = u ? 100 : (ach.type==='score'?Math.min(100, (state.best/ach.goal)*100):(ach.type==='coins'?Math.min(100,(state.totalCoinsEarned/ach.goal)*100):Math.min(100,(state.unlockedSkins.filter(x=>!SKINS.find(y=>y.id===x).isAchievement).length/ach.goal)*100)));
-                return `<div class="border-2 ${u?'border-yellow-500/50 bg-yellow-500/10':'border-white/5 bg-white/5'} p-4 rounded-2xl flex items-center gap-4"><div class="text-2xl">${u?'🏆':'🔒'}</div><div class="flex-1"><span class="text-xs font-black uppercase">${ach.name}</span><p class="text-[9px] text-white/50 mb-2">${ach.desc}</p><div class="h-1 bg-white/10 rounded-full overflow-hidden"><div class="h-full bg-yellow-500" style="width:${prog}%"></div></div></div><div class="w-8 h-8 rounded bg-indigo-900 border border-white/10 flex items-center justify-center overflow-hidden"><canvas id="ach-canv-${ach.id}" width="32" height="32"></canvas></div></div>`;
-            }).join('');
-            ACHIEVEMENTS.forEach(a => drawPigAvatar(document.getElementById(`ach-canv-${a.id}`).getContext('2d'), SKINS.find(s=>s.id===a.rewardSkin), 16, 16, 0.6, -0.2));
-            document.getElementById('ui-achievements').classList.remove('hidden');
-        };
-        window.closeAchievements = () => document.getElementById('ui-achievements').classList.add('hidden');
-
-        window.buyRandomSkin = () => { if (!isBezosMode() && state.coins < 100) return; const locked = SKINS.filter(s => !s.isAchievement && !state.unlockedSkins.includes(s.id)); if (locked.length === 0) return; const c = locked[Math.floor(Math.random()*locked.length)]; if (!isBezosMode()) { state.coins -= 100; localStorage.setItem('oinkCoins', state.coins); } state.unlockedSkins.push(c.id); localStorage.setItem('oinkUnlocked', JSON.stringify(state.unlockedSkins)); playSound('unlock'); openSkins(); refreshUI(); };
-        window.buyRandomTheme = () => { if (!isBezosMode() && state.coins < 250) return; const locked = THEMES.filter(t => !state.unlockedThemes.includes(t.id)); if (locked.length === 0) return; const c = locked[Math.floor(Math.random()*locked.length)]; if (!isBezosMode()) { state.coins -= 250; localStorage.setItem('oinkCoins', state.coins); } state.unlockedThemes.push(c.id); localStorage.setItem('oinkThemesUnlocked', JSON.stringify(state.unlockedThemes)); playSound('unlock'); openThemes(); refreshUI(); };
-
-        function createClock(id, y, index) {
-            let r = 35 + Math.random() * 50; if (state.selectedSkinId === 'devil') r *= 0.65;
-            let spd = (0.04 + (index * 0.0015)) * (60 / r) * (index % 2 === 0 ? 1 : -1); if (state.selectedSkinId === 'matcha') spd *= 0.75;
-            return { id, x: r + 20 + Math.random() * (WIDTH - (r * 2 + 40)), y, radius: r, angle: Math.random() * Math.PI * 2, speed: spd, color: CLOCK_COLORS[index % CLOCK_COLORS.length], frozen: false };
-        }
-
-        window.startGame = () => {
-            initAudio(); if (!state.username) return showUsernameEntry();
-            state.status = 'PLAYING'; state.score = 0; state.cameraY = 0; state.clocks = []; state.lastClockId = 0;
-            state.pig = { x: WIDTH/2, y: HEIGHT-150-60, vx: 0, vy: 0, attachedTo: 0, slimeUsed: false, zombieUsed: false };
-            state.clocks.push({ id: 0, x: WIDTH/2, y: HEIGHT-150, radius: 60, angle: -Math.PI/2, speed: 0.04, color: CLOCK_COLORS[0], frozen: false });
-            for(let i=1; i<6; i++) state.clocks.push(createClock(i, HEIGHT-150-i*CLOCK_SPACING, i));
-            document.getElementById('ui-home').classList.add('hidden'); document.getElementById('ui-gameover').classList.add('hidden'); document.getElementById('ui-hud').classList.remove('hidden');
-            scoreVal.innerText = "0"; document.getElementById('best-val').innerText = state.best; refreshUI();
-        };
-
-        function jump() {
-            if (state.status !== 'PLAYING' || state.pig.attachedTo === null) return;
-            const c = state.clocks.find(x => x.id === state.pig.attachedTo);
-            let f = JUMP_SPEED; if (state.selectedSkinId === 'void') f *= 1.25; if (state.selectedSkinId === 'ninja') f *= 1.4; if (state.selectedSkinId === 'angel') f *= 0.6;
-            state.pig.vx = Math.cos(c.angle) * f; state.pig.vy = Math.sin(c.angle) * f;
-            state.pig.attachedTo = null; playSound('jump');
-        }
-
-        function gameOver() {
-            state.status = 'GAMEOVER'; playSound('gameover'); localStorage.setItem('oinkCoins', state.coins); localStorage.setItem('oinkTotalCoins', state.totalCoinsEarned);
-            if (state.score > state.best) { state.best = state.score; localStorage.setItem('oinkBest', state.best); document.getElementById('new-best-tag').classList.remove('hidden'); if (state.username) db.ref('leaderboard/'+state.username.toLowerCase()).set({ name: state.username, score: parseInt(state.best) }); }
-            else document.getElementById('new-best-tag').classList.add('hidden');
-            document.getElementById('earned-coins').innerText = `+${state.score}`; document.getElementById('final-score').innerText = state.score; document.getElementById('gameover-total-coins').innerText = isBezosMode() ? "∞" : state.coins;
-            document.getElementById('ui-gameover').classList.remove('hidden'); refreshUI(); checkAchievements();
+            const container = document.getElementById('achievement-popup-container');
+            const popup = document.createElement('div');
+            popup.className = 'achievement-unlock bg-gradient-to-r from-yellow-500 to-amber-600 p-4 rounded-2xl border-2 border-yellow-300 shadow-2xl flex items-center gap-4 text-white';
+            popup.innerHTML = `<div class="text-3xl">🏆</div><div><div class="text-[10px] font-black uppercase tracking-widest opacity-70">Achievement Unlocked!</div><div class="font-black text-sm">${ach.name}</div><div class="text-[9px] opacity-80">Reward: ${rewardSkin.name} Skin Unlocked!</div></div>`;
+            container.appendChild(popup);
+            setTimeout(() => popup.remove(), 4000);
+            
+            refreshUI();
+            playSound('unlock');
         }
 
         function checkAchievements() {
             if (state.score >= 50) unlockAchievement('height_50');
             if (state.score >= 300) unlockAchievement('height_300');
             if (state.totalCoinsEarned >= 2000) unlockAchievement('coins_2000');
-            if (state.unlockedSkins.filter(id => !SKINS.find(s=>s.id===id).isAchievement).length >= SKINS.filter(s=>!s.isAchievement).length) unlockAchievement('skins_all');
+            const normalSkinsCount = state.unlockedSkins.filter(id => !SKINS.find(s => s.id === id)?.isAchievement).length;
+            if (normalSkinsCount >= SKINS.filter(s => !s.isAchievement).length) unlockAchievement('skins_all');
         }
 
-        function unlockAchievement(id) {
-            if (state.unlockedAchievements.includes(id)) return; const ach = ACHIEVEMENTS.find(a=>a.id===id);
-            state.unlockedAchievements.push(id); localStorage.setItem('oinkAchieved', JSON.stringify(state.unlockedAchievements));
-            const s = SKINS.find(x=>x.id===ach.rewardSkin); if (s && !state.unlockedSkins.includes(s.id)) { state.unlockedSkins.push(s.id); localStorage.setItem('oinkUnlocked', JSON.stringify(state.unlockedSkins)); }
-            const pop = document.createElement('div'); pop.className = 'achievement-unlock bg-gradient-to-r from-yellow-500 to-amber-600 p-4 rounded-2xl border-2 border-yellow-300 shadow-2xl flex items-center gap-4 text-white';
-            pop.innerHTML = `<div class="text-3xl">🏆</div><div><div class="text-[10px] font-black uppercase tracking-widest opacity-70">Unlocked!</div><div class="font-black text-sm">${ach.name}</div><div class="text-[9px] opacity-80">Reward: ${s.name} Skin</div></div>`;
-            document.getElementById('achievement-popup-container').appendChild(pop); setTimeout(() => pop.remove(), 4000); refreshUI(); playSound('unlock');
+        function refreshUI() {
+            const isBezos = isBezosMode();
+            const coinText = isBezos ? "∞" : state.coins;
+            homeCoins.innerText = coinText;
+            hudCoins.innerText = coinText;
+            homeBestVal.innerText = state.best;
+            
+            const displayUser = document.getElementById('display-username');
+            displayUser.innerText = state.username || "Set Your Identity";
+            if (isBezos) {
+                displayUser.classList.add('bezos-rainbow');
+                document.getElementById('home-coin-pill').classList.add('gold-flash');
+                document.getElementById('hud-coin-pill').classList.add('gold-flash');
+            } else {
+                displayUser.classList.remove('bezos-rainbow');
+                document.getElementById('home-coin-pill').classList.remove('gold-flash');
+                document.getElementById('hud-coin-pill').classList.remove('gold-flash');
+            }
+
+            const purchasableSkins = SKINS.filter(s => !s.isAchievement);
+            const lockedNormalSkins = purchasableSkins.filter(s => !state.unlockedSkins.includes(s.id)).length;
+            document.getElementById('buy-skin-btn').disabled = (!isBezos && state.coins < 100) || lockedNormalSkins === 0;
+            
+            const lockedThemes = THEMES.filter(t => !state.unlockedThemes.includes(t.id)).length;
+            document.getElementById('buy-theme-btn').disabled = (!isBezos && state.coins < 250) || lockedThemes === 0;
+            
+            if (state.selectedThemeId === 'noir') gameContainer.classList.add('noir-mode');
+            else gameContainer.classList.remove('noir-mode');
+        }
+
+        for(let i=0; i<60; i++) state.stars.push({ x: Math.random() * WIDTH, y: Math.random() * HEIGHT * 2, size: Math.random() * 2, opacity: Math.random() * 0.5 + 0.2 });
+
+        function startTutorial() {
+            state.isTutorial = true;
+            state.tutorialStep = 0;
+            startGame(true);
+            updateTutorialUI();
+        }
+
+        function advanceTutorial() {
+            state.tutorialStep++;
+            if (state.tutorialStep >= TUTORIAL_STEPS.length) {
+                state.isTutorial = false;
+                state.hasSeenTutorial = true;
+                localStorage.setItem('oinkTutorialSeen', 'true');
+                uiTutorial.classList.add('hidden');
+                return;
+            }
+            updateTutorialUI();
+            playSound('land');
+        }
+
+        function updateTutorialUI() {
+            const step = TUTORIAL_STEPS[state.tutorialStep];
+            document.getElementById('tut-title').innerText = step.title;
+            document.getElementById('tut-desc').innerText = step.desc;
+            document.getElementById('tut-btn').innerText = step.btn;
+            uiTutorial.classList.remove('hidden');
+            if (state.tutorialStep === 2) {
+                uiTutorial.classList.add('pointer-events-none');
+                document.getElementById('tut-btn').classList.add('hidden');
+            } else {
+                uiTutorial.classList.remove('pointer-events-none');
+                document.getElementById('tut-btn').classList.remove('hidden');
+            }
+        }
+
+        function skipTutorial() {
+            state.isTutorial = false;
+            state.hasSeenTutorial = true;
+            localStorage.setItem('oinkTutorialSeen', 'true');
+            uiTutorial.classList.add('hidden');
+            startGame();
+        }
+
+        window.saveUsername = () => {
+            const val = document.getElementById('username-input').value.trim();
+            if (val.length < 2) return showToast("Too short!", "error");
+            state.username = val; localStorage.setItem('oinkUser', val);
+            document.getElementById('ui-username').classList.add('hidden');
+            refreshUI();
+            if(state.best > 0) db.ref('leaderboard/'+state.username.toLowerCase()).set({ name: state.username, score: state.best }).catch(()=>{});
+            if (!state.hasSeenTutorial) startTutorial();
+            if (isBezosMode()) showToast("Welcome Master Bezos!", "info");
+        };
+
+        window.showUsernameEntry = () => {
+            document.getElementById('username-input').value = state.username;
+            document.getElementById('ui-username').classList.remove('hidden');
+        };
+
+        window.openSkins = () => {
+            skinsGrid.innerHTML = SKINS.map(skin => {
+                const unlocked = state.unlockedSkins.includes(skin.id);
+                const isSelected = state.selectedSkinId === skin.id;
+                return `<div onclick="${unlocked?`selectSkin('${skin.id}')`:''}" class="card-item border-2 border-white/10 bg-white/5 p-4 rounded-2xl flex items-center gap-4 ${isSelected?'selected':''} ${!unlocked?'locked':''}"><div class="w-16 h-16 relative flex items-center justify-center bg-indigo-900/50 rounded-xl overflow-hidden"><canvas class="pig-preview-canvas" id="preview-${skin.id}" width="64" height="64"></canvas>${!unlocked?'<div class="absolute inset-0 flex items-center justify-center bg-black/40 text-xl">🔒</div>':''}</div><div class="text-left flex-1"><span class="text-sm font-black uppercase tracking-tight">${unlocked?skin.name:'Locked Pig'}</span><div class="text-[9px] text-pink-400 font-bold uppercase">${unlocked?skin.ability:(skin.isAchievement ? 'Milestone Reward' : 'Unlock for 100')}</div></div></div>`;
+            }).join('');
+            SKINS.forEach(skin => {
+                const pcanv = document.getElementById(`preview-${skin.id}`);
+                if (pcanv) { const pctx = pcanv.getContext('2d'); pctx.clearRect(0,0,64,64); drawPigAvatar(pctx, skin, 32, 32, 1.2, -0.2); }
+            });
+            document.getElementById('ui-skins').classList.remove('hidden');
+        };
+
+        window.openAchievements = () => {
+            achievementsList.innerHTML = ACHIEVEMENTS.map(ach => {
+                const unlocked = state.unlockedAchievements.includes(ach.id);
+                const rewardSkin = SKINS.find(s => s.id === ach.rewardSkin);
+                let progress = unlocked ? 100 : (ach.type === 'score' ? Math.min(100, (state.best / ach.goal) * 100) : (ach.type === 'coins' ? Math.min(100, (state.totalCoinsEarned / ach.goal) * 100) : Math.min(100, (state.unlockedSkins.filter(id => !SKINS.find(s => s.id === id)?.isAchievement).length / ach.goal) * 100)));
+                return `<div class="border-2 ${unlocked?'border-yellow-500/50 bg-yellow-500/10':'border-white/5 bg-white/5'} p-4 rounded-2xl flex items-center gap-4"><div class="text-2xl">${unlocked?'🏆':'🔒'}</div><div class="flex-1"><div class="flex justify-between items-center mb-1"><span class="text-xs font-black uppercase ${unlocked?'text-yellow-400':'text-white'}">${ach.name}</span>${unlocked?'<span class="text-[8px] bg-yellow-500 text-black px-1.5 rounded font-black">CLAIMED</span>':''}</div><p class="text-[9px] text-white/50 mb-2">${ach.desc}</p><div class="h-1 bg-white/10 rounded-full overflow-hidden"><div class="h-full bg-yellow-500 transition-all duration-1000" style="width: ${progress}%"></div></div></div><div class="flex flex-col items-center gap-1 opacity-80"><div class="w-8 h-8 rounded-lg bg-indigo-900 border border-white/10 flex items-center justify-center overflow-hidden"><canvas id="ach-prev-${ach.id}" width="32" height="32"></canvas></div><div class="text-[7px] font-black text-yellow-500 uppercase">REWARD</div></div></div>`;
+            }).join('');
+            ACHIEVEMENTS.forEach(ach => {
+                const rewardSkin = SKINS.find(s => s.id === ach.rewardSkin);
+                const pcanv = document.getElementById(`ach-prev-${ach.id}`);
+                if (pcanv) { const pctx = pcanv.getContext('2d'); pctx.clearRect(0,0,32,32); drawPigAvatar(pctx, rewardSkin, 16, 16, 0.6, -0.2); }
+            });
+            uiAchievements.classList.remove('hidden');
+        };
+
+        window.openThemes = () => {
+            themesGrid.innerHTML = THEMES.map(theme => {
+                const unlocked = state.unlockedThemes.includes(theme.id);
+                return `<div onclick="${unlocked?`selectTheme('${theme.id}')`:''}" class="card-item border-2 border-white/10 bg-white/5 p-4 rounded-2xl flex items-center gap-4 ${state.selectedThemeId===theme.id?'selected':''} ${!unlocked?'locked':''}"><div class="w-12 h-12 relative rounded-lg border border-white/20" style="background:${theme.bg}"><div class="absolute inset-0 flex items-center justify-center">${!unlocked?'🔒':''}</div></div><div class="text-left flex-1"><span class="text-sm font-black uppercase">${unlocked?theme.name:'Locked Theme'}</span><div class="text-[9px] text-indigo-400 font-bold uppercase">${theme.type} STYLE</div></div></div>`;
+            }).join('');
+            document.getElementById('ui-themes').classList.remove('hidden');
+        };
+
+        window.buyRandomSkin = () => {
+            const isBezos = isBezosMode();
+            if (!isBezos && state.coins < 100) return showToast("Not enough coins!", "error");
+            
+            const purchasable = SKINS.filter(s => !s.isAchievement);
+            const locked = purchasable.filter(s => !state.unlockedSkins.includes(s.id));
+            if (locked.length === 0) return showToast("All normal skins owned!");
+            
+            const choice = locked[Math.floor(Math.random() * locked.length)];
+            
+            if (!isBezos) {
+                state.coins -= 100;
+                localStorage.setItem('oinkCoins', state.coins);
+            }
+            
+            state.unlockedSkins.push(choice.id);
+            localStorage.setItem('oinkUnlocked', JSON.stringify(state.unlockedSkins));
+            playSound('unlock');
+            showToast(`Unlocked ${choice.name}!`);
+            openSkins();
+            refreshUI();
+            checkAchievements();
+        };
+
+        window.buyRandomTheme = () => {
+            const isBezos = isBezosMode();
+            if (!isBezos && state.coins < 250) return showToast("Not enough coins!", "error");
+            const locked = THEMES.filter(t => !state.unlockedThemes.includes(t.id));
+            if (locked.length === 0) return showToast("All themes owned!");
+            const choice = locked[Math.floor(Math.random() * locked.length)];
+            
+            if (!isBezos) {
+                state.coins -= 250;
+                localStorage.setItem('oinkCoins', state.coins);
+            }
+            
+            state.unlockedThemes.push(choice.id);
+            localStorage.setItem('oinkThemesUnlocked', JSON.stringify(state.unlockedThemes));
+            playSound('unlock');
+            showToast(`Unlocked ${choice.name} Theme!`);
+            openThemes();
+            refreshUI();
+        };
+
+        window.selectSkin = (id) => { state.selectedSkinId = id; localStorage.setItem('oinkSkin', id); openSkins(); playSound('land'); };
+        window.selectTheme = (id) => { state.selectedThemeId = id; localStorage.setItem('oinkTheme', id); openThemes(); refreshUI(); playSound('land'); };
+        window.closeSkins = () => uiSkins.classList.add('hidden');
+        window.closeThemes = () => uiThemes.classList.add('hidden');
+        window.closeLeaderboard = () => uiLeaderboard.classList.add('hidden');
+        window.closeAchievements = () => uiAchievements.classList.add('hidden');
+
+        window.openLeaderboard = async () => {
+            uiLeaderboard.classList.remove('hidden');
+            leaderboardList.innerHTML = '<div class="text-center py-10 opacity-50 animate-pulse">SYNCING LEGENDS...</div>';
+            try {
+                const snap = await db.ref('leaderboard').orderByChild('score').limitToLast(20).once('value');
+                const data = []; 
+                snap.forEach(c => {
+                    const val = c.val();
+                    if (val && val.name && typeof val.score === 'number') data.push(val);
+                });
+                data.sort((a, b) => b.score - a.score);
+                if (data.length === 0) { 
+                    leaderboardList.innerHTML = `<div class="text-center py-10 opacity-30">NO GLOBAL LEGENDS YET.<br><span class="text-[10px]">Your best: ${state.best}</span></div>`; 
+                } else { 
+                    leaderboardList.innerHTML = data.map((e, i) => {
+                        const isYou = e.name && state.username && (e.name.toLowerCase() === state.username.toLowerCase());
+                        let medal = '';
+                        if (i === 0) medal = '🥇';
+                        else if (i === 1) medal = '🥈';
+                        else if (i === 2) medal = '🥉';
+                        return `<div class="flex justify-between items-center p-4 rounded-2xl border ${isYou ? 'border-pink-500 bg-pink-500/20' : 'border-white/5 bg-white/5'} mb-2 transition-all">
+                            <div class="flex items-center gap-4">
+                                <span class="font-black ${i < 3 ? 'text-yellow-400' : 'text-white/20'} text-xl italic w-8">${medal || (i + 1)}</span>
+                                <div class="flex flex-col">
+                                    <span class="font-black text-sm uppercase tracking-tight">${e.name}</span>
+                                    ${isYou ? '<span class="text-[8px] text-pink-400 font-bold uppercase tracking-widest">YOU</span>' : ''}
+                                </div>
+                            </div>
+                            <span class="font-black text-pink-400 text-xl">${e.score}</span>
+                        </div>`;
+                    }).join(''); 
+                }
+            } catch (err) { 
+                console.error(err);
+                leaderboardList.innerHTML = `<div class="text-center py-10 opacity-30">OFFLINE MODE<br><span class="text-[10px]">Showing your personal best: ${state.best}</span></div>`; 
+            }
+        };
+
+        function createClock(id, y, index) {
+            let radius = 35 + Math.random() * 50;
+            if (state.selectedSkinId === 'devil') radius *= 0.65;
+            let speed = (0.04 + (index * 0.0015)) * (60 / radius) * (index % 2 === 0 ? 1 : -1);
+            if (state.selectedSkinId === 'matcha') speed *= 0.75;
+            return { id, x: radius + 20 + Math.random() * (WIDTH - (radius * 2 + 40)), y, radius, angle: Math.random() * Math.PI * 2, speed, color: CLOCK_COLORS[index % CLOCK_COLORS.length], isFrozen: false };
+        }
+
+        window.startGame = (forceTutorial = false) => {
+            initAudio();
+            if (!state.username) return showUsernameEntry();
+            state.status = 'PLAYING'; state.score = 0; state.cameraY = 0; state.clocks = []; state.lastClockId = 0;
+            state.pig = { x: WIDTH/2, y: HEIGHT-150-60, vx: 0, vy: 0, attachedTo: 0, slimeUsed: false, zombieUsed: false };
+            state.clocks.push({ id: 0, x: WIDTH/2, y: HEIGHT-150, radius: 60, angle: -Math.PI/2, speed: 0.04, color: CLOCK_COLORS[0], isFrozen: false });
+            for(let i=1; i<6; i++) state.clocks.push(createClock(i, HEIGHT-150-i*CLOCK_SPACING, i));
+            uiHome.classList.add('hidden'); uiGameOver.classList.add('hidden'); uiHUD.classList.remove('hidden');
+            scoreVal.innerText = "0"; bestVal.innerText = state.best; refreshUI();
+        };
+
+        function jump() {
+            if (state.status !== 'PLAYING' || state.pig.attachedTo === null) return;
+            const clock = state.clocks.find(c => c.id === state.pig.attachedTo);
+            let force = JUMP_SPEED;
+            if (state.selectedSkinId === 'void') force *= 1.25;
+            if (state.selectedSkinId === 'ninja') force *= 1.4;
+            if (state.selectedSkinId === 'angel') force *= 0.6; // Angel moves slower for precision
+            
+            state.pig.vx = Math.cos(clock.angle) * force;
+            state.pig.vy = Math.sin(clock.angle) * force;
+            state.pig.attachedTo = null;
+            playSound('jump');
         }
 
         function update() {
             if (state.status !== 'PLAYING') return;
-            state.rainbowHue = (state.rainbowHue + 2) % 360; state.gridScroll = (state.gridScroll + 2) % 40;
-            state.clocks.forEach(c => { if (!c.frozen) c.angle += c.speed; });
+            if (state.isTutorial) { if (state.tutorialStep === 0 || state.tutorialStep === 1 || state.tutorialStep === 3) return; }
+            state.rainbowHue = (state.rainbowHue + 2) % 360;
+            state.clocks.forEach(c => { if (!c.isFrozen) c.angle += c.speed; });
             if (state.pig.attachedTo !== null) {
-                const c = state.clocks.find(x => x.id === state.pig.attachedTo); if (state.selectedSkinId === 'ice') c.frozen = true;
-                state.pig.x = c.x + Math.cos(c.angle) * c.radius; state.pig.y = c.y + Math.sin(c.angle) * c.radius;
+                const clock = state.clocks.find(c => c.id === state.pig.attachedTo);
+                if (state.selectedSkinId === 'ice') clock.isFrozen = true;
+                state.pig.x = clock.x + Math.cos(clock.angle) * clock.radius;
+                state.pig.y = clock.y + Math.sin(clock.angle) * clock.radius;
             } else {
-                state.pig.x += state.pig.vx; state.pig.y += state.pig.vy;
-                let range = 5; if (state.selectedSkinId === 'blueberry') range = 12; if (state.selectedSkinId === 'ninja') range = 15; if (state.selectedSkinId === 'space') range = 25;
-                for (const c of state.clocks) {
-                    if (Math.sqrt((state.pig.x-c.x)**2 + (state.pig.y-c.y)**2) < c.radius + range) {
-                        state.pig.attachedTo = c.id; state.pig.vx = 0; state.pig.vy = 0;
-                        if (c.id > state.lastClockId) {
-                            let mult = (state.selectedSkinId==='golden'||state.selectedSkinId==='king') ? 2 : (state.selectedSkinId==='devil'?3:1);
-                            let reward = 1; if (state.selectedSkinId === 'rainbow') reward += 5; if (state.selectedSkinId === 'bank'||state.selectedSkinId==='king') reward += 10;
-                            state.coins += reward; state.totalCoinsEarned += reward; state.score += (c.id - state.lastClockId) * mult;
-                            state.lastClockId = c.id; scoreVal.innerText = state.score; playSound('coin'); refreshUI(); checkAchievements();
+                state.pig.x += state.pig.vx; 
+                state.pig.y += state.pig.vy;
+                
+                let grabRange = 5;
+                if (state.selectedSkinId === 'blueberry') grabRange = 12;
+                if (state.selectedSkinId === 'ninja') grabRange = 15;
+                if (state.selectedSkinId === 'space') grabRange = 25; // Massive magnet for space cadet
+                
+                for (const clock of state.clocks) {
+                    const d = Math.sqrt((state.pig.x-clock.x)**2 + (state.pig.y-clock.y)**2);
+                    if (d < clock.radius + grabRange) {
+                        state.pig.attachedTo = clock.id; state.pig.vx = 0; state.pig.vy = 0;
+                        if (clock.id > state.lastClockId) {
+                            let multiplier = 1;
+                            if (state.selectedSkinId === 'golden' || state.selectedSkinId === 'king') { 
+                                multiplier = 2; 
+                                document.getElementById('score-container').classList.add('gold-flash'); 
+                                setTimeout(() => document.getElementById('score-container').classList.remove('gold-flash'), 300); 
+                            }
+                            if (state.selectedSkinId === 'devil') multiplier = 3;
+                            
+                            // Coin Rewards
+                            let jumpReward = 1;
+                            if (state.selectedSkinId === 'rainbow') jumpReward += 5;
+                            if (state.selectedSkinId === 'bank' || state.selectedSkinId === 'king') jumpReward += 10;
+                            
+                            state.coins += jumpReward;
+                            state.totalCoinsEarned += jumpReward;
+                            refreshUI();
+                            
+                            state.score += (clock.id - state.lastClockId) * multiplier;
+                            state.lastClockId = clock.id;
+                            scoreVal.innerText = state.score;
+                            playSound('coin');
+                            checkAchievements();
+                            if (state.isTutorial && state.tutorialStep === 2) advanceTutorial();
                         }
                         playSound('land'); break;
                     }
                 }
                 if (state.pig.y > state.cameraY + HEIGHT + 120 || state.pig.x < -150 || state.pig.x > WIDTH + 150) {
-                    if (state.selectedSkinId === 'slime' && !state.pig.slimeUsed) { state.pig.slimeUsed = true; state.pig.y = state.cameraY + HEIGHT - 10; state.pig.vy = -22; state.pig.vx = (WIDTH/2 - state.pig.x) * 0.05; gameContainer.classList.add('slime-flash'); playSound('unlock'); setTimeout(() => gameContainer.classList.remove('slime-flash'), 500); }
-                    else if (state.selectedSkinId === 'zombie' && !state.pig.zombieUsed) { state.pig.zombieUsed = true; state.pig.y = state.cameraY + HEIGHT/2; state.pig.vy = -12; state.pig.vx = 0; state.pig.x = WIDTH/2; gameContainer.classList.add('slime-flash'); playSound('unlock'); setTimeout(() => gameContainer.classList.remove('slime-flash'), 500); }
-                    else gameOver();
+                    if (state.isTutorial) { state.pig.x = WIDTH/2; state.pig.y = state.cameraY + HEIGHT - 200; state.pig.vy = -10; state.pig.vx = 0; return; }
+                    if (state.selectedSkinId === 'slime' && !state.pig.slimeUsed) {
+                        state.pig.slimeUsed = true; state.pig.y = state.cameraY + HEIGHT - 10; state.pig.vy = -22; state.pig.vx = (WIDTH/2 - state.pig.x) * 0.05; 
+                        gameContainer.classList.add('slime-flash'); playSound('unlock'); setTimeout(() => gameContainer.classList.remove('slime-flash'), 500);
+                    } else if (state.selectedSkinId === 'zombie' && !state.pig.zombieUsed) {
+                        state.pig.zombieUsed = true; state.pig.y = state.cameraY + HEIGHT/2; state.pig.vy = -12; state.pig.vx = 0; state.pig.x = WIDTH/2; 
+                        gameContainer.classList.add('slime-flash'); playSound('unlock'); setTimeout(() => gameContainer.classList.remove('slime-flash'), 500);
+                    } else gameOver();
                 }
             }
             state.cameraY += (state.pig.y - HEIGHT/1.6 - state.cameraY) * 0.1;
-            const last = state.clocks[state.clocks.length-1]; if (last && last.y > state.cameraY - 400) state.clocks.push(createClock(last.id+1, last.y-CLOCK_SPACING, last.id+1));
+            const last = state.clocks[state.clocks.length-1];
+            if (last && last.y > state.cameraY - 400) {
+                const nextId = last.id + 1;
+                state.clocks.push(createClock(nextId, last.y - CLOCK_SPACING, nextId));
+            }
             if (state.clocks.length > 15) state.clocks.shift();
         }
 
-        function draw() {
-            const t = THEMES.find(x => x.id === state.selectedThemeId) || THEMES[0]; ctx.fillStyle = t.bg; ctx.fillRect(0,0,WIDTH,HEIGHT);
-            
-            // Perspective Grid for Synthwave
-            if (t.type === 'GRID') {
-                ctx.strokeStyle = 'rgba(244,114,182,0.2)'; ctx.lineWidth = 1;
-                for(let i=0; i<WIDTH; i+=40) { ctx.beginPath(); ctx.moveTo(i, HEIGHT); ctx.lineTo(WIDTH/2 + (i-WIDTH/2)*2, 0); ctx.stroke(); }
-                for(let i=0; i<HEIGHT; i+=40) { let y = (i + state.gridScroll) % HEIGHT; ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(WIDTH, y); ctx.stroke(); }
-            }
+        function gameOver() {
+            state.status = 'GAMEOVER'; playSound('gameover');
+            const earned = state.score;
+            // Balance already updated in jump logic
+            localStorage.setItem('oinkCoins', state.coins);
+            localStorage.setItem('oinkTotalCoins', state.totalCoinsEarned);
+            if (state.score > state.best) { 
+                state.best = state.score; localStorage.setItem('oinkBest', state.best); 
+                document.getElementById('new-best-tag').classList.remove('hidden'); 
+                if (state.username) db.ref('leaderboard/'+state.username.toLowerCase()).set({ name: state.username, score: parseInt(state.best) }).catch(e => {});
+            } else { document.getElementById('new-best-tag').classList.add('hidden'); }
+            earnedCoinsText.innerText = `+${earned}`; 
+            finalScoreLabel.innerText = state.score; 
+            gameoverTotalCoins.innerText = isBezosMode() ? "∞" : state.coins; 
+            uiGameOver.classList.remove('hidden'); 
+            refreshUI(); checkAchievements();
+        }
 
+        function draw() {
+            const theme = THEMES.find(t => t.id === state.selectedThemeId) || THEMES[0];
+            ctx.fillStyle = theme.bg; ctx.fillRect(0,0,WIDTH,HEIGHT);
             ctx.save(); ctx.translate(0, -state.cameraY);
             state.stars.forEach(s => {
                 let sy = s.y; while(sy < state.cameraY) sy += HEIGHT*2; while(sy > state.cameraY + HEIGHT*2) sy -= HEIGHT*2;
-                if (t.type === 'CORAL') { ctx.fillStyle = `rgba(186,230,253,${s.opacity})`; ctx.beginPath(); ctx.arc(s.x, sy - (Date.now()*0.02*s.speed)%100, s.size, 0, Math.PI*2); ctx.fill(); }
-                else if (t.type === 'COIN') { ctx.fillStyle = '#FBBF24'; ctx.globalAlpha = Math.sin(Date.now()*0.005 + s.x)*0.5+0.5; ctx.fillRect(s.x, sy, s.size, s.size); ctx.globalAlpha = 1; }
-                else if (t.type === 'CANDY') { ctx.fillStyle = ['#F472B6','#60A5FA','#34D399'][Math.floor(s.x)%3]; ctx.save(); ctx.translate(s.x, sy); ctx.rotate(Date.now()*0.001); ctx.fillRect(-s.size, -s.size, s.size*2, s.size*2); ctx.restore(); }
+                if (theme.type === 'CORAL') { ctx.fillStyle = `rgba(255,255,255,${s.opacity * 0.4})`; ctx.beginPath(); ctx.arc(s.x, sy, s.size * 2, 0, Math.PI*2); ctx.fill(); }
+                else if (theme.type === 'GRID') { ctx.fillStyle = `rgba(244,114,182,${s.opacity * 0.2})`; ctx.fillRect(s.x, sy, s.size * 4, s.size); }
                 else { ctx.fillStyle = `rgba(255,255,255,${s.opacity})`; ctx.fillRect(s.x, sy, s.size, s.size); }
             });
-
             state.clocks.forEach(c => {
-                ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2); ctx.strokeStyle = c.color; ctx.lineWidth = 6; ctx.stroke();
-                ctx.fillStyle = (t.type === 'NOIR') ? '#111' : 'rgba(15,23,42,0.9)'; ctx.fill();
-                ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.strokeStyle = c.color; ctx.lineWidth = 8; ctx.lineCap='round'; ctx.stroke();
-            });
-
-            if (state.status === 'PLAYING') {
-                const s = SKINS.find(x => x.id === state.selectedSkinId) || SKINS[0];
-                if (state.pig.attachedTo !== null && (s.id === 'cyber' || s.id === 'king')) {
-                    const c = state.clocks.find(x => x.id === state.pig.attachedTo);
-                    ctx.setLineDash([5, 10]); ctx.strokeStyle = s.id === 'king' ? '#FBBF24' : '#A78BFA'; ctx.lineWidth = 2;
-                    ctx.beginPath(); ctx.moveTo(state.pig.x, state.pig.y); ctx.lineTo(state.pig.x + Math.cos(c.angle)*400, state.pig.y + Math.sin(c.angle)*400); ctx.stroke(); ctx.setLineDash([]);
+                ctx.globalAlpha = 1.0;
+                let clockColor = c.color;
+                if (state.isTutorial && c.id === 1) clockColor = '#34D399';
+                if (theme.type === 'CLOCK') {
+                    ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2); ctx.strokeStyle = clockColor; ctx.lineWidth = 6; ctx.stroke();
+                    ctx.fillStyle = 'rgba(15,23,42,0.9)'; ctx.fill();
+                    ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.strokeStyle = clockColor; ctx.lineWidth = 8; ctx.lineCap='round'; ctx.stroke();
+                } else {
+                    ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2); ctx.fillStyle = '#ffffff'; ctx.fill();
+                    ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.strokeStyle = '#000000'; ctx.lineWidth = 6; ctx.stroke();
                 }
-                drawPigAvatar(ctx, s, state.pig.x, state.pig.y, 1, (state.pig.attachedTo !== null ? 0 : Math.atan2(state.pig.vy, state.pig.vx) + Math.PI/2));
+            });
+            if (state.status === 'PLAYING') {
+                const skin = SKINS.find(s => s.id === state.selectedSkinId) || SKINS[0];
+                const p = state.pig;
+                const rot = p.attachedTo !== null ? 0 : Math.atan2(p.vy, p.vx) + Math.PI/2;
+                
+                // Trajectory Laser for Cyber and King
+                if (p.attachedTo !== null && (skin.id === 'cyber' || skin.id === 'king')) {
+                    const clock = state.clocks.find(c => c.id === p.attachedTo);
+                    ctx.setLineDash([5, 10]);
+                    ctx.strokeStyle = skin.id === 'king' ? 'rgba(251, 191, 36, 0.4)' : 'rgba(167, 139, 250, 0.4)';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(p.x, p.y);
+                    ctx.lineTo(p.x + Math.cos(clock.angle) * 400, p.y + Math.sin(clock.angle) * 400);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+                
+                if (state.isTutorial && p.attachedTo !== null && state.tutorialStep === 2) {
+                    const target = state.clocks.find(c => c.id === 1);
+                    ctx.setLineDash([5, 5]); ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                    ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(target.x, target.y); ctx.stroke(); ctx.setLineDash([]);
+                }
+                drawPigAvatar(ctx, skin, p.x, p.y, 1, rot);
             }
             ctx.restore();
         }
 
         function loop() { update(); draw(); requestAnimationFrame(loop); }
-        window.addEventListener('keydown', e => { if (e.code === 'Space') { e.preventDefault(); if (state.status === 'PLAYING') jump(); else if (state.status === 'HOME' || state.status === 'GAMEOVER') startGame(); } });
+        window.addEventListener('keydown', (e) => { 
+            if (e.code === 'Space') { e.preventDefault(); if (state.status === 'PLAYING') jump(); else if (state.status === 'HOME' || state.status === 'GAMEOVER') startGame(); } 
+        });
         canvas.addEventListener('mousedown', () => { initAudio(); if (state.status === 'PLAYING') jump(); });
-        canvas.addEventListener('touchstart', e => { e.preventDefault(); initAudio(); if (state.status === 'PLAYING') jump(); });
-        loop(); refreshUI();
-        window.backToHome = () => { state.status='HOME'; document.getElementById('ui-gameover').classList.add('hidden'); document.getElementById('ui-hud').classList.add('hidden'); document.getElementById('ui-home').classList.remove('hidden'); refreshUI(); };
-        window.closeLeaderboard = () => document.getElementById('ui-leaderboard').classList.add('hidden');
-        window.openLeaderboard = async () => {
-            const list = document.getElementById('leaderboard-list'); list.innerHTML = '<div class="text-center py-10 opacity-50">SYNCING...</div>'; document.getElementById('ui-leaderboard').classList.remove('hidden');
-            try {
-                const snap = await db.ref('leaderboard').orderByChild('score').limitToLast(20).once('value');
-                const data = []; snap.forEach(c => { const v = c.val(); if (v && v.name) data.push(v); }); data.sort((a,b)=>b.score-a.score);
-                list.innerHTML = data.map((e,i) => `<div class="flex justify-between items-center p-4 rounded-2xl border ${e.name.toLowerCase()===state.username.toLowerCase()?'border-pink-500 bg-pink-500/20':'border-white/5 bg-white/5'} mb-2"><span>${i+1}. ${e.name}</span><span class="text-pink-400 font-black">${e.score}</span></div>`).join('');
-            } catch(e) { list.innerHTML = '<div class="text-center py-10 opacity-30">Offline Mode</div>'; }
-        };
+        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); initAudio(); if (state.status === 'PLAYING') jump(); });
+        loop();
+        window.backToHome = () => { state.status='HOME'; uiGameOver.classList.add('hidden'); uiHUD.classList.add('hidden'); uiHome.classList.remove('hidden'); refreshUI(); };
+        refreshUI();
     </script>
 </body>
 </html>
