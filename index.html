@@ -431,6 +431,10 @@
             { id: 'detective', name: 'Sleuth Cap', type: 'DRAW', price: 1000 },
             { id: 'propeller', name: 'Flying Prop', type: 'DRAW', price: 1000 },
             { id: 'viking', name: 'Boar Warrior', type: 'DRAW', price: 1000 },
+            { id: 'cowboy', name: 'Yeehaw Hat', type: 'DRAW', price: 1000 },
+            { id: 'wizard', name: 'Magic Cone', type: 'DRAW', price: 1000 },
+            { id: 'straw', name: 'Straw Hat', type: 'DRAW', price: 1000 },
+            { id: 'catears', name: 'Cat Ears', type: 'DRAW', price: 1000 },
             { id: 'crown', name: 'Golden Crown', type: 'DRAW', price: 1000 },
             { id: 'halo', name: 'Divine Halo', type: 'DRAW', price: 1000 }
         ];
@@ -1521,6 +1525,20 @@
                         pctx.beginPath(); pctx.moveTo(8, -4); pctx.lineTo(15, -15); pctx.lineTo(5, -8); pctx.fill(); break;
                     case 'detective':
                         pctx.fillStyle = '#451a03'; pctx.beginPath(); pctx.ellipse(0, 0, 12, 6, 0, Math.PI, 0); pctx.fill(); pctx.fillRect(-12, -4, 24, 4); pctx.fillRect(8, -2, 8, 3); break;
+                    case 'cowboy':
+                        pctx.fillStyle = '#78350f'; pctx.beginPath(); pctx.ellipse(0, 0, 15, 4, 0, 0, Math.PI*2); pctx.fill();
+                        pctx.fillRect(-10, -10, 20, 10); break;
+                    case 'wizard':
+                        pctx.fillStyle = '#312e81'; pctx.beginPath(); pctx.moveTo(-12, 0); pctx.lineTo(0, -22); pctx.lineTo(12, 0); pctx.fill();
+                        pctx.fillStyle = '#fef08a'; pctx.beginPath(); pctx.arc(-2, -8, 2, 0, Math.PI*2); pctx.fill(); pctx.beginPath(); pctx.arc(3, -14, 1.5, 0, Math.PI*2); pctx.fill(); break;
+                    case 'straw':
+                        pctx.fillStyle = '#fde68a'; pctx.beginPath(); pctx.ellipse(0, 0, 16, 5, 0, 0, Math.PI*2); pctx.fill();
+                        pctx.fillStyle = '#ef4444'; pctx.fillRect(-9, -4, 18, 2);
+                        pctx.fillStyle = '#fde68a'; pctx.beginPath(); pctx.arc(0, -3, 9, Math.PI, 0); pctx.fill(); break;
+                    case 'catears':
+                        pctx.fillStyle = '#000000';
+                        pctx.beginPath(); pctx.moveTo(-12, 0); pctx.lineTo(-15, -10); pctx.lineTo(-6, -2); pctx.fill();
+                        pctx.beginPath(); pctx.moveTo(12, 0); pctx.lineTo(15, -10); pctx.lineTo(6, -2); pctx.fill(); break;
                     case 'party':
                         pctx.fillStyle = `hsl(${state.rainbowHue}, 80%, 60%)`; pctx.beginPath(); pctx.moveTo(-8, 0); pctx.lineTo(0, -18); pctx.lineTo(8, 0); pctx.fill(); break;
                     case 'halo':
