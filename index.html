@@ -224,7 +224,7 @@
         <div id="ui-leaderboard" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
             <div class="flex justify-between items-center mb-4">
                 <h2 id="title-rankings" class="text-3xl font-black italic uppercase tracking-tighter">Legends</h2>
-                <button onclick="closeLeaderboard()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                <button onclick="closeLeaderboard()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" x2="6" x2="18"></line><line x1="6" x2="18" y2="18"></line></svg></button>
             </div>
             <div class="flex gap-2 mb-4">
                 <button onclick="setLeaderboardTab('regular')" id="tab-regular" class="flex-1 py-2 text-[10px] font-black uppercase border-b-2 border-white/5 opacity-50">Regular</button>
@@ -238,7 +238,7 @@
         <div id="ui-achievements" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
             <div class="flex justify-between items-center mb-4">
                 <h2 id="title-milestones" class="text-3xl font-black italic uppercase tracking-tighter text-yellow-500">Milestones</h2>
-                <button onclick="closeAchievements()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                <button onclick="closeAchievements()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" x2="6" x2="18"></line><line x1="6" x2="18" y2="18"></line></svg></button>
             </div>
             <div id="achievements-list" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
         </div>
@@ -247,7 +247,7 @@
         <div id="ui-skins" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
             <div class="flex justify-between items-center mb-4">
                 <h2 id="title-skins" class="text-3xl font-black italic uppercase tracking-tighter">Skins</h2>
-                <button onclick="closeSkins()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                <button onclick="closeSkins()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" x2="6" x2="18"></line><line x1="6" x2="18" y2="18"></line></svg></button>
             </div>
             <div id="skins-grid" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
             <button id="buy-skin-btn" onclick="buyRandomSkin()" class="mt-4 w-full bg-pink-500 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 active:scale-95 transition-transform disabled:opacity-50">
@@ -260,7 +260,7 @@
         <div id="ui-themes" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
             <div class="flex justify-between items-center mb-4">
                 <h2 id="title-themes" class="text-3xl font-black italic uppercase tracking-tighter">Themes</h2>
-                <button onclick="closeThemes()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                <button onclick="closeThemes()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" x2="6" x2="18"></line><line x1="6" x2="18" y2="18"></line></svg></button>
             </div>
             <div id="themes-grid" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
             <button id="buy-theme-btn" onclick="buyRandomTheme()" class="mt-4 w-full bg-indigo-500 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 active:scale-95 transition-transform disabled:opacity-50">
@@ -302,7 +302,7 @@
                 <div><div id="total-label" class="text-[10px] uppercase font-bold opacity-40">Total</div><div id="gameover-total-coins" class="text-2xl font-black text-white">0</div></div>
             </div>
             <div class="flex flex-col gap-3 w-64 items-center">
-                <button id="btn-retry" onclick="openModeSelect()" class="bg-white text-indigo-900 font-black py-4 px-12 rounded-xl text-2xl w-full active:scale-95 transition-transform uppercase">RETRY</button>
+                <button id="btn-retry" onclick="retryGame()" class="bg-white text-indigo-900 font-black py-4 px-12 rounded-xl text-2xl w-full active:scale-95 transition-transform uppercase">RETRY</button>
                 <button id="btn-home" onclick="backToHome()" class="text-white/60 font-bold text-sm uppercase">EXIT TO HOME</button>
             </div>
         </div>
@@ -332,26 +332,28 @@
         const SKINS = [
             { id: 'classic', name: 'Classic Oink', ability: 'Standard', desc: 'A well-rounded pig.', body: '#F472B6', ears: '#EC4899', snout: '#F9A8D4', snoutDots: '#BE185D' },
             { id: 'frog', name: 'Leap Frog', ability: 'Aqua', desc: 'Slightly higher mid-air jumps.', body: '#22C55E', ears: '#166534', snout: '#86EFAC', snoutDots: '#064E3B' },
-            { id: 'ghost', name: 'Spectral Pig', ability: 'Phaze', desc: 'Cumulative Score Reward. Translucent.', body: 'rgba(255,255,255,0.35)', ears: 'rgba(200,200,255,0.3)', snout: 'rgba(255,255,255,0.5)', snoutDots: 'rgba(0,0,0,0.1)', isAchievement: true },
+            { id: 'ghost', name: 'Spectral Pig', ability: 'Phaze', desc: 'Cumulative Reward. Translucent.', body: 'rgba(255,255,255,0.35)', ears: 'rgba(200,200,255,0.3)', snout: 'rgba(255,255,255,0.5)', snoutDots: 'rgba(0,0,0,0.1)', isAchievement: true },
             { id: 'lava', name: 'Magma Boar', ability: 'Burn', desc: 'Clocks 50% faster. 2x Total Coins!', body: '#991B1B', ears: '#7F1D1D', snout: '#F97316', snoutDots: '#78350F' },
             { id: 'steampunk', name: 'Steampunk Pig', ability: 'Torque', desc: '2x Speed clocks. 3x Score!', body: '#A8A29E', ears: '#78350F', snout: '#D6D3D1', snoutDots: '#451A03' },
-            { id: 'neon', name: 'Neon Hog', ability: 'Pulse', desc: 'High Score Reward (1000). +20% Jump Speed.', body: '#000000', ears: '#3B82F6', snout: '#60A5FA', snoutDots: '#1E40AF', isAchievement: true },
+            { id: 'neon', name: 'Neon Hog', ability: 'Pulse', desc: 'Score Reward (50). +20% Jump Speed.', body: '#000000', ears: '#3B82F6', snout: '#60A5FA', snoutDots: '#1E40AF', isAchievement: true },
             { id: 'blueberry', name: 'Time Jam', ability: 'Sticky', desc: '+15% Grab range.', body: '#60A5FA', ears: '#2563EB', snout: '#93C5FD', snoutDots: '#1E40AF' },
             { id: 'matcha', name: 'Matcha Zen', ability: 'Focus', desc: '25% Slower rotation.', body: '#34D399', ears: '#059669', snout: '#6EE7B7', snoutDots: '#064E3B' },
             { id: 'golden', name: 'Wealthy Swine', ability: 'Greed', desc: 'Double score per jump.', body: '#FBBF24', ears: '#D97706', snout: '#FDE68A', snoutDots: '#78350F' },
             { id: 'void', name: 'Void Walker', ability: 'Warp', desc: '+25% Jump velocity.', body: '#4B5563', ears: '#1F2937', snout: '#9CA3AF', snoutDots: '#000000' },
-            { id: 'cyber', name: 'Cyber Ham', ability: 'Laser', desc: 'World Traveler Reward. Shows trajectory.', body: '#A78BFA', ears: '#7C3AED', snout: '#C4B5FD', snoutDots: '#4C1D95', isAchievement: true },
-            { id: 'slime', name: 'Slime Pig', ability: 'Resilient', desc: 'Endurance Reward. Bounces from void.', body: '#10B981', ears: '#064E3B', snout: '#D1FAE5', snoutDots: '#059669', isAchievement: true },
+            { id: 'cyber', name: 'Cyber Ham', ability: 'Laser', desc: 'Themes Reward. Shows trajectory.', body: '#A78BFA', ears: '#7C3AED', snout: '#C4B5FD', snoutDots: '#4C1D95', isAchievement: true },
+            { id: 'slime', name: 'Slime Pig', ability: 'Resilient', desc: 'Jumps Reward. Bounces from void.', body: '#10B981', ears: '#064E3B', snout: '#D1FAE5', snoutDots: '#059669', isAchievement: true },
             { id: 'devil', name: 'Hell Hog', ability: 'Inferno', desc: 'Triple score, small clocks.', body: '#EF4444', ears: '#7F1D1D', snout: '#FCA5A5', snoutDots: '#991B1B' },
-            { id: 'ninja', name: 'Shadow Swine', ability: 'Ninja', desc: 'Precision Reward. High grab range.', body: '#1E293B', ears: '#0F172A', snout: '#334155', snoutDots: '#000000', isAchievement: true },
+            { id: 'ninja', name: 'Shadow Swine', ability: 'Ninja', desc: 'Streak Reward. High grab range.', body: '#1E293B', ears: '#0F172A', snout: '#334155', snoutDots: '#000000', isAchievement: true },
             { id: 'zombie', name: 'Undead Hog', ability: 'Unending', desc: 'Revives once (Keep score).', body: '#4D7C0F', ears: '#365314', snout: '#84CC16', snoutDots: '#14532D' },
             { id: 'ice', name: 'Frost Piglet', ability: 'Freeze', desc: 'Stops clocks when touched.', body: '#BAE6FD', ears: '#0EA5E9', snout: '#E0F2FE', snoutDots: '#0369A1' },
-            { id: 'rainbow', name: 'Prism Pig', ability: 'Fortune', desc: '+8 Coins every successful jump.', body: '#FFFFFF', ears: '#FF0000', snout: '#FF00FF', snoutDots: '#000000' },
-            { id: 'angel', name: 'Angel Pig', ability: 'Glory', desc: 'Score 50 Reward. Floaty.', body: '#FFFBEB', ears: '#FEF3C7', snout: '#FDE68A', snoutDots: '#F59E0B', isAchievement: true },
-            { id: 'space', name: 'Space Cadet', ability: 'Helmet', desc: 'Score 300 Reward. Huge magnet.', body: '#334155', ears: '#475569', snout: '#94A3B8', snoutDots: '#F1F5F9', isAchievement: true },
+            { id: 'rainbow', name: 'Prism Pig', ability: 'Fortune', desc: '+8 Coins every jump.', body: '#FFFFFF', ears: '#FF0000', snout: '#FF00FF', snoutDots: '#000000' },
+            { id: 'angel', name: 'Angel Pig', ability: 'Glory', desc: 'Score 10 Reward. Floaty.', body: '#FFFBEB', ears: '#FEF3C7', snout: '#FDE68A', snoutDots: '#F59E0B', isAchievement: true },
+            { id: 'space', name: 'Space Cadet', ability: 'Helmet', desc: 'Score 25 Reward. Huge magnet.', body: '#334155', ears: '#475569', snout: '#94A3B8', snoutDots: '#F1F5F9', isAchievement: true },
             { id: 'bank', name: 'Piggy Bank', ability: 'Wealth', desc: 'Total Coins Reward. +20 Coins/Jump.', body: '#FCD34D', ears: '#F59E0B', snout: '#FEF3C7', snoutDots: '#D97706', isAchievement: true },
-            { id: 'king', name: 'King Swine', ability: 'Royalty', desc: 'Completion Reward. +20 Coins/Jump.', body: '#7C3AED', ears: '#C084FC', snout: '#DDD6FE', snoutDots: '#4C1D95', isAchievement: true },
-            { id: 'omega', name: 'Omega Hog', ability: 'Omni', desc: 'Ultimate Reward. +35 Coins/Jump.', body: '#FFFFFF', ears: '#000000', snout: '#F472B6', snoutDots: '#000000', isAchievement: true }
+            { id: 'king', name: 'King Swine', ability: 'Royalty', desc: 'Collection Reward. +20 Coins/Jump.', body: '#7C3AED', ears: '#C084FC', snout: '#DDD6FE', snoutDots: '#4C1D95', isAchievement: true },
+            { id: 'rocket', name: 'Rocket Pig', ability: 'Thrust', desc: 'Hard Mode Reward. Air Control.', body: '#94A3B8', ears: '#EF4444', snout: '#F1F5F9', snoutDots: '#000000', isAchievement: true },
+            { id: 'smoking', name: 'Cool Swine', ability: 'Cloud', desc: 'Leaves a mysterious trail.', body: '#475569', ears: '#1E293B', snout: '#94A3B8', snoutDots: '#000000' },
+            { id: 'omega', name: 'Omega Hog', ability: 'Omni', desc: 'Master Reward. +35 Coins/Jump.', body: '#FFFFFF', ears: '#000000', snout: '#F472B6', snoutDots: '#000000', isAchievement: true }
         ];
 
         const THEMES = [
@@ -366,16 +368,17 @@
         ];
 
         const ACHIEVEMENTS = [
-            { id: 'height_50', name: 'High Flyer', desc: 'Reach a score of 50.', goal: 50, type: 'score', rewardSkin: 'angel' },
-            { id: 'height_300', name: 'Space Voyager', desc: 'Reach a score of 300.', goal: 300, type: 'score', rewardSkin: 'space' },
-            { id: 'height_1000', name: 'Infinite Climber', desc: 'Reach a score of 1000.', goal: 1000, type: 'score', rewardSkin: 'neon' },
-            { id: 'total_score_5000', name: 'Oink Overlord', desc: 'Amass a total cumulative score of 5000.', goal: 5000, type: 'cumulative_score', rewardSkin: 'ghost' },
-            { id: 'coins_2000', name: 'Wealthy Merchant', desc: 'Earn a total of 2000 coins.', goal: 2000, type: 'total_coins', rewardSkin: 'bank' },
-            { id: 'perfect_10', name: 'Precision Pro', desc: 'Land 10 consecutive jumps in a single game.', goal: 10, type: 'perfect_streak', rewardSkin: 'ninja' },
-            { id: 'themes_all', name: 'World Traveler', desc: 'Unlock all available themes.', goal: THEMES.length, type: 'themes', rewardSkin: 'cyber' },
-            { id: 'jumps_500', name: 'Endurance Pig', desc: 'Land a total of 500 jumps across all games.', goal: 500, type: 'total_jumps', rewardSkin: 'slime' },
-            { id: 'skins_normal', name: 'Collector', desc: 'Unlock all 12 purchasable skins.', goal: 12, type: 'skins_normal', rewardSkin: 'king' },
-            { id: 'mastery', name: 'Ultimate Master', desc: 'Complete all other achievements.', goal: 9, type: 'all_achievements', rewardSkin: 'omega' }
+            { id: 'height_10', name: 'Small Step', desc: 'Reach a score of 10.', goal: 10, type: 'score', rewardSkin: 'angel' },
+            { id: 'height_25', name: 'Cloud Hopper', desc: 'Reach a score of 25.', goal: 25, type: 'score', rewardSkin: 'space' },
+            { id: 'height_50', name: 'Neon Knight', desc: 'Reach a score of 50.', goal: 50, type: 'score', rewardSkin: 'neon' },
+            { id: 'total_score_200', name: 'Oink Initiate', desc: 'Total cumulative score of 200.', goal: 200, type: 'cumulative_score', rewardSkin: 'ghost' },
+            { id: 'coins_150', name: 'Budget Hog', desc: 'Earn 150 coins total.', goal: 150, type: 'total_coins', rewardSkin: 'bank' },
+            { id: 'perfect_3', name: 'Lucky Streak', desc: 'Land 3 consecutive jumps.', goal: 3, type: 'perfect_streak', rewardSkin: 'ninja' },
+            { id: 'themes_2', name: 'Tourist', desc: 'Unlock 2 available themes.', goal: 2, type: 'themes', rewardSkin: 'cyber' },
+            { id: 'jumps_30', name: 'Active Pig', desc: 'Land 30 total jumps.', goal: 30, type: 'total_jumps', rewardSkin: 'slime' },
+            { id: 'skins_2', name: 'Hobbyist', desc: 'Unlock 2 purchasable skins.', goal: 2, type: 'skins_normal', rewardSkin: 'king' },
+            { id: 'hard_2', name: 'Gravity Defier', desc: 'Land 2 jumps in Hard Mode.', goal: 2, type: 'hard_jumps', rewardSkin: 'rocket' },
+            { id: 'mastery', name: 'Great Master', desc: 'Complete 9 achievements.', goal: 9, type: 'all_achievements', rewardSkin: 'omega' }
         ];
 
         const LATIN_MAP = {
@@ -425,6 +428,7 @@
             totalCoinsEarned: parseInt(localStorage.getItem('oinkTotalCoins') || '0'),
             totalScore: parseInt(localStorage.getItem('oinkTotalScore') || '0'),
             totalJumps: parseInt(localStorage.getItem('oinkTotalJumps') || '0'),
+            hardJumps: parseInt(localStorage.getItem('oinkHardJumps') || '0'),
             consecutiveJumps: 0,
             bestStreak: 0,
             currentMaxSpeed: 0,
@@ -474,7 +478,6 @@
         const finalScoreLabel = document.getElementById('final-score');
         const homeBestVal = document.getElementById('home-best-val');
 
-        // Audio System
         const AudioContextClass = window.AudioContext || window.webkitAudioContext;
         let audioCtx;
         
@@ -539,7 +542,6 @@
             }
         }
 
-        // Global Utility Functions
         function getLang(text) {
             const isLatin = state.selectedSkinId === 'frog' && state.selectedThemeId === 'lake';
             if (isLatin && LATIN_MAP[text]) return LATIN_MAP[text];
@@ -570,7 +572,6 @@
             homeCoins.innerText = coinText;
             hudCoins.innerText = coinText;
             
-            // PB display on home
             if (state.gameMode === 'hard') homeBestVal.innerText = state.bestHard;
             else homeBestVal.innerText = state.best;
             
@@ -627,7 +628,6 @@
             }
         }
 
-        // Action Functions
         function openModeSelect() {
             if (!state.username) return showUsernameEntry();
             uiModeSelect.classList.remove('hidden');
@@ -771,20 +771,15 @@
         async function openLeaderboard() {
             const tab = state.leaderboardTab;
             const path = tab === 'sandbox' ? 'leaderboard/speed' : `leaderboard/${tab}`;
-            
             leaderboardList.innerHTML = `<div class="text-center py-10 opacity-50 animate-pulse">Scanning ${tab} legends...</div>`;
             try {
-                // Fetch more and manually sort to ensure the HIGHEST scores are on top
                 const snap = await db.ref(path).orderByChild('score').limitToLast(10).once('value');
                 const data = []; 
                 snap.forEach(c => { 
                     const val = c.val(); 
                     if (val && val.name && typeof val.score === 'number') data.push(val); 
                 });
-                
-                // limitToLast fetches from the end, so we reverse to show 1st at the top
                 data.sort((a, b) => b.score - a.score);
-                
                 if (data.length === 0) { 
                     leaderboardList.innerHTML = `<div class="text-center py-10 opacity-30 uppercase font-black tracking-widest text-sm">No entries in ${tab} yet.</div>`; 
                 } else { 
@@ -821,10 +816,10 @@
                     case 'perfect_streak': progress = Math.min(100, (state.bestStreak / ach.goal) * 100); break;
                     case 'themes': progress = Math.min(100, (state.unlockedThemes.length / ach.goal) * 100); break;
                     case 'skins_normal': progress = Math.min(100, (state.unlockedSkins.filter(id => !SKINS.find(s => s.id === id)?.isAchievement).length / ach.goal) * 100); break;
-                    case 'all_achievements': progress = Math.min(100, ((state.unlockedAchievements.length - (unlocked?1:0)) / ach.goal) * 100); break;
+                    case 'all_achievements': progress = Math.min(100, (state.unlockedAchievements.length / ach.goal) * 100); break;
+                    case 'hard_jumps': progress = Math.min(100, (state.hardJumps / ach.goal) * 100); break;
                 }
                 if (unlocked) progress = 100;
-
                 return `<div class="border-2 ${unlocked?'border-yellow-500/50 bg-yellow-500/10':'border-white/5 bg-white/5'} p-4 rounded-2xl flex items-center gap-4"><div class="text-2xl">${unlocked?'🏆':'🔒'}</div><div class="flex-1"><div class="flex justify-between items-center mb-1"><span class="text-xs font-black uppercase ${unlocked?'text-yellow-400':'text-white'}">${ach.name}</span>${unlocked?'<span class="text-[8px] bg-yellow-500 text-black px-1.5 rounded font-black">CLAIMED</span>':''}</div><p class="text-[9px] text-white/50 mb-2">${ach.desc}</p><div class="h-1 bg-white/10 rounded-full overflow-hidden"><div class="h-full bg-yellow-500 transition-all duration-1000" style="width: ${progress}%"></div></div></div><div class="flex flex-col items-center gap-1 opacity-80"><div class="w-8 h-8 rounded-lg bg-indigo-900 border border-white/10 flex items-center justify-center overflow-hidden"><canvas id="ach-prev-${ach.id}" width="32" height="32"></canvas></div><div class="text-[7px] font-black text-yellow-500 uppercase">REWARD</div></div></div>`;
             }).join('');
             ACHIEVEMENTS.forEach(ach => {
@@ -929,7 +924,10 @@
             backToHome();
         }
 
-        // Game Logic Functions
+        function retryGame() {
+            startGame(state.gameMode);
+        }
+
         function createClock(id, y, index, forcedX = null) {
             let radius = 35 + Math.random() * 50; 
             if (state.selectedSkinId === 'devil') radius *= 0.65;
@@ -1005,8 +1003,12 @@
                 state.pig.vx = 0;
                 state.pig.vy = 0;
             } else {
-                if (state.gameMode === 'hard') {
-                    state.pig.vy += 0.5 * timeScale;
+                if (state.gameMode === 'hard') state.pig.vy += 0.5 * timeScale;
+
+                if (skinId === 'rocket') {
+                    const targetX = state.mouse.x + state.cameraX;
+                    if (targetX < state.pig.x - 5) state.pig.vx -= 0.15 * timeScale;
+                    else if (targetX > state.pig.x + 5) state.pig.vx += 0.15 * timeScale;
                 }
 
                 state.pig.x += state.pig.vx * timeScale; 
@@ -1020,10 +1022,10 @@
                     }
                 }
 
-                if (skinId === 'neon' || skinId === 'omega') {
+                if (skinId === 'neon' || skinId === 'omega' || skinId === 'smoking') {
                     state.pig.trail.unshift({ x: state.pig.x, y: state.pig.y, life: 1 });
-                    if (state.pig.trail.length > 10) state.pig.trail.pop();
-                    state.pig.trail.forEach(t => t.life -= 0.1 * timeScale);
+                    if (state.pig.trail.length > (skinId === 'smoking' ? 20 : 10)) state.pig.trail.pop();
+                    state.pig.trail.forEach(t => t.life -= (skinId === 'smoking' ? 0.04 : 0.1) * timeScale);
                 }
 
                 if (state.gameMode === 'sandbox') { state.pig.vx *= Math.pow(0.99, timeScale); state.pig.vy *= Math.pow(0.99, timeScale); }
@@ -1038,20 +1040,19 @@
                         if (d < clock.radius + grabRange) {
                             state.pig.attachedTo = clock.id; state.pig.vx = 0; state.pig.vy = 0;
                             if (clock.id > state.lastClockId && state.gameMode !== 'sandbox') {
-                                // Scoring & Coin Rebalance
                                 let multiplier = (skinId === 'golden' || skinId === 'king') ? 2 : (skinId === 'devil' || skinId === 'steampunk' ? 3 : 1);
-                                if (state.gameMode === 'hard') multiplier *= 2;
-                                
-                                // Rebalanced Rewards
+                                if (state.gameMode === 'hard') {
+                                    multiplier *= 2;
+                                    state.hardJumps++;
+                                    localStorage.setItem('oinkHardJumps', state.hardJumps);
+                                }
                                 let baseReward = (state.gameMode === 'hard') ? 5 : 2;
                                 let bonus = 0;
                                 if (skinId === 'rainbow') bonus += 8;
                                 if (skinId === 'bank' || skinId === 'king') bonus += 20;
                                 if (skinId === 'omega') bonus += 35;
-                                
                                 let reward = (baseReward + bonus);
-                                if (skinId === 'lava') reward *= 2; // Lava is now a multiplier
-                                
+                                if (skinId === 'lava') reward *= 2;
                                 state.coins += Math.floor(reward); 
                                 state.totalCoinsEarned += Math.floor(reward);
                                 state.score += (clock.id - state.lastClockId) * multiplier; 
@@ -1132,23 +1133,24 @@
             if (state.currentMaxSpeed > state.bestSpeed) {
                 state.bestSpeed = state.currentMaxSpeed;
                 localStorage.setItem('oinkBestSpeed', state.bestSpeed);
-                if (state.username) db.ref(`leaderboard/speed/${state.username.toLowerCase()}`).set({ name: state.username, score: state.bestSpeed }).catch(()=>{});
+                if (state.username) db.ref('leaderboard/speed/'+state.username.toLowerCase()).set({ name: state.username, score: state.bestSpeed }).catch(()=>{});
             }
         }
 
         function checkAchievements() { 
             if (state.gameMode === 'sandbox') return; 
-            if (state.score >= 50) unlockAchievement('height_50'); 
-            if (state.score >= 300) unlockAchievement('height_300'); 
-            if (state.score >= 1000) unlockAchievement('height_1000');
-            if (state.totalScore >= 5000) unlockAchievement('total_score_5000');
-            if (state.totalCoinsEarned >= 2000) unlockAchievement('coins_2000'); 
-            if (state.bestStreak >= 10) unlockAchievement('perfect_10');
-            if (state.unlockedThemes.length >= THEMES.length) unlockAchievement('themes_all');
-            if (state.totalJumps >= 500) unlockAchievement('jumps_500');
+            if (state.score >= 10) unlockAchievement('height_10'); 
+            if (state.score >= 25) unlockAchievement('height_25'); 
+            if (state.score >= 50) unlockAchievement('height_50');
+            if (state.totalScore >= 200) unlockAchievement('total_score_200');
+            if (state.totalCoinsEarned >= 150) unlockAchievement('coins_150'); 
+            if (state.bestStreak >= 3) unlockAchievement('perfect_3');
+            if (state.unlockedThemes.length >= 2) unlockAchievement('themes_2');
+            if (state.totalJumps >= 30) unlockAchievement('jumps_30');
+            if (state.hardJumps >= 2) unlockAchievement('hard_2');
             
             const normalSkinsCount = state.unlockedSkins.filter(id => !SKINS.find(s => s.id === id)?.isAchievement).length; 
-            if (normalSkinsCount >= 12) unlockAchievement('skins_normal'); 
+            if (normalSkinsCount >= 2) unlockAchievement('skins_2'); 
             
             if (state.unlockedAchievements.length >= 9) unlockAchievement('mastery');
         }
@@ -1185,7 +1187,16 @@
             pctx.beginPath(); pctx.moveTo(14, -10); pctx.lineTo(18, -20); pctx.lineTo(6, -14); pctx.fill();
             pctx.fillStyle = snoutColor; pctx.beginPath(); pctx.ellipse(0, 4, 8, 6, 0, 0, Math.PI * 2); pctx.fill();
             pctx.fillStyle = skin.snoutDots || 'rgba(0,0,0,0.3)'; pctx.beginPath(); pctx.arc(-3, 4, 1.5, 0, Math.PI * 2); pctx.fill(); pctx.beginPath(); pctx.arc(3, 4, 1.5, 0, Math.PI * 2); pctx.fill();
-            const eyeColor = (skin.id === 'void' || skin.id === 'neon' || skin.id === 'omega') ? 'white' : 'black'; pctx.fillStyle = eyeColor; pctx.beginPath(); pctx.arc(-7, -4, 2.5, 0, Math.PI * 2); pctx.fill(); pctx.beginPath(); pctx.arc(7, -4, 2.5, 0, Math.PI * 2); pctx.fill();
+            const eyeColor = (skin.id === 'void' || skin.id === 'neon' || skin.id === 'omega' || skin.id === 'rocket') ? 'white' : 'black'; pctx.fillStyle = eyeColor; pctx.beginPath(); pctx.arc(-7, -4, 2.5, 0, Math.PI * 2); pctx.fill(); pctx.beginPath(); pctx.arc(7, -4, 2.5, 0, Math.PI * 2); pctx.fill();
+            
+            if (skin.id === 'rocket') {
+                pctx.fillStyle = '#EF4444';
+                pctx.beginPath(); pctx.moveTo(-5, 16); pctx.lineTo(0, 25); pctx.lineTo(5, 16); pctx.fill();
+            }
+            if (skin.id === 'smoking') {
+                pctx.fillStyle = 'black'; pctx.fillRect(-10, -6, 20, 2); 
+            }
+            
             if (skin.id === 'lava') { pctx.shadowBlur = 10; pctx.shadowColor = '#F97316'; pctx.fillStyle = '#FB923C'; pctx.beginPath(); pctx.arc(0, 0, 12, 0, Math.PI*2); pctx.fill(); pctx.shadowBlur = 0; }
             if (skin.id === 'steampunk') { pctx.fillStyle = '#78350F'; pctx.fillRect(-10, -18, 20, 4); pctx.strokeStyle = '#D97706'; pctx.lineWidth = 1; pctx.strokeRect(-10, -18, 20, 4); }
             if (skin.id === 'neon' || skin.id === 'omega') { pctx.shadowBlur = 15; pctx.shadowColor = '#3B82F6'; pctx.strokeStyle = '#3B82F6'; pctx.lineWidth = 1; pctx.strokeRect(-18, -16, 36, 32); pctx.shadowBlur = 0; }
@@ -1217,10 +1228,10 @@
                 const p = state.pig; 
                 const rot = p.attachedTo !== null ? 0 : Math.atan2(p.vy, p.vx) + Math.PI/2;
                 
-                if ((skin.id === 'neon' || skin.id === 'omega') && p.trail.length > 0) {
+                if ((skin.id === 'neon' || skin.id === 'omega' || skin.id === 'smoking') && p.trail.length > 0) {
                     p.trail.forEach(t => {
-                        ctx.fillStyle = `rgba(59, 130, 246, ${t.life * 0.5})`;
-                        ctx.beginPath(); ctx.arc(t.x, t.y, 8 * t.life, 0, Math.PI * 2); ctx.fill();
+                        ctx.fillStyle = skin.id === 'smoking' ? `rgba(200, 200, 200, ${t.life * 0.4})` : `rgba(59, 130, 246, ${t.life * 0.5})`;
+                        ctx.beginPath(); ctx.arc(t.x, t.y, (skin.id === 'smoking' ? 12 : 8) * t.life, 0, Math.PI * 2); ctx.fill();
                     });
                 }
 
@@ -1263,7 +1274,6 @@
             requestAnimationFrame(loop); 
         }
 
-        // Event Listeners
         window.addEventListener('mousemove', (e) => { 
             const rect = canvas.getBoundingClientRect(); 
             state.mouse.x = (e.clientX - rect.left) * (WIDTH / rect.width); 
@@ -1289,7 +1299,6 @@
             jump(); 
         });
 
-        // Initialize
         requestAnimationFrame(loop);
         refreshUI();
     </script>
