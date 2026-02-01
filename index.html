@@ -196,6 +196,9 @@
             <div id="pb-label" class="mt-6 text-indigo-300/40 text-[10px] font-bold uppercase tracking-widest">
                 Best: <span id="home-best-val" class="text-white">0</span>
             </div>
+
+            <!-- Reset Button -->
+            <button onclick="resetAllData()" class="absolute bottom-6 left-6 text-[8px] font-black uppercase tracking-tighter text-white/20 hover:text-red-500 transition-colors pointer-events-auto">Reset Data</button>
         </div>
 
         <!-- Mode Select Popup -->
@@ -258,7 +261,7 @@
         <div id="ui-hats" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-3xl font-black italic uppercase tracking-tighter text-pink-400">Headwear Shop</h2>
-                <button onclick="closeHats()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" x2="6" y1="6" y2="18"></line><line x1="6" x2="18" y1="6" y2="18"></line></svg></button>
+                <button onclick="closeHats()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
             </div>
             <div id="hats-grid" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
             <div class="mt-4 p-4 bg-indigo-900/50 rounded-2xl flex justify-between items-center border border-white/5">
@@ -382,6 +385,8 @@
         const CLOCK_SPACING = 260;
         const CLOCK_COLORS = ['#F472B6', '#60A5FA', '#34D399', '#FBBF24', '#A78BFA', '#FB923C'];
 
+        const HAT_PRICE = 1000;
+
         const GLOBAL_UPGRADES = [
             { id: 'magnet', name: 'Cosmic Magnet', desc: 'Slightly increases grab range globally.', basePrice: 250, multiplier: 1.5 },
             { id: 'coin_boost', name: 'Tax Fraud', desc: '+1 bonus coin per successful jump.', basePrice: 400, multiplier: 2.0 },
@@ -395,7 +400,7 @@
             { id: 'ghost', name: 'Spectral Pig', ability: 'Phaze', desc: 'Cumulative Reward. Translucent.', body: 'rgba(255,255,255,0.35)', ears: 'rgba(200,200,255,0.3)', snout: 'rgba(255,255,255,0.5)', snoutDots: 'rgba(0,0,0,0.1)', isAchievement: true },
             { id: 'lava', name: 'Magma Boar', ability: 'Burn', desc: 'Clocks 50% faster. 2x Total Coins!', body: '#991B1B', ears: '#7F1D1D', snout: '#F97316', snoutDots: '#78350F' },
             { id: 'steampunk', name: 'Steampunk Pig', ability: 'Torque', desc: '2x Speed clocks. 3x Score!', body: '#A8A29E', ears: '#78350F', snout: '#D6D3D1', snoutDots: '#451A03' },
-            { id: 'neon', name: 'Neon Hog', ability: 'Pulse', desc: 'Score Reward (50). +20% Jump Speed.', body: '#000000', ears: '#3B82F6', snout: '#60A5FA', snoutDots: '#1E40AF', isAchievement: true },
+            { id: 'neon', name: 'Neon Hog', ability: 'Pulse', desc: 'Score Reward (500). +20% Jump Speed.', body: '#000000', ears: '#3B82F6', snout: '#60A5FA', snoutDots: '#1E40AF', isAchievement: true },
             { id: 'blueberry', name: 'Time Jam', ability: 'Sticky', desc: '+15% Grab range.', body: '#60A5FA', ears: '#2563EB', snout: '#93C5FD', snoutDots: '#1E40AF' },
             { id: 'matcha', name: 'Matcha Zen', ability: 'Focus', desc: '25% Slower rotation.', body: '#34D399', ears: '#059669', snout: '#6EE7B7', snoutDots: '#064E3B' },
             { id: 'golden', name: 'Wealthy Swine', ability: 'Greed', desc: 'Shiny +25 Coins/Jump!', body: '#FBBF24', ears: '#D97706', snout: '#FDE68A', snoutDots: '#78350F' },
@@ -407,8 +412,8 @@
             { id: 'zombie', name: 'Undead Hog', ability: 'Unending', desc: 'Revives once (Keep score).', body: '#4D7C0F', ears: '#365314', snout: '#84CC16', snoutDots: '#14532D' },
             { id: 'ice', name: 'Frost Piglet', ability: 'Freeze', desc: 'Stops clocks when touched.', body: '#BAE6FD', ears: '#0EA5E9', snout: '#E0F2FE', snoutDots: '#0369A1' },
             { id: 'rainbow', name: 'Prism Pig', ability: 'Fortune', desc: '+15 Coins every jump.', body: '#FFFFFF', ears: '#FF0000', snout: '#FF00FF', snoutDots: '#000000' },
-            { id: 'angel', name: 'Angel Pig', ability: 'Glory', desc: 'Score 10 Reward. Floaty.', body: '#FFFBEB', ears: '#FEF3C7', snout: '#FDE68A', snoutDots: '#F59E0B', isAchievement: true },
-            { id: 'space', name: 'Space Cadet', ability: 'Helmet', desc: 'Score 25 Reward. Huge magnet.', body: '#334155', ears: '#475569', snout: '#94A3B8', snoutDots: '#F1F5F9', isAchievement: true },
+            { id: 'angel', name: 'Angel Pig', ability: 'Glory', desc: 'Score 50 Reward. Floaty.', body: '#FFFBEB', ears: '#FEF3C7', snout: '#FDE68A', snoutDots: '#F59E0B', isAchievement: true },
+            { id: 'space', name: 'Space Cadet', ability: 'Helmet', desc: 'Score 150 Reward. Huge magnet.', body: '#334155', ears: '#475569', snout: '#94A3B8', snoutDots: '#F1F5F9', isAchievement: true },
             { id: 'bank', name: 'Piggy Bank', ability: 'Wealth', desc: 'Total Coins Reward. +100 Coins/Jump.', body: '#FCD34D', ears: '#F59E0B', snout: '#FEF3C7', snoutDots: '#D97706', isAchievement: true },
             { id: 'king', name: 'King Swine', ability: 'Royalty', desc: 'Collection Reward. +250 Coins/Jump.', body: '#7C3AED', ears: '#C084FC', snout: '#DDD6FE', snoutDots: '#4C1D95', isAchievement: true },
             { id: 'rocket', name: 'Rocket Pig', ability: 'Thrust', desc: 'Hard Mode Reward. Air Control.', body: '#94A3B8', ears: '#EF4444', snout: '#F1F5F9', snoutDots: '#000000', isAchievement: true },
@@ -418,14 +423,16 @@
 
         const HATS = [
             { id: 'none', name: 'No Hat', type: 'NONE', price: 0 },
-            { id: 'party', name: 'Party Time', type: 'DRAW', price: 2500 },
-            { id: 'tophat', name: 'Classy Top Hat', type: 'DRAW', price: 5000 },
-            { id: 'chef', name: 'Chef de Oink', type: 'DRAW', price: 7500 },
-            { id: 'detective', name: 'Sleuth Cap', type: 'DRAW', price: 10000 },
-            { id: 'propeller', name: 'Flying Prop', type: 'DRAW', price: 15000 },
-            { id: 'viking', name: 'Boar Warrior', type: 'DRAW', price: 25000 },
-            { id: 'crown', name: 'Golden Crown', type: 'DRAW', price: 35000 },
-            { id: 'halo', name: 'Divine Halo', type: 'DRAW', price: 50000 }
+            { id: 'party', name: 'Party Time', type: 'DRAW', price: 1000 },
+            { id: 'tophat', name: 'Classy Top Hat', type: 'DRAW', price: 1000 },
+            { id: 'hathat', name: 'Hat Hat', type: 'DRAW', price: 1000 },
+            { id: 'suit', name: 'Tuxedo', type: 'DRAW', price: 1000 },
+            { id: 'chef', name: 'Chef de Oink', type: 'DRAW', price: 1000 },
+            { id: 'detective', name: 'Sleuth Cap', type: 'DRAW', price: 1000 },
+            { id: 'propeller', name: 'Flying Prop', type: 'DRAW', price: 1000 },
+            { id: 'viking', name: 'Boar Warrior', type: 'DRAW', price: 1000 },
+            { id: 'crown', name: 'Golden Crown', type: 'DRAW', price: 1000 },
+            { id: 'halo', name: 'Divine Halo', type: 'DRAW', price: 1000 }
         ];
 
         const THEMES = [
@@ -440,24 +447,24 @@
         ];
 
         const ACHIEVEMENTS = [
-            { id: 'height_10', name: 'Small Step', desc: 'Reach a score of 10.', goal: 10, type: 'score', rewardSkin: 'angel' },
-            { id: 'height_25', name: 'Cloud Hopper', desc: 'Reach a score of 25.', goal: 25, type: 'score', rewardSkin: 'space' },
-            { id: 'height_50', name: 'Neon Knight', desc: 'Reach a score of 50.', goal: 50, type: 'score', rewardSkin: 'neon' },
-            { id: 'total_score_200', name: 'Oink Initiate', desc: 'Total cumulative score of 200.', goal: 200, type: 'cumulative_score', rewardSkin: 'ghost' },
-            { id: 'coins_150', name: 'Budget Hog', desc: 'Earn 150 coins total.', goal: 150, type: 'total_coins', rewardSkin: 'bank' },
-            { id: 'perfect_3', name: 'Lucky Streak', desc: 'Land 3 consecutive jumps.', goal: 3, type: 'perfect_streak', rewardSkin: 'ninja' },
-            { id: 'themes_2', name: 'Tourist', desc: 'Unlock 2 available themes.', goal: 2, type: 'themes', rewardSkin: 'cyber' },
-            { id: 'jumps_30', name: 'Active Pig', desc: 'Land 30 total jumps.', goal: 30, type: 'total_jumps', rewardSkin: 'slime' },
-            { id: 'skins_2', name: 'Hobbyist', desc: 'Unlock 2 purchasable skins.', goal: 2, type: 'skins_normal', rewardSkin: 'king' },
-            { id: 'hard_2', name: 'Gravity Defier', desc: 'Land 2 jumps in Hard Mode.', goal: 2, type: 'hard_jumps', rewardSkin: 'rocket' },
-            { id: 'mastery', name: 'Great Master', desc: 'Complete 9 achievements.', goal: 9, type: 'all_achievements', rewardSkin: 'omega' }
+            { id: 'height_10', name: 'Expert Hopper', desc: 'Reach a score of 50.', goal: 50, type: 'score', rewardSkin: 'angel' },
+            { id: 'height_25', name: 'Cloud Titan', desc: 'Reach a score of 150.', goal: 150, type: 'score', rewardSkin: 'space' },
+            { id: 'height_50', name: 'Clock God', desc: 'Reach a score of 500.', goal: 500, type: 'score', rewardSkin: 'neon' },
+            { id: 'total_score_200', name: 'Time Archon', desc: 'Total cumulative score of 5,000.', goal: 5000, type: 'cumulative_score', rewardSkin: 'ghost' },
+            { id: 'coins_150', name: 'Mega Mogul', desc: 'Earn 10,000 coins total.', goal: 10000, type: 'total_coins', rewardSkin: 'bank' },
+            { id: 'perfect_3', name: 'Flawless God', desc: 'Land 20 consecutive jumps.', goal: 20, type: 'perfect_streak', rewardSkin: 'ninja' },
+            { id: 'themes_2', name: 'Multiversal', desc: 'Unlock 6 available themes.', goal: 6, type: 'themes', rewardSkin: 'cyber' },
+            { id: 'jumps_30', name: 'Jump Legend', desc: 'Land 1,000 total jumps.', goal: 1000, type: 'total_jumps', rewardSkin: 'slime' },
+            { id: 'skins_2', name: 'Collector', desc: 'Unlock 10 purchasable skins.', goal: 10, type: 'skins_normal', rewardSkin: 'king' },
+            { id: 'hard_2', name: 'Hard Core', desc: 'Land 50 jumps in Hard Mode.', goal: 50, type: 'hard_jumps', rewardSkin: 'rocket' },
+            { id: 'mastery', name: 'Omega Legend', desc: 'Complete 10 achievements.', goal: 10, type: 'all_achievements', rewardSkin: 'omega' }
         ];
 
         const DAILY_CHALLENGE_TEMPLATES = [
-            { id: 'jumps', text: "Land [GOAL] jumps today.", goal: 50, rewardCoins: 150 },
-            { id: 'score', text: "Reach a score of [GOAL] today.", goal: 30, rewardCoins: 200 },
-            { id: 'hard_jumps', text: "Land [GOAL] hard mode jumps today.", goal: 10, rewardCoins: 300 },
-            { id: 'earn_coins', text: "Earn [GOAL] coins today.", goal: 100, rewardCoins: 250 }
+            { id: 'jumps', text: "Land [GOAL] jumps today.", goal: 100, rewardCoins: 300 },
+            { id: 'score', text: "Reach a score of [GOAL] today.", goal: 75, rewardCoins: 400 },
+            { id: 'hard_jumps', text: "Land [GOAL] hard mode jumps today.", goal: 25, rewardCoins: 600 },
+            { id: 'earn_coins', text: "Earn [GOAL] coins today.", goal: 250, rewardCoins: 500 }
         ];
 
         let state = {
@@ -614,6 +621,13 @@
                 toast.style.transform = 'translateY(-20px)';
                 setTimeout(() => toast.remove(), 300);
             }, 2500);
+        }
+
+        function resetAllData() {
+            if (confirm("ARE YOU SURE? This will permanently delete all your progress, coins, skins, and rankings locally.")) {
+                localStorage.clear();
+                window.location.reload();
+            }
         }
 
         function generateDailyChallenge() {
@@ -1437,7 +1451,34 @@
             if (skin.id === 'rainbow' || skin.id === 'omega') { bodyColor = `hsl(${state.rainbowHue}, 80%, 70%)`; earColor = `hsl(${state.rainbowHue + 30}, 80%, 40%)`; snoutColor = `hsl(${state.rainbowHue + 60}, 80%, 80%)`; }
             
             pctx.strokeStyle = earColor; pctx.lineWidth = 2; pctx.beginPath(); pctx.moveTo(-18, 0); pctx.bezierCurveTo(-25, -10, -25, 10, -20, 5); pctx.stroke();
-            pctx.fillStyle = bodyColor; pctx.beginPath(); pctx.ellipse(0, 0, 18, 16, 0, 0, Math.PI * 2); pctx.fill();
+            
+            // Draw Suit (Tuxedo Overlay)
+            const currentHatId = hatId || state.selectedHatId;
+            if (currentHatId === 'suit') {
+                pctx.fillStyle = '#000000';
+                pctx.beginPath();
+                pctx.ellipse(0, 0, 18, 16, 0, 0, Math.PI * 2);
+                pctx.fill();
+                // Shirt triangle
+                pctx.fillStyle = '#ffffff';
+                pctx.beginPath();
+                pctx.moveTo(0, -16);
+                pctx.lineTo(-8, 5);
+                pctx.lineTo(8, 5);
+                pctx.closePath();
+                pctx.fill();
+                // Bowtie
+                pctx.fillStyle = '#ff0000';
+                pctx.beginPath();
+                pctx.moveTo(-4, -10); pctx.lineTo(4, -6); pctx.lineTo(4, -14); pctx.closePath();
+                pctx.moveTo(4, -10); pctx.lineTo(-4, -6); pctx.lineTo(-4, -14); pctx.closePath();
+                pctx.fill();
+            } else {
+                pctx.fillStyle = bodyColor;
+                pctx.beginPath();
+                pctx.ellipse(0, 0, 18, 16, 0, 0, Math.PI * 2);
+                pctx.fill();
+            }
             
             const isWealthPig = ['golden', 'bank', 'king', 'omega'].includes(skin.id);
             if (isWealthPig) {
@@ -1456,13 +1497,16 @@
             pctx.fillStyle = skin.snoutDots || 'rgba(0,0,0,0.3)'; pctx.beginPath(); pctx.arc(-3, 4, 1.5, 0, Math.PI * 2); pctx.fill(); pctx.beginPath(); pctx.arc(3, 4, 1.5, 0, Math.PI * 2); pctx.fill();
             const eyeColor = (skin.id === 'void' || skin.id === 'neon' || skin.id === 'omega' || skin.id === 'rocket') ? 'white' : 'black'; pctx.fillStyle = eyeColor; pctx.beginPath(); pctx.arc(-7, -4, 2.5, 0, Math.PI * 2); pctx.fill(); pctx.beginPath(); pctx.arc(7, -4, 2.5, 0, Math.PI * 2); pctx.fill();
             
-            const currentHatId = hatId || state.selectedHatId;
-            if (currentHatId && currentHatId !== 'none') {
+            if (currentHatId && currentHatId !== 'none' && currentHatId !== 'suit') {
                 pctx.save();
                 pctx.translate(0, -14);
                 switch(currentHatId) {
                     case 'tophat':
                         pctx.fillStyle = '#000000'; pctx.fillRect(-10, -15, 20, 15); pctx.fillRect(-15, -2, 30, 4); break;
+                    case 'hathat':
+                        pctx.fillStyle = '#000000'; 
+                        pctx.fillRect(-10, -15, 20, 15); pctx.fillRect(-15, -2, 30, 4);
+                        pctx.fillRect(-8, -28, 16, 12); pctx.fillRect(-12, -17, 24, 3); break;
                     case 'propeller':
                         pctx.fillStyle = '#ef4444'; pctx.beginPath(); pctx.arc(0, 0, 10, Math.PI, 0); pctx.fill();
                         pctx.strokeStyle = '#ffffff'; pctx.lineWidth = 2; pctx.beginPath(); pctx.moveTo(0, 0); pctx.lineTo(0, -6); pctx.stroke();
