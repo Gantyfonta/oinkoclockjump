@@ -445,9 +445,9 @@
             { id: 'planets', name: 'Deep Space', bg: '#020617', type: 'PLANET' },
             { id: 'gold', name: 'Golden Vault', bg: '#1c1917', type: 'COIN' },
             { id: 'noir', name: 'Old Cinema', bg: '#000000', type: 'NOIR' },
-            { id: 'synthwave', name: 'Retro Grid', bg: '#2e1065', type: 'GRID' },
-            { id: 'candy', name: 'Sugar Rush', bg: '#fdf2f8', type: 'CANDY' },
-            { id: 'ocean', name: 'Abyss', bg: '#082f49', type: 'CORAL' }
+            { id: 'synthwave', name: 'Retro Grid', bg: '#1a0b2e', type: 'GRID' },
+            { id: 'candy', name: 'Sugar Rush', bg: '#fff1f2', type: 'CANDY' },
+            { id: 'ocean', name: 'Abyss', bg: '#0c4a6e', type: 'CORAL' }
         ];
 
         const ACHIEVEMENTS = [
@@ -506,6 +506,7 @@
             pig: { x: 200, y: 550, vx: 0, vy: 0, attachedTo: null, slimeUsed: false, zombieUsed: false, jumpCooldown: 0, trail: [], coinParticles: [] },
             clocks: [],
             stars: [],
+            bubbles: [],
             lastClockId: -1,
             rainbowHue: 0,
             isTutorial: false,
@@ -848,6 +849,8 @@
             state.clocks = []; 
             state.lastClockId = 0;
             state.consecutiveJumps = 0;
+            state.stars = Array.from({length: 30}, () => ({x: Math.random()*WIDTH, y: Math.random()*HEIGHT, size: Math.random()*2, speed: Math.random()*0.5}));
+            state.bubbles = Array.from({length: 15}, () => ({x: Math.random()*WIDTH, y: Math.random()*HEIGHT, size: Math.random()*4+2, speed: Math.random()*1+0.5}));
             state.pig = { x: WIDTH/2, y: HEIGHT-150-60, vx: 0, vy: 0, attachedTo: 0, slimeUsed: false, zombieUsed: false, jumpCooldown: 0, trail: [], coinParticles: [] };
             
             state.clocks.push({ id: 0, x: WIDTH/2, y: HEIGHT-150, radius: 60, angle: -Math.PI/2, speed: 0.04, color: CLOCK_COLORS[0], isFrozen: false, features: [], hasSpikes: false });
@@ -1106,8 +1109,9 @@
             const locked = THEMES.filter(t => !state.unlockedThemes.includes(t.id));
             if (locked.length === 0) return showToast("All themes owned!");
             const choice = locked[Math.floor(Math.random() * locked.length)];
-            if (!isBezos) { state.coins -= 250; state.unlockedThemes.push(choice.id); localStorage.setItem('oinkThemesUnlocked', JSON.stringify(state.unlockedThemes)); }
-            else { state.unlockedThemes.push(choice.id); localStorage.setItem('oinkThemesUnlocked', JSON.stringify(state.unlockedThemes)); }
+            if (!isBezos) { state.coins -= 250; }
+            state.unlockedThemes.push(choice.id); 
+            localStorage.setItem('oinkThemesUnlocked', JSON.stringify(state.unlockedThemes));
             playSound('unlock');
             showToast(`Unlocked ${choice.name} Theme!`);
             openThemes();
@@ -1222,7 +1226,6 @@
                         c.spikeActive = !c.spikeActive;
                         c.spikeTimer = 120; // 2 seconds at 60fps
                         if (c.spikeActive && state.pig.attachedTo === c.id) {
-                            // Mercy check
                             const mercyLvl = state.upgrades.mercy || 0;
                             if (Math.random() > mercyLvl * 0.1) gameOver();
                             else showToast("Mercy!", "sandbox");
@@ -1232,6 +1235,15 @@
             });
 
             if (state.pig.jumpCooldown > 0) state.pig.jumpCooldown -= timeScale;
+
+            // Environmental Particles
+            if (state.selectedThemeId === 'planets' && state.stars) {
+                state.stars.forEach(s => { s.y += s.speed * timeScale; if (s.y > HEIGHT) s.y = 0; });
+            }
+            if (state.selectedThemeId === 'ocean' && state.bubbles) {
+                state.bubbles.forEach(b => { b.y -= b.speed * timeScale; b.x += Math.sin(Date.now()*0.001) * 0.5; if (b.y < 0) b.y = HEIGHT; });
+            }
+
             if (state.pig.attachedTo !== null) {
                 const clock = state.clocks.find(c => c.id === state.pig.attachedTo); 
                 if (skinId === 'ice') clock.isFrozen = true;
@@ -1261,7 +1273,6 @@
                     state.pig.trail.forEach(t => t.life -= (skinId === 'smoking' ? 0.04 : 0.1) * timeScale);
                 }
 
-                // Wealth Pig Coin Trail
                 if (isWealthPig) {
                     if (Math.random() < 0.4) {
                         state.pig.coinParticles.push({
@@ -1323,7 +1334,6 @@
                                 playSound('coin'); 
                                 if (isWealthPig) { setTimeout(()=>playSound('coin'), 100); setTimeout(()=>playSound('coin'), 200); }
                                 
-                                // Daily Progression
                                 updateDailyProgress('jumps', 1);
                                 if (state.gameMode === 'hard') updateDailyProgress('hard_jumps', 1);
                                 updateDailyProgress('earn_coins', Math.floor(reward));
@@ -1351,7 +1361,6 @@
                 }
             }
 
-            // Update coin particles
             state.pig.coinParticles.forEach((cp, idx) => {
                 cp.x += cp.vx * timeScale;
                 cp.y += cp.vy * timeScale;
@@ -1456,14 +1465,12 @@
             
             pctx.strokeStyle = earColor; pctx.lineWidth = 2; pctx.beginPath(); pctx.moveTo(-18, 0); pctx.bezierCurveTo(-25, -10, -25, 10, -20, 5); pctx.stroke();
             
-            // Draw Suit (Tuxedo Overlay)
             const currentHatId = hatId || state.selectedHatId;
             if (currentHatId === 'suit') {
                 pctx.fillStyle = '#000000';
                 pctx.beginPath();
                 pctx.ellipse(0, 0, 18, 16, 0, 0, Math.PI * 2);
                 pctx.fill();
-                // Shirt triangle
                 pctx.fillStyle = '#ffffff';
                 pctx.beginPath();
                 pctx.moveTo(0, -16);
@@ -1471,7 +1478,6 @@
                 pctx.lineTo(8, 5);
                 pctx.closePath();
                 pctx.fill();
-                // Bowtie
                 pctx.fillStyle = '#ff0000';
                 pctx.beginPath();
                 pctx.moveTo(-4, -10); pctx.lineTo(4, -6); pctx.lineTo(4, -14); pctx.closePath();
@@ -1562,6 +1568,23 @@
         function draw() {
             const theme = THEMES.find(t => t.id === state.selectedThemeId) || THEMES[0];
             ctx.fillStyle = theme.bg; ctx.fillRect(0,0,WIDTH,HEIGHT);
+            
+            // Background environmental details
+            if (theme.type === 'PLANET') {
+                ctx.fillStyle = 'white';
+                state.stars.forEach(s => { ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI*2); ctx.fill(); });
+            } else if (theme.type === 'CORAL') {
+                ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+                state.bubbles.forEach(b => { ctx.beginPath(); ctx.arc(b.x, b.y, b.size, 0, Math.PI*2); ctx.stroke(); });
+            } else if (theme.type === 'GRID') {
+                ctx.strokeStyle = 'rgba(167, 139, 250, 0.2)';
+                ctx.lineWidth = 1;
+                const gridSpacing = 40;
+                const scrollOffset = (Date.now() * 0.05) % gridSpacing;
+                for(let x=0; x<WIDTH; x+=gridSpacing) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, HEIGHT); ctx.stroke(); }
+                for(let y=0; y<HEIGHT; y+=gridSpacing) { ctx.beginPath(); ctx.moveTo(0, y+scrollOffset); ctx.lineTo(WIDTH, y+scrollOffset); ctx.stroke(); }
+            }
+
             ctx.save(); ctx.translate(-state.cameraX, -state.cameraY);
             state.clocks.forEach(c => {
                 if (c.hasSpikes) {
@@ -1593,6 +1616,26 @@
                     ctx.fillStyle = '#166534'; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2); ctx.fill(); ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2); ctx.stroke(); ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.strokeStyle = 'white'; ctx.lineWidth = 3; ctx.stroke();
                 } else if (theme.type === 'COIN') {
                     const g = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.radius); g.addColorStop(0, '#fef08a'); g.addColorStop(0.7, '#fbbf24'); g.addColorStop(1, '#92400e'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.strokeStyle = '#78350f'; ctx.lineWidth = 4; ctx.stroke();
+                } else if (theme.type === 'NOIR') {
+                    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2); ctx.stroke();
+                    ctx.fillStyle = 'rgba(30,30,30,0.8)'; ctx.fill();
+                    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke();
+                    ctx.font = '10px Courier New'; ctx.fillStyle = 'white'; ctx.textAlign = 'center'; ctx.fillText('XII', c.x, c.y - c.radius + 15);
+                } else if (theme.type === 'GRID') {
+                    ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke();
+                    ctx.setLineDash([2, 4]); ctx.beginPath(); ctx.arc(c.x, c.y, c.radius - 5, 0, Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
+                } else if (theme.type === 'CANDY') {
+                    const grad = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.radius); grad.addColorStop(0, '#fff'); grad.addColorStop(0.5, '#fb7185'); grad.addColorStop(1, '#e11d48'); ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2); ctx.fill();
+                    ctx.strokeStyle = 'white'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke();
+                } else if (theme.type === 'CORAL') {
+                    ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 5; ctx.beginPath();
+                    for(let i=0; i<8; i++) {
+                        const a = i * Math.PI / 4; const r = c.radius + Math.sin(Date.now()*0.005 + i)*5;
+                        ctx.lineTo(c.x + Math.cos(a)*r, c.y + Math.sin(a)*r);
+                    }
+                    ctx.closePath(); ctx.stroke(); ctx.fillStyle = 'rgba(12, 74, 110, 0.6)'; ctx.fill();
+                    ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke();
                 } else {
                     ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2); ctx.strokeStyle = c.color; ctx.lineWidth = 6; ctx.stroke(); ctx.fillStyle = 'rgba(15,23,42,0.9)'; ctx.fill(); ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.strokeStyle = c.color; ctx.lineWidth = 8; ctx.lineCap='round'; ctx.stroke();
                 }
@@ -1602,14 +1645,7 @@
                 const skin = SKINS.find(s => s.id === state.selectedSkinId) || SKINS[0]; const p = state.pig; const rot = p.attachedTo !== null ? 0 : Math.atan2(p.vy, p.vx) + Math.PI/2;
                 
                 p.coinParticles.forEach(cp => {
-                    ctx.save();
-                    ctx.translate(cp.x, cp.y);
-                    ctx.rotate(cp.rot);
-                    ctx.scale(cp.life, cp.life);
-                    ctx.fillStyle = '#fbbf24';
-                    ctx.beginPath(); ctx.ellipse(0, 0, 5, 2, 0, 0, Math.PI*2); ctx.fill();
-                    ctx.strokeStyle = '#b45309'; ctx.lineWidth = 1; ctx.stroke();
-                    ctx.restore();
+                    ctx.save(); ctx.translate(cp.x, cp.y); ctx.rotate(cp.rot); ctx.scale(cp.life, cp.life); ctx.fillStyle = '#fbbf24'; ctx.beginPath(); ctx.ellipse(0, 0, 5, 2, 0, 0, Math.PI*2); ctx.fill(); ctx.strokeStyle = '#b45309'; ctx.lineWidth = 1; ctx.stroke(); ctx.restore();
                 });
 
                 if ((skin.id === 'neon' || skin.id === 'omega' || skin.id === 'smoking') && p.trail.length > 0) {
