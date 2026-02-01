@@ -400,7 +400,7 @@
             { id: 'ghost', name: 'Spectral Pig', ability: 'Phaze', desc: 'Cumulative Reward. Translucent.', body: 'rgba(255,255,255,0.35)', ears: 'rgba(200,200,255,0.3)', snout: 'rgba(255,255,255,0.5)', snoutDots: 'rgba(0,0,0,0.1)', isAchievement: true },
             { id: 'lava', name: 'Magma Boar', ability: 'Burn', desc: 'Clocks 50% faster. 2x Total Coins!', body: '#991B1B', ears: '#7F1D1D', snout: '#F97316', snoutDots: '#78350F' },
             { id: 'steampunk', name: 'Steampunk Pig', ability: 'Torque', desc: '2x Speed clocks. 3x Score!', body: '#A8A29E', ears: '#78350F', snout: '#D6D3D1', snoutDots: '#451A03' },
-            { id: 'neon', name: 'Neon Hog', ability: 'Pulse', desc: 'Score Reward (500). +20% Jump Speed.', body: '#000000', ears: '#3B82F6', snout: '#60A5FA', snoutDots: '#1E40AF', isAchievement: true },
+            { id: 'neon', name: 'Neon Hog', ability: 'Pulse', desc: 'Score Reward (150). +20% Jump Speed.', body: '#000000', ears: '#3B82F6', snout: '#60A5FA', snoutDots: '#1E40AF', isAchievement: true },
             { id: 'blueberry', name: 'Time Jam', ability: 'Sticky', desc: '+15% Grab range.', body: '#60A5FA', ears: '#2563EB', snout: '#93C5FD', snoutDots: '#1E40AF' },
             { id: 'matcha', name: 'Matcha Zen', ability: 'Focus', desc: '25% Slower rotation.', body: '#34D399', ears: '#059669', snout: '#6EE7B7', snoutDots: '#064E3B' },
             { id: 'golden', name: 'Wealthy Swine', ability: 'Greed', desc: 'Shiny +2 Coins/Jump!', body: '#FBBF24', ears: '#D97706', snout: '#FDE68A', snoutDots: '#78350F' },
@@ -412,8 +412,8 @@
             { id: 'zombie', name: 'Undead Hog', ability: 'Unending', desc: 'Revives once (Keep score).', body: '#4D7C0F', ears: '#365314', snout: '#84CC16', snoutDots: '#14532D' },
             { id: 'ice', name: 'Frost Piglet', ability: 'Freeze', desc: 'Stops clocks when touched.', body: '#BAE6FD', ears: '#0EA5E9', snout: '#E0F2FE', snoutDots: '#0369A1' },
             { id: 'rainbow', name: 'Prism Pig', ability: 'Fortune', desc: '+1 Coin every jump.', body: '#FFFFFF', ears: '#FF0000', snout: '#FF00FF', snoutDots: '#000000' },
-            { id: 'angel', name: 'Angel Pig', ability: 'Glory', desc: 'Score 50 Reward. Floaty.', body: '#FFFBEB', ears: '#FEF3C7', snout: '#FDE68A', snoutDots: '#F59E0B', isAchievement: true },
-            { id: 'space', name: 'Space Cadet', ability: 'Helmet', desc: 'Score 150 Reward. Huge magnet.', body: '#334155', ears: '#475569', snout: '#94A3B8', snoutDots: '#F1F5F9', isAchievement: true },
+            { id: 'angel', name: 'Angel Pig', ability: 'Glory', desc: 'Score 25 Reward. Floaty.', body: '#FFFBEB', ears: '#FEF3C7', snout: '#FDE68A', snoutDots: '#F59E0B', isAchievement: true },
+            { id: 'space', name: 'Space Cadet', ability: 'Helmet', desc: 'Score 75 Reward. Huge magnet.', body: '#334155', ears: '#475569', snout: '#94A3B8', snoutDots: '#F1F5F9', isAchievement: true },
             { id: 'bank', name: 'Piggy Bank', ability: 'Wealth', desc: 'Total Coins Reward. +3 Coins/Jump.', body: '#FCD34D', ears: '#F59E0B', snout: '#FEF3C7', snoutDots: '#D97706', isAchievement: true },
             { id: 'king', name: 'King Swine', ability: 'Royalty', desc: 'Collection Reward. +5 Coins/Jump.', body: '#7C3AED', ears: '#C084FC', snout: '#DDD6FE', snoutDots: '#4C1D95', isAchievement: true },
             { id: 'rocket', name: 'Rocket Pig', ability: 'Thrust', desc: 'Hard Mode Reward. Air Control.', body: '#94A3B8', ears: '#EF4444', snout: '#F1F5F9', snoutDots: '#000000', isAchievement: true },
@@ -451,17 +451,17 @@
         ];
 
         const ACHIEVEMENTS = [
-            { id: 'height_10', name: 'Expert Hopper', desc: 'Reach a score of 50.', goal: 50, type: 'score', rewardSkin: 'angel' },
-            { id: 'height_25', name: 'Cloud Titan', desc: 'Reach a score of 150.', goal: 150, type: 'score', rewardSkin: 'space' },
-            { id: 'height_50', name: 'Clock God', desc: 'Reach a score of 500.', goal: 500, type: 'score', rewardSkin: 'neon' },
-            { id: 'total_score_200', name: 'Time Archon', desc: 'Total cumulative score of 5,000.', goal: 5000, type: 'cumulative_score', rewardSkin: 'ghost' },
-            { id: 'coins_150', name: 'Mega Mogul', desc: 'Earn 10,000 coins total.', goal: 10000, type: 'total_coins', rewardSkin: 'bank' },
-            { id: 'perfect_3', name: 'Flawless God', desc: 'Land 20 consecutive jumps.', goal: 20, type: 'perfect_streak', rewardSkin: 'ninja' },
-            { id: 'themes_2', name: 'Multiversal', desc: 'Unlock 6 available themes.', goal: 6, type: 'themes', rewardSkin: 'cyber' },
-            { id: 'jumps_30', name: 'Jump Legend', desc: 'Land 1,000 total jumps.', goal: 1000, type: 'total_jumps', rewardSkin: 'slime' },
-            { id: 'skins_2', name: 'Collector', desc: 'Unlock 10 purchasable skins.', goal: 10, type: 'skins_normal', rewardSkin: 'king' },
-            { id: 'hard_2', name: 'Hard Core', desc: 'Land 50 jumps in Hard Mode.', goal: 50, type: 'hard_jumps', rewardSkin: 'rocket' },
-            { id: 'mastery', name: 'Omega Legend', desc: 'Complete 10 achievements.', goal: 10, type: 'all_achievements', rewardSkin: 'omega' }
+            { id: 'height_10', name: 'Steady Leaper', desc: 'Reach a score of 25.', goal: 25, type: 'score', rewardSkin: 'angel' },
+            { id: 'height_25', name: 'Cloud Climber', desc: 'Reach a score of 75.', goal: 75, type: 'score', rewardSkin: 'space' },
+            { id: 'height_50', name: 'Time Master', desc: 'Reach a score of 150.', goal: 150, type: 'score', rewardSkin: 'neon' },
+            { id: 'total_score_200', name: 'Clock Enthusiast', desc: 'Total cumulative score of 1,500.', goal: 1500, type: 'cumulative_score', rewardSkin: 'ghost' },
+            { id: 'coins_150', name: 'Penny Pincher', desc: 'Earn 3,000 coins total.', goal: 3000, type: 'total_coins', rewardSkin: 'bank' },
+            { id: 'perfect_3', name: 'Rhythm Jumper', desc: 'Land 10 consecutive jumps.', goal: 10, type: 'perfect_streak', rewardSkin: 'ninja' },
+            { id: 'themes_2', name: 'Explorer', desc: 'Unlock 4 available themes.', goal: 4, type: 'themes', rewardSkin: 'cyber' },
+            { id: 'jumps_30', name: 'Active Leaper', desc: 'Land 300 total jumps.', goal: 300, type: 'total_jumps', rewardSkin: 'slime' },
+            { id: 'skins_2', name: 'Skin Collector', desc: 'Unlock 6 purchasable skins.', goal: 6, type: 'skins_normal', rewardSkin: 'king' },
+            { id: 'hard_2', name: 'Gravity Tamer', desc: 'Land 20 jumps in Hard Mode.', goal: 20, type: 'hard_jumps', rewardSkin: 'rocket' },
+            { id: 'mastery', name: 'The Completionist', desc: 'Complete 10 achievements.', goal: 10, type: 'all_achievements', rewardSkin: 'omega' }
         ];
 
         const DAILY_CHALLENGE_TEMPLATES = [
