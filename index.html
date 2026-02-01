@@ -374,7 +374,7 @@
             { id: 'neon', name: 'Neon Hog', ability: 'Pulse', desc: 'Score Reward (50). +20% Jump Speed.', body: '#000000', ears: '#3B82F6', snout: '#60A5FA', snoutDots: '#1E40AF', isAchievement: true },
             { id: 'blueberry', name: 'Time Jam', ability: 'Sticky', desc: '+15% Grab range.', body: '#60A5FA', ears: '#2563EB', snout: '#93C5FD', snoutDots: '#1E40AF' },
             { id: 'matcha', name: 'Matcha Zen', ability: 'Focus', desc: '25% Slower rotation.', body: '#34D399', ears: '#059669', snout: '#6EE7B7', snoutDots: '#064E3B' },
-            { id: 'golden', name: 'Wealthy Swine', ability: 'Greed', desc: 'Double score per jump.', body: '#FBBF24', ears: '#D97706', snout: '#FDE68A', snoutDots: '#78350F' },
+            { id: 'golden', name: 'Wealthy Swine', ability: 'Greed', desc: 'Shiny +25 Coins/Jump!', body: '#FBBF24', ears: '#D97706', snout: '#FDE68A', snoutDots: '#78350F' },
             { id: 'void', name: 'Void Walker', ability: 'Warp', desc: '+25% Jump velocity.', body: '#4B5563', ears: '#1F2937', snout: '#9CA3AF', snoutDots: '#000000' },
             { id: 'cyber', name: 'Cyber Ham', ability: 'Laser', desc: 'Themes Reward. Shows trajectory.', body: '#A78BFA', ears: '#7C3AED', snout: '#C4B5FD', snoutDots: '#4C1D95', isAchievement: true },
             { id: 'slime', name: 'Slime Pig', ability: 'Resilient', desc: 'Jumps Reward. Bounces from void.', body: '#10B981', ears: '#064E3B', snout: '#D1FAE5', snoutDots: '#059669', isAchievement: true },
@@ -382,14 +382,14 @@
             { id: 'ninja', name: 'Shadow Swine', ability: 'Ninja', desc: 'Streak Reward. High grab range.', body: '#1E293B', ears: '#0F172A', snout: '#334155', snoutDots: '#000000', isAchievement: true },
             { id: 'zombie', name: 'Undead Hog', ability: 'Unending', desc: 'Revives once (Keep score).', body: '#4D7C0F', ears: '#365314', snout: '#84CC16', snoutDots: '#14532D' },
             { id: 'ice', name: 'Frost Piglet', ability: 'Freeze', desc: 'Stops clocks when touched.', body: '#BAE6FD', ears: '#0EA5E9', snout: '#E0F2FE', snoutDots: '#0369A1' },
-            { id: 'rainbow', name: 'Prism Pig', ability: 'Fortune', desc: '+8 Coins every jump.', body: '#FFFFFF', ears: '#FF0000', snout: '#FF00FF', snoutDots: '#000000' },
+            { id: 'rainbow', name: 'Prism Pig', ability: 'Fortune', desc: '+15 Coins every jump.', body: '#FFFFFF', ears: '#FF0000', snout: '#FF00FF', snoutDots: '#000000' },
             { id: 'angel', name: 'Angel Pig', ability: 'Glory', desc: 'Score 10 Reward. Floaty.', body: '#FFFBEB', ears: '#FEF3C7', snout: '#FDE68A', snoutDots: '#F59E0B', isAchievement: true },
             { id: 'space', name: 'Space Cadet', ability: 'Helmet', desc: 'Score 25 Reward. Huge magnet.', body: '#334155', ears: '#475569', snout: '#94A3B8', snoutDots: '#F1F5F9', isAchievement: true },
-            { id: 'bank', name: 'Piggy Bank', ability: 'Wealth', desc: 'Total Coins Reward. +20 Coins/Jump.', body: '#FCD34D', ears: '#F59E0B', snout: '#FEF3C7', snoutDots: '#D97706', isAchievement: true },
-            { id: 'king', name: 'King Swine', ability: 'Royalty', desc: 'Collection Reward. +20 Coins/Jump.', body: '#7C3AED', ears: '#C084FC', snout: '#DDD6FE', snoutDots: '#4C1D95', isAchievement: true },
+            { id: 'bank', name: 'Piggy Bank', ability: 'Wealth', desc: 'Total Coins Reward. +100 Coins/Jump.', body: '#FCD34D', ears: '#F59E0B', snout: '#FEF3C7', snoutDots: '#D97706', isAchievement: true },
+            { id: 'king', name: 'King Swine', ability: 'Royalty', desc: 'Collection Reward. +250 Coins/Jump.', body: '#7C3AED', ears: '#C084FC', snout: '#DDD6FE', snoutDots: '#4C1D95', isAchievement: true },
             { id: 'rocket', name: 'Rocket Pig', ability: 'Thrust', desc: 'Hard Mode Reward. Air Control (NERFED).', body: '#94A3B8', ears: '#EF4444', snout: '#F1F5F9', snoutDots: '#000000', isAchievement: true },
             { id: 'smoking', name: 'Cool Swine', ability: 'Cloud', desc: 'Leaves a mysterious trail.', body: '#475569', ears: '#1E293B', snout: '#94A3B8', snoutDots: '#000000' },
-            { id: 'omega', name: 'Omega Hog', ability: 'Omni', desc: 'Master Reward. +35 Coins/Jump.', body: '#FFFFFF', ears: '#000000', snout: '#F472B6', snoutDots: '#000000', isAchievement: true }
+            { id: 'omega', name: 'Omega Hog', ability: 'Omni', desc: 'The Ultimate. +1000 Coins/Jump & 10x Score!', body: '#FFFFFF', ears: '#FBBF24', snout: '#FDE68A', snoutDots: '#000000', isAchievement: true }
         ];
 
         const THEMES = [
@@ -444,7 +444,7 @@
             hasSeenTutorial: localStorage.getItem('oinkTutorialSeen') === 'true',
             cameraY: 0,
             cameraX: 0,
-            pig: { x: 200, y: 550, vx: 0, vy: 0, attachedTo: null, slimeUsed: false, zombieUsed: false, jumpCooldown: 0, trail: [] },
+            pig: { x: 200, y: 550, vx: 0, vy: 0, attachedTo: null, slimeUsed: false, zombieUsed: false, jumpCooldown: 0, trail: [], coinParticles: [] },
             clocks: [],
             stars: [],
             lastClockId: -1,
@@ -707,7 +707,7 @@
             state.clocks = []; 
             state.lastClockId = 0;
             state.consecutiveJumps = 0;
-            state.pig = { x: WIDTH/2, y: HEIGHT-150-60, vx: 0, vy: 0, attachedTo: 0, slimeUsed: false, zombieUsed: false, jumpCooldown: 0, trail: [] };
+            state.pig = { x: WIDTH/2, y: HEIGHT-150-60, vx: 0, vy: 0, attachedTo: 0, slimeUsed: false, zombieUsed: false, jumpCooldown: 0, trail: [], coinParticles: [] };
             
             state.clocks.push({ id: 0, x: WIDTH/2, y: HEIGHT-150, radius: 60, angle: -Math.PI/2, speed: 0.04, color: CLOCK_COLORS[0], isFrozen: false, features: [], hasSpikes: false });
             
@@ -977,6 +977,7 @@
             if (state.status !== 'PLAYING') return;
             state.rainbowHue = (state.rainbowHue + 2 * timeScale) % 360;
             const skinId = state.selectedSkinId;
+            const isWealthPig = ['golden', 'bank', 'king', 'omega'].includes(skinId);
             
             state.clocks.forEach(c => { 
                 let s = c.speed; 
@@ -1011,7 +1012,7 @@
 
                 if (skinId === 'rocket') {
                     const targetX = state.mouse.x + state.cameraX;
-                    const rocketStrength = 0.07; // NERFED from 0.15
+                    const rocketStrength = 0.07; 
                     if (targetX < state.pig.x - 5) state.pig.vx -= rocketStrength * timeScale;
                     else if (targetX > state.pig.x + 5) state.pig.vx += rocketStrength * timeScale;
                 }
@@ -1029,13 +1030,28 @@
                     state.pig.trail.forEach(t => t.life -= (skinId === 'smoking' ? 0.04 : 0.1) * timeScale);
                 }
 
+                // Wealth Pig Coin Trail
+                if (isWealthPig) {
+                    if (Math.random() < 0.4) {
+                        state.pig.coinParticles.push({
+                            x: state.pig.x,
+                            y: state.pig.y,
+                            vx: (Math.random() - 0.5) * 5,
+                            vy: (Math.random() - 0.5) * 5,
+                            rot: Math.random() * Math.PI * 2,
+                            rotV: (Math.random() - 0.5) * 0.4,
+                            life: 1.0
+                        });
+                    }
+                }
+
                 if (state.gameMode === 'sandbox') { state.pig.vx *= Math.pow(0.99, timeScale); state.pig.vy *= Math.pow(0.99, timeScale); }
                 
                 let grabRange = 5; 
                 if (skinId === 'blueberry') grabRange = 12; 
                 if (skinId === 'ninja') grabRange = 15; 
                 if (skinId === 'space' || skinId === 'ghost' || skinId === 'omega') grabRange = 25;
-                grabRange += (state.upgrades.magnet || 0) * 8; // Magnet Upgrade
+                grabRange += (state.upgrades.magnet || 0) * 8; 
 
                 if (state.pig.jumpCooldown <= 0) {
                     for (const clock of state.clocks) {
@@ -1049,6 +1065,7 @@
                             state.pig.attachedTo = clock.id; state.pig.vx = 0; state.pig.vy = 0;
                             if (clock.id > state.lastClockId && state.gameMode !== 'sandbox') {
                                 let scoreMultiplier = (skinId === 'golden' || skinId === 'king') ? 2 : (skinId === 'devil' || skinId === 'steampunk' ? 3 : 1);
+                                if (skinId === 'omega') scoreMultiplier = 10;
                                 if (state.gameMode === 'hard') scoreMultiplier *= 2;
                                 if (state.gameMode === 'superhard') scoreMultiplier *= 5;
                                 scoreMultiplier *= (1 + (state.upgrades.score_bonus || 0) * 0.05);
@@ -1057,9 +1074,11 @@
                                 baseReward += (state.upgrades.coin_boost || 0);
 
                                 let bonus = 0;
-                                if (skinId === 'rainbow') bonus += 8;
-                                if (skinId === 'bank' || skinId === 'king') bonus += 20;
-                                if (skinId === 'omega') bonus += 35;
+                                if (skinId === 'rainbow') bonus += 15;
+                                if (skinId === 'golden') bonus += 25;
+                                if (skinId === 'bank') bonus += 100;
+                                if (skinId === 'king') bonus += 250;
+                                if (skinId === 'omega') bonus += 1000;
                                 let reward = (baseReward + bonus);
                                 if (skinId === 'lava') reward *= 2;
                                 state.coins += Math.floor(reward); 
@@ -1070,7 +1089,9 @@
                                 state.bestStreak = Math.max(state.bestStreak, state.consecutiveJumps);
                                 state.totalJumps++;
                                 scoreVal.innerText = state.score;
-                                playSound('coin'); refreshUI(); checkAchievements();
+                                playSound('coin'); 
+                                if (isWealthPig) { setTimeout(()=>playSound('coin'), 100); setTimeout(()=>playSound('coin'), 200); }
+                                refreshUI(); checkAchievements();
                                 if (state.isTutorial && state.tutorialStep === 2) advanceTutorial();
                             } else if (state.gameMode === 'sandbox') { state.lastClockId = Math.max(state.lastClockId, clock.id); }
                             playSound('land'); break;
@@ -1092,6 +1113,17 @@
                     }
                 }
             }
+
+            // Update coin particles
+            state.pig.coinParticles.forEach((cp, idx) => {
+                cp.x += cp.vx * timeScale;
+                cp.y += cp.vy * timeScale;
+                cp.vy += 0.2 * timeScale;
+                cp.rot += cp.rotV * timeScale;
+                cp.life -= 0.02 * timeScale;
+                if (cp.life <= 0) state.pig.coinParticles.splice(idx, 1);
+            });
+
             state.cameraY += (state.pig.y - HEIGHT/2 - state.cameraY) * 0.1 * timeScale;
             if (state.gameMode === 'sandbox') state.cameraX += (state.pig.x - WIDTH/2 - state.cameraX) * 0.1 * timeScale;
             if (state.gameMode === 'sandbox') {
@@ -1160,8 +1192,22 @@
             if (!skin) return; pctx.save(); pctx.translate(x, y); pctx.scale(scale, scale); pctx.rotate(rotation);
             let bodyColor = skin.body; let earColor = skin.ears; let snoutColor = skin.snout;
             if (skin.id === 'rainbow' || skin.id === 'omega') { bodyColor = `hsl(${state.rainbowHue}, 80%, 70%)`; earColor = `hsl(${state.rainbowHue + 30}, 80%, 40%)`; snoutColor = `hsl(${state.rainbowHue + 60}, 80%, 80%)`; }
+            
             pctx.strokeStyle = earColor; pctx.lineWidth = 2; pctx.beginPath(); pctx.moveTo(-18, 0); pctx.bezierCurveTo(-25, -10, -25, 10, -20, 5); pctx.stroke();
             pctx.fillStyle = bodyColor; pctx.beginPath(); pctx.ellipse(0, 0, 18, 16, 0, 0, Math.PI * 2); pctx.fill();
+            
+            // Shine effect for wealth pigs
+            const isWealthPig = ['golden', 'bank', 'king', 'omega'].includes(skin.id);
+            if (isWealthPig) {
+                const shineGrad = pctx.createLinearGradient(-20, -20, 20, 20);
+                const shift = (Date.now() % 2000) / 2000;
+                shineGrad.addColorStop(Math.max(0, shift - 0.2), 'rgba(255,255,255,0)');
+                shineGrad.addColorStop(shift, 'rgba(255,255,255,0.4)');
+                shineGrad.addColorStop(Math.min(1, shift + 0.2), 'rgba(255,255,255,0)');
+                pctx.fillStyle = shineGrad;
+                pctx.beginPath(); pctx.ellipse(0, 0, 18, 16, 0, 0, Math.PI * 2); pctx.fill();
+            }
+
             pctx.fillStyle = earColor; pctx.beginPath(); pctx.moveTo(-14, -10); pctx.lineTo(-18, -20); pctx.lineTo(-6, -14); pctx.fill();
             pctx.beginPath(); pctx.moveTo(14, -10); pctx.lineTo(18, -20); pctx.lineTo(6, -14); pctx.fill();
             pctx.fillStyle = snoutColor; pctx.beginPath(); pctx.ellipse(0, 4, 8, 6, 0, 0, Math.PI * 2); pctx.fill();
@@ -1218,8 +1264,22 @@
                     ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2); ctx.strokeStyle = c.color; ctx.lineWidth = 6; ctx.stroke(); ctx.fillStyle = 'rgba(15,23,42,0.9)'; ctx.fill(); ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.strokeStyle = c.color; ctx.lineWidth = 8; ctx.lineCap='round'; ctx.stroke();
                 }
             });
+
             if (state.status === 'PLAYING') {
                 const skin = SKINS.find(s => s.id === state.selectedSkinId) || SKINS[0]; const p = state.pig; const rot = p.attachedTo !== null ? 0 : Math.atan2(p.vy, p.vx) + Math.PI/2;
+                
+                // Draw coin particles
+                p.coinParticles.forEach(cp => {
+                    ctx.save();
+                    ctx.translate(cp.x, cp.y);
+                    ctx.rotate(cp.rot);
+                    ctx.scale(cp.life, cp.life);
+                    ctx.fillStyle = '#fbbf24';
+                    ctx.beginPath(); ctx.ellipse(0, 0, 5, 2, 0, 0, Math.PI*2); ctx.fill();
+                    ctx.strokeStyle = '#b45309'; ctx.lineWidth = 1; ctx.stroke();
+                    ctx.restore();
+                });
+
                 if ((skin.id === 'neon' || skin.id === 'omega' || skin.id === 'smoking') && p.trail.length > 0) {
                     p.trail.forEach(t => { ctx.fillStyle = skin.id === 'smoking' ? `rgba(200, 200, 200, ${t.life * 0.4})` : `rgba(59, 130, 246, ${t.life * 0.5})`; ctx.beginPath(); ctx.arc(t.x, t.y, (skin.id === 'smoking' ? 12 : 8) * t.life, 0, Math.PI * 2); ctx.fill(); });
                 }
