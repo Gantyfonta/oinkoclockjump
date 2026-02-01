@@ -46,9 +46,8 @@
             box-shadow: 0 0 20px rgba(244, 114, 182, 0.1);
         }
         .card-item.locked {
-            filter: grayscale(1) contrast(0.5);
-            opacity: 0.6;
-            cursor: not-allowed;
+            filter: grayscale(0.8) contrast(0.8);
+            opacity: 0.8;
         }
         ::-webkit-scrollbar {
             width: 4px;
@@ -123,10 +122,6 @@
         @keyframes rainbow-scroll {
             to { background-position: 200% center; }
         }
-        .sandbox-badge {
-            background: linear-gradient(135deg, #06b6d4, #0891b2);
-            box-shadow: 0 0 15px rgba(6, 182, 212, 0.5);
-        }
         .mode-btn {
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -137,13 +132,6 @@
         .tab-active {
             border-bottom: 2px solid #F472B6;
             color: #F472B6;
-        }
-        .spike-warning {
-            animation: spike-blink 0.4s infinite alternate;
-        }
-        @keyframes spike-blink {
-            0% { opacity: 0.3; transform: scale(0.95); }
-            100% { opacity: 1; transform: scale(1.05); }
         }
     </style>
 </head>
@@ -157,12 +145,28 @@
 
         <!-- Home Screen -->
         <div id="ui-home" class="absolute inset-0 flex flex-col items-center justify-center bg-indigo-950/80 backdrop-blur-sm z-40 text-white p-6 text-center">
+            <!-- Daily Challenge Ticket -->
+            <div id="daily-challenge-card" onclick="openDaily()" class="absolute top-16 left-0 right-0 px-8 pointer-events-auto">
+                <div class="bg-gradient-to-r from-pink-600 to-indigo-700 p-2.5 rounded-2xl border border-white/20 shadow-lg cursor-pointer hover:scale-[1.02] transition-transform active:scale-95 group">
+                    <div class="flex items-center justify-between gap-4">
+                        <div class="text-left">
+                            <div class="text-[8px] font-black uppercase tracking-widest opacity-60 group-hover:opacity-100 transition-opacity">Daily Objective</div>
+                            <div id="daily-text" class="text-[10px] font-bold leading-tight">Land 50 jumps today.</div>
+                        </div>
+                        <div class="text-right shrink-0">
+                            <div id="daily-progress" class="text-lg font-black italic">0/50</div>
+                            <div id="daily-reward-icon" class="text-[8px] bg-yellow-400 text-black px-1 rounded font-black uppercase">REWARD</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="home-coin-pill" class="absolute top-6 right-6 flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-full border border-white/5">
                 <div class="w-4 h-4 bg-yellow-400 rounded-full flex items-center justify-center text-[10px] text-black font-black coin-spin">₵</div>
                 <div id="home-coins" class="text-sm font-black">0</div>
             </div>
 
-            <div class="mb-10">
+            <div class="mb-6 mt-12">
                 <h1 id="title-main" class="text-5xl font-black mb-1 tracking-tighter text-pink-400 drop-shadow-lg text-center leading-none">OINK-O-CLOCK</h1>
                 <p id="title-sub" class="text-pink-300/60 font-bold tracking-widest text-[10px] uppercase">Precision Time Leaper</p>
             </div>
@@ -171,13 +175,14 @@
                 <button id="btn-play" onclick="openModeSelect()" class="bg-pink-500 hover:bg-pink-400 text-white font-black py-4 px-12 rounded-2xl text-2xl transition-all active:scale-95 shadow-xl shadow-pink-500/30 uppercase">
                     PLAY GAME
                 </button>
-                <div class="grid grid-cols-2 gap-2">
-                    <button id="btn-skins" onclick="openSkins()" class="bg-indigo-800 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-xs transition-transform active:scale-95 uppercase">SKINS</button>
-                    <button id="btn-themes" onclick="openThemes()" class="bg-indigo-800 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-xs transition-transform active:scale-95 uppercase">THEMES</button>
-                    <button id="btn-goals" onclick="openAchievements()" class="bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-3 rounded-xl text-xs transition-transform active:scale-95 uppercase">GOALS</button>
-                    <button id="btn-upgrades" onclick="openUpgrades()" class="bg-cyan-700 hover:bg-cyan-600 text-white font-bold py-3 rounded-xl text-xs transition-transform active:scale-95 uppercase">UPGRADES</button>
+                <div class="grid grid-cols-3 gap-2">
+                    <button id="btn-skins" onclick="openSkins()" class="bg-indigo-800 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-[10px] transition-transform active:scale-95 uppercase">SKINS</button>
+                    <button id="btn-hats" onclick="openHats()" class="bg-indigo-800 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-[10px] transition-transform active:scale-95 uppercase">HATS</button>
+                    <button id="btn-themes" onclick="openThemes()" class="bg-indigo-800 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-[10px] transition-transform active:scale-95 uppercase">THEMES</button>
+                    <button id="btn-goals" onclick="openAchievements()" class="bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-3 rounded-xl text-[10px] transition-transform active:scale-95 uppercase">GOALS</button>
+                    <button id="btn-upgrades" onclick="openUpgrades()" class="bg-cyan-700 hover:bg-cyan-600 text-white font-bold py-3 rounded-xl text-[10px] transition-transform active:scale-95 uppercase">UPGRADES</button>
+                    <button id="btn-rankings" onclick="openLeaderboardUI()" class="bg-indigo-800 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-[10px] transition-transform active:scale-95 uppercase">LIST</button>
                 </div>
-                <button id="btn-rankings" onclick="openLeaderboardUI()" class="bg-indigo-800 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-xs transition-transform active:scale-95 uppercase">HALL OF FAME</button>
                 <button id="btn-how" onclick="startTutorial()" class="mt-1 text-[10px] font-black uppercase text-white/30 hover:text-white transition-colors tracking-widest">How to Play?</button>
             </div>
 
@@ -187,7 +192,7 @@
             </div>
 
             <div id="pb-label" class="mt-6 text-indigo-300/40 text-[10px] font-bold uppercase tracking-widest">
-                Personal Best Record: <span id="home-best-val" class="text-white">0</span>
+                Best: <span id="home-best-val" class="text-white">0</span>
             </div>
         </div>
 
@@ -231,6 +236,73 @@
             </div>
         </div>
 
+        <!-- Leaderboard Menu -->
+        <div id="ui-leaderboard" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="title-rankings" class="text-3xl font-black italic uppercase tracking-tighter">Legends</h2>
+                <button onclick="closeLeaderboard()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            </div>
+            <div class="flex gap-1 mb-4">
+                <button onclick="setLeaderboardTab('regular')" id="tab-regular" class="flex-1 py-2 text-[7px] font-black uppercase border-b-2 border-white/5 opacity-50">Score</button>
+                <button onclick="setLeaderboardTab('hard')" id="tab-hard" class="flex-1 py-2 text-[7px] font-black uppercase border-b-2 border-white/5 opacity-50">Hard</button>
+                <button onclick="setLeaderboardTab('superhard')" id="tab-superhard" class="flex-1 py-2 text-[7px] font-black uppercase border-b-2 border-white/5 opacity-50">Super</button>
+                <button onclick="setLeaderboardTab('sandbox')" id="tab-sandbox" class="flex-1 py-2 text-[7px] font-black uppercase border-b-2 border-white/5 opacity-50">Speed</button>
+                <button onclick="setLeaderboardTab('wealth')" id="tab-wealth" class="flex-1 py-2 text-[7px] font-black uppercase border-b-2 border-white/5 opacity-50 text-yellow-500">Wealth</button>
+            </div>
+            <div id="leaderboard-list" class="flex-1 overflow-y-auto space-y-1 pr-1"></div>
+        </div>
+
+        <!-- Hats Menu -->
+        <div id="ui-hats" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-3xl font-black italic uppercase tracking-tighter text-pink-400">Headwear</h2>
+                <button onclick="closeHats()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            </div>
+            <div id="hats-grid" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
+            <div class="mt-4 p-4 bg-indigo-900/50 rounded-2xl flex justify-between items-center border border-white/5">
+                <span class="text-[10px] font-black uppercase opacity-60">Piggy Bank</span>
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 bg-yellow-400 rounded-full flex items-center justify-center text-[10px] text-black font-black coin-spin">₵</div>
+                    <span id="hats-wallet" class="font-black text-xl">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Achievements Menu -->
+        <div id="ui-achievements" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="title-milestones" class="text-3xl font-black italic uppercase tracking-tighter text-yellow-500">Milestones</h2>
+                <button onclick="closeAchievements()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            </div>
+            <div id="achievements-list" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
+        </div>
+
+        <!-- Skins Menu -->
+        <div id="ui-skins" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="title-skins" class="text-3xl font-black italic uppercase tracking-tighter">Skins</h2>
+                <button onclick="closeSkins()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            </div>
+            <div id="skins-grid" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
+            <button id="buy-skin-btn" onclick="buyRandomSkin()" class="mt-4 w-full bg-pink-500 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 active:scale-95 transition-transform disabled:opacity-50">
+                <div class="w-6 h-6 bg-yellow-400 rounded-full text-black font-black flex items-center justify-center text-xs">₵</div>
+                <span id="buy-skin-label">BUY RANDOM SKIN (100)</span>
+            </button>
+        </div>
+
+        <!-- Theme Shop Menu -->
+        <div id="ui-themes" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="title-themes" class="text-3xl font-black italic uppercase tracking-tighter">Themes</h2>
+                <button onclick="closeThemes()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            </div>
+            <div id="themes-grid" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
+            <button id="buy-theme-btn" onclick="buyRandomTheme()" class="mt-4 w-full bg-indigo-500 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 active:scale-95 transition-transform disabled:opacity-50">
+                <div class="w-6 h-6 bg-yellow-400 rounded-full text-black font-black flex items-center justify-center text-xs">₵</div>
+                <span id="buy-theme-label">UNLOCK THEME (250)</span>
+            </button>
+        </div>
+
         <!-- Tutorial UI -->
         <div id="ui-tutorial" class="absolute inset-0 flex flex-col items-center justify-end p-12 bg-black/40 backdrop-blur-[2px] z-[70] hidden pointer-events-none">
             <div class="bg-indigo-900/90 border-2 border-pink-500 p-6 rounded-3xl shadow-2xl text-white text-center w-full tutorial-pulse pointer-events-auto">
@@ -248,56 +320,6 @@
             <button id="btn-confirm-user" onclick="saveUsername()" class="bg-pink-500 text-white font-black py-3 px-12 rounded-xl text-lg transition-transform active:scale-95 w-64 uppercase">CONFIRM</button>
         </div>
 
-        <!-- Leaderboard Menu -->
-        <div id="ui-leaderboard" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
-            <div class="flex justify-between items-center mb-4">
-                <h2 id="title-rankings" class="text-3xl font-black italic uppercase tracking-tighter">Legends</h2>
-                <button onclick="closeLeaderboard()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
-            </div>
-            <div class="flex gap-2 mb-4">
-                <button onclick="setLeaderboardTab('regular')" id="tab-regular" class="flex-1 py-2 text-[8px] font-black uppercase border-b-2 border-white/5 opacity-50">Regular</button>
-                <button onclick="setLeaderboardTab('hard')" id="tab-hard" class="flex-1 py-2 text-[8px] font-black uppercase border-b-2 border-white/5 opacity-50">Hard</button>
-                <button onclick="setLeaderboardTab('superhard')" id="tab-superhard" class="flex-1 py-2 text-[8px] font-black uppercase border-b-2 border-white/5 opacity-50">Super</button>
-                <button onclick="setLeaderboardTab('sandbox')" id="tab-sandbox" class="flex-1 py-2 text-[8px] font-black uppercase border-b-2 border-white/5 opacity-50">Speed</button>
-            </div>
-            <div id="leaderboard-list" class="flex-1 overflow-y-auto space-y-1 pr-1"></div>
-        </div>
-
-        <!-- Achievements Menu -->
-        <div id="ui-achievements" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
-            <div class="flex justify-between items-center mb-4">
-                <h2 id="title-milestones" class="text-3xl font-black italic uppercase tracking-tighter text-yellow-500">Milestones</h2>
-                <button onclick="closeAchievements()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" x2="6" x2="18"></line><line x1="6" x2="18" y2="18"></line></svg></button>
-            </div>
-            <div id="achievements-list" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
-        </div>
-
-        <!-- Skins Menu -->
-        <div id="ui-skins" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
-            <div class="flex justify-between items-center mb-4">
-                <h2 id="title-skins" class="text-3xl font-black italic uppercase tracking-tighter">Skins</h2>
-                <button onclick="closeSkins()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" x2="6" x2="18"></line><line x1="6" x2="18" y2="18"></line></svg></button>
-            </div>
-            <div id="skins-grid" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
-            <button id="buy-skin-btn" onclick="buyRandomSkin()" class="mt-4 w-full bg-pink-500 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 active:scale-95 transition-transform disabled:opacity-50">
-                <div class="w-6 h-6 bg-yellow-400 rounded-full text-black font-black flex items-center justify-center text-xs">₵</div>
-                <span id="buy-skin-label">BUY RANDOM SKIN (100)</span>
-            </button>
-        </div>
-
-        <!-- Theme Shop Menu -->
-        <div id="ui-themes" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
-            <div class="flex justify-between items-center mb-4">
-                <h2 id="title-themes" class="text-3xl font-black italic uppercase tracking-tighter">Themes</h2>
-                <button onclick="closeThemes()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" x2="6" x2="18"></line><line x1="6" x2="18" y2="18"></line></svg></button>
-            </div>
-            <div id="themes-grid" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
-            <button id="buy-theme-btn" onclick="buyRandomTheme()" class="mt-4 w-full bg-indigo-500 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 active:scale-95 transition-transform disabled:opacity-50">
-                <div class="w-6 h-6 bg-yellow-400 rounded-full text-black font-black flex items-center justify-center text-xs">₵</div>
-                <span id="buy-theme-label">UNLOCK THEME (250)</span>
-            </button>
-        </div>
-
         <!-- HUD -->
         <div id="ui-hud" class="absolute top-0 left-0 right-0 p-4 flex justify-between ui-layer text-white hidden">
             <div class="bg-black/20 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/5">
@@ -305,7 +327,7 @@
                     <div id="score-label" class="text-[8px] font-bold uppercase opacity-60 tracking-widest mb-0.5">SCORE</div>
                     <div id="score-val" class="text-3xl font-black text-pink-400 leading-none">0</div>
                 </div>
-                <div id="sandbox-badge" class="sandbox-badge px-2 py-0.5 rounded text-[8px] font-black mt-1 hidden uppercase tracking-widest text-center">Sandbox Mode</div>
+                <div id="sandbox-badge" class="sandbox-badge px-2 py-0.5 rounded text-[8px] font-black mt-1 hidden uppercase tracking-widest text-center bg-cyan-600">Sandbox Mode</div>
             </div>
             <div class="text-right flex flex-col items-end gap-2">
                 <div class="bg-black/20 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/5">
@@ -358,6 +380,8 @@
         const CLOCK_SPACING = 260;
         const CLOCK_COLORS = ['#F472B6', '#60A5FA', '#34D399', '#FBBF24', '#A78BFA', '#FB923C'];
 
+        const HAT_PRICE = 1000;
+
         const GLOBAL_UPGRADES = [
             { id: 'magnet', name: 'Cosmic Magnet', desc: 'Slightly increases grab range globally.', basePrice: 250, multiplier: 1.5 },
             { id: 'coin_boost', name: 'Tax Fraud', desc: '+1 bonus coin per successful jump.', basePrice: 400, multiplier: 2.0 },
@@ -387,9 +411,21 @@
             { id: 'space', name: 'Space Cadet', ability: 'Helmet', desc: 'Score 25 Reward. Huge magnet.', body: '#334155', ears: '#475569', snout: '#94A3B8', snoutDots: '#F1F5F9', isAchievement: true },
             { id: 'bank', name: 'Piggy Bank', ability: 'Wealth', desc: 'Total Coins Reward. +100 Coins/Jump.', body: '#FCD34D', ears: '#F59E0B', snout: '#FEF3C7', snoutDots: '#D97706', isAchievement: true },
             { id: 'king', name: 'King Swine', ability: 'Royalty', desc: 'Collection Reward. +250 Coins/Jump.', body: '#7C3AED', ears: '#C084FC', snout: '#DDD6FE', snoutDots: '#4C1D95', isAchievement: true },
-            { id: 'rocket', name: 'Rocket Pig', ability: 'Thrust', desc: 'Hard Mode Reward. Air Control (NERFED).', body: '#94A3B8', ears: '#EF4444', snout: '#F1F5F9', snoutDots: '#000000', isAchievement: true },
+            { id: 'rocket', name: 'Rocket Pig', ability: 'Thrust', desc: 'Hard Mode Reward. Air Control.', body: '#94A3B8', ears: '#EF4444', snout: '#F1F5F9', snoutDots: '#000000', isAchievement: true },
             { id: 'smoking', name: 'Cool Swine', ability: 'Cloud', desc: 'Leaves a mysterious trail.', body: '#475569', ears: '#1E293B', snout: '#94A3B8', snoutDots: '#000000' },
             { id: 'omega', name: 'Omega Hog', ability: 'Omni', desc: 'The Ultimate. +1000 Coins/Jump & 10x Score!', body: '#FFFFFF', ears: '#FBBF24', snout: '#FDE68A', snoutDots: '#000000', isAchievement: true }
+        ];
+
+        const HATS = [
+            { id: 'none', name: 'No Hat', type: 'NONE' },
+            { id: 'tophat', name: 'Classy Top Hat', type: 'DRAW', rewardAch: 'height_10' },
+            { id: 'propeller', name: 'Flying Prop', type: 'DRAW', rewardAch: 'height_25' },
+            { id: 'crown', name: 'Golden Crown', type: 'DRAW', rewardAch: 'height_50' },
+            { id: 'chef', name: 'Chef de Oink', type: 'DRAW', rewardAch: 'jumps_30' },
+            { id: 'viking', name: 'Boar Warrior', type: 'DRAW', rewardAch: 'hard_2' },
+            { id: 'detective', name: 'Sleuth Cap', type: 'DRAW', rewardDaily: true },
+            { id: 'party', name: 'Party Time', type: 'DRAW', rewardAch: 'total_score_200' },
+            { id: 'halo', name: 'Divine Halo', type: 'DRAW', rewardAch: 'mastery' }
         ];
 
         const THEMES = [
@@ -404,17 +440,24 @@
         ];
 
         const ACHIEVEMENTS = [
-            { id: 'height_10', name: 'Small Step', desc: 'Reach a score of 10.', goal: 10, type: 'score', rewardSkin: 'angel' },
-            { id: 'height_25', name: 'Cloud Hopper', desc: 'Reach a score of 25.', goal: 25, type: 'score', rewardSkin: 'space' },
-            { id: 'height_50', name: 'Neon Knight', desc: 'Reach a score of 50.', goal: 50, type: 'score', rewardSkin: 'neon' },
-            { id: 'total_score_200', name: 'Oink Initiate', desc: 'Total cumulative score of 200.', goal: 200, type: 'cumulative_score', rewardSkin: 'ghost' },
+            { id: 'height_10', name: 'Small Step', desc: 'Reach a score of 10.', goal: 10, type: 'score', rewardSkin: 'angel', rewardHat: 'tophat' },
+            { id: 'height_25', name: 'Cloud Hopper', desc: 'Reach a score of 25.', goal: 25, type: 'score', rewardSkin: 'space', rewardHat: 'propeller' },
+            { id: 'height_50', name: 'Neon Knight', desc: 'Reach a score of 50.', goal: 50, type: 'score', rewardSkin: 'neon', rewardHat: 'crown' },
+            { id: 'total_score_200', name: 'Oink Initiate', desc: 'Total cumulative score of 200.', goal: 200, type: 'cumulative_score', rewardSkin: 'ghost', rewardHat: 'party' },
             { id: 'coins_150', name: 'Budget Hog', desc: 'Earn 150 coins total.', goal: 150, type: 'total_coins', rewardSkin: 'bank' },
             { id: 'perfect_3', name: 'Lucky Streak', desc: 'Land 3 consecutive jumps.', goal: 3, type: 'perfect_streak', rewardSkin: 'ninja' },
             { id: 'themes_2', name: 'Tourist', desc: 'Unlock 2 available themes.', goal: 2, type: 'themes', rewardSkin: 'cyber' },
-            { id: 'jumps_30', name: 'Active Pig', desc: 'Land 30 total jumps.', goal: 30, type: 'total_jumps', rewardSkin: 'slime' },
+            { id: 'jumps_30', name: 'Active Pig', desc: 'Land 30 total jumps.', goal: 30, type: 'total_jumps', rewardSkin: 'slime', rewardHat: 'chef' },
             { id: 'skins_2', name: 'Hobbyist', desc: 'Unlock 2 purchasable skins.', goal: 2, type: 'skins_normal', rewardSkin: 'king' },
-            { id: 'hard_2', name: 'Gravity Defier', desc: 'Land 2 jumps in Hard Mode.', goal: 2, type: 'hard_jumps', rewardSkin: 'rocket' },
-            { id: 'mastery', name: 'Great Master', desc: 'Complete 9 achievements.', goal: 9, type: 'all_achievements', rewardSkin: 'omega' }
+            { id: 'hard_2', name: 'Gravity Defier', desc: 'Land 2 jumps in Hard Mode.', goal: 2, type: 'hard_jumps', rewardSkin: 'rocket', rewardHat: 'viking' },
+            { id: 'mastery', name: 'Great Master', desc: 'Complete 9 achievements.', goal: 9, type: 'all_achievements', rewardSkin: 'omega', rewardHat: 'halo' }
+        ];
+
+        const DAILY_CHALLENGE_TEMPLATES = [
+            { id: 'jumps', text: "Land [GOAL] jumps today.", goal: 50, rewardCoins: 150, rewardHat: 'detective' },
+            { id: 'score', text: "Reach a score of [GOAL] today.", goal: 30, rewardCoins: 200, rewardHat: 'detective' },
+            { id: 'hard_jumps', text: "Land [GOAL] hard mode jumps today.", goal: 10, rewardCoins: 300, rewardHat: 'detective' },
+            { id: 'earn_coins', text: "Earn [GOAL] coins today.", goal: 100, rewardCoins: 250, rewardHat: 'detective' }
         ];
 
         let state = {
@@ -436,12 +479,17 @@
             leaderboardTab: 'regular',
             unlockedSkins: JSON.parse(localStorage.getItem('oinkUnlocked') || '["classic"]'),
             selectedSkinId: localStorage.getItem('oinkSkin') || 'classic',
+            unlockedHats: JSON.parse(localStorage.getItem('oinkHats') || '["none"]'),
+            selectedHatId: localStorage.getItem('oinkHatSelected') || 'none',
             unlockedThemes: JSON.parse(localStorage.getItem('oinkThemesUnlocked') || '["classic"]'),
             selectedThemeId: localStorage.getItem('oinkTheme') || 'classic',
             unlockedAchievements: JSON.parse(localStorage.getItem('oinkAchieved') || '[]'),
             upgrades: JSON.parse(localStorage.getItem('oinkUpgrades') || '{"magnet":0, "coin_boost":0, "score_bonus":0, "mercy":0}'),
             username: localStorage.getItem('oinkUser') || '',
             hasSeenTutorial: localStorage.getItem('oinkTutorialSeen') === 'true',
+            
+            dailyChallenge: JSON.parse(localStorage.getItem('oinkDaily') || '{}'),
+            
             cameraY: 0,
             cameraX: 0,
             pig: { x: 200, y: 550, vx: 0, vy: 0, attachedTo: null, slimeUsed: false, zombieUsed: false, jumpCooldown: 0, trail: [], coinParticles: [] },
@@ -459,6 +507,7 @@
         const ctx = canvas.getContext('2d');
         const uiHome = document.getElementById('ui-home');
         const uiSkins = document.getElementById('ui-skins');
+        const uiHats = document.getElementById('ui-hats');
         const uiHUD = document.getElementById('ui-hud');
         const uiGameOver = document.getElementById('ui-gameover');
         const uiLeaderboard = document.getElementById('ui-leaderboard');
@@ -470,6 +519,7 @@
         const achievementsList = document.getElementById('achievements-list');
         const leaderboardList = document.getElementById('leaderboard-list');
         const skinsGrid = document.getElementById('skins-grid');
+        const hatsGrid = document.getElementById('hats-grid');
         const themesGrid = document.getElementById('themes-grid');
         const upgradesList = document.getElementById('upgrades-list');
         const gameContainer = document.getElementById('game-container');
@@ -564,12 +614,50 @@
             }, 2500);
         }
 
+        function generateDailyChallenge() {
+            const today = new Date().toDateString();
+            if (state.dailyChallenge.date === today) return;
+            
+            const seed = today.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            const template = DAILY_CHALLENGE_TEMPLATES[seed % DAILY_CHALLENGE_TEMPLATES.length];
+            
+            state.dailyChallenge = {
+                id: template.id,
+                date: today,
+                goal: template.goal,
+                current: 0,
+                completed: false,
+                text: template.text.replace('[GOAL]', template.goal),
+                rewardCoins: template.rewardCoins,
+                rewardHat: template.rewardHat
+            };
+            localStorage.setItem('oinkDaily', JSON.stringify(state.dailyChallenge));
+        }
+
+        function updateDailyProgress(type, amount = 1) {
+            if (state.dailyChallenge.completed) return;
+            if (state.dailyChallenge.id === type) {
+                state.dailyChallenge.current += amount;
+                if (state.dailyChallenge.current >= state.dailyChallenge.goal) {
+                    state.dailyChallenge.completed = true;
+                    state.coins += state.dailyChallenge.rewardCoins;
+                    state.totalCoinsEarned += state.dailyChallenge.rewardCoins;
+                    unlockHat(state.dailyChallenge.rewardHat);
+                    showToast(`Daily Challenge Complete! +${state.dailyChallenge.rewardCoins}₵`);
+                    playSound('unlock');
+                }
+                localStorage.setItem('oinkDaily', JSON.stringify(state.dailyChallenge));
+                refreshUI();
+            }
+        }
+
         function refreshUI() {
             const isBezos = isBezosMode();
             const coinText = isBezos ? "∞" : state.coins;
             homeCoins.innerText = coinText;
             hudCoins.innerText = coinText;
             document.getElementById('upgrade-wallet').innerText = coinText;
+            document.getElementById('hats-wallet').innerText = coinText;
             
             if (state.gameMode === 'hard') homeBestVal.innerText = state.bestHard;
             else if (state.gameMode === 'superhard') homeBestVal.innerText = state.bestSuperHard;
@@ -578,6 +666,12 @@
             const displayUser = document.getElementById('display-username');
             displayUser.innerText = state.username || 'Identify Yourself';
             
+            // Daily Challenge UI
+            const daily = state.dailyChallenge;
+            document.getElementById('daily-text').innerText = daily.completed ? "Mission Accomplished!" : daily.text;
+            document.getElementById('daily-progress').innerText = daily.completed ? "DONE" : `${daily.current}/${daily.goal}`;
+            document.getElementById('daily-challenge-card').classList.toggle('opacity-40', daily.completed);
+
             if (isBezos) {
                 displayUser.classList.add('bezos-rainbow');
                 document.getElementById('home-coin-pill').classList.add('gold-flash');
@@ -624,6 +718,14 @@
             }
         }
 
+        function openDaily() {
+            if (state.dailyChallenge.completed) {
+                showToast("Already finished today. Come back tomorrow!", "info");
+            } else {
+                showToast(`Current Objective: ${state.dailyChallenge.text}`, "info");
+            }
+        }
+
         function openModeSelect() {
             if (!state.username) return showUsernameEntry();
             uiModeSelect.classList.remove('hidden');
@@ -645,9 +747,11 @@
             localStorage.setItem('oinkUser', val);
             document.getElementById('ui-username').classList.add('hidden');
             refreshUI();
-            if(state.best > 0) db.ref('leaderboard/regular/'+state.username.toLowerCase()).set({ name: state.username, score: state.best }).catch(()=>{});
+            if(state.best > 0 && !isBezosMode()) {
+                db.ref('leaderboard/regular/'+state.username.toLowerCase()).set({ name: state.username, score: state.best }).catch(()=>{});
+            }
             if (!state.hasSeenTutorial) startTutorial();
-            if (isBezosMode()) showToast("Welcome Master Bezos!", "info");
+            if (isBezosMode()) showToast("Welcome Master Bezos! (Rankings Disabled)", "info");
         }
 
         function openUpgrades() {
@@ -770,6 +874,74 @@
             playSound('land'); 
         }
 
+        function openHats() {
+            const isBezos = isBezosMode();
+            hatsGrid.innerHTML = HATS.map(hat => {
+                const unlocked = state.unlockedHats.includes(hat.id);
+                const isSelected = state.selectedHatId === hat.id;
+                const canAfford = isBezos || state.coins >= HAT_PRICE;
+
+                return `
+                <div class="card-item border-2 ${isSelected ? 'selected border-pink-500' : 'border-white/10'} bg-white/5 p-4 rounded-2xl flex items-center gap-4 ${!unlocked ? 'locked' : ''}">
+                    <div class="w-16 h-16 relative flex items-center justify-center bg-indigo-900/50 rounded-xl overflow-hidden shrink-0" onclick="${unlocked ? `selectHat('${hat.id}')` : ''}">
+                        <canvas class="pig-preview-canvas" id="hat-preview-${hat.id}" width="64" height="64"></canvas>
+                        ${!unlocked ? '<div class="absolute inset-0 flex items-center justify-center bg-black/40 text-xs font-black">LOCKED</div>' : ''}
+                    </div>
+                    <div class="text-left flex-1 min-w-0" onclick="${unlocked ? `selectHat('${hat.id}')` : ''}">
+                        <span class="text-sm font-black uppercase tracking-tight truncate">${hat.name}</span>
+                        <p class="text-[9px] text-white/50 mt-0.5 leading-tight uppercase font-black">
+                            ${unlocked ? 'Equip' : 'Premium Headwear'}
+                        </p>
+                    </div>
+                    ${!unlocked ? `
+                        <button onclick="buyHat('${hat.id}')" ${!canAfford ? 'disabled' : ''} class="bg-yellow-500 hover:bg-yellow-400 disabled:opacity-30 disabled:grayscale text-black font-black py-2 px-3 rounded-xl text-[10px] flex items-center gap-1 active:scale-95 transition-all">
+                            <div class="w-3 h-3 bg-black rounded-full text-yellow-500 font-black flex items-center justify-center text-[7px]">₵</div>
+                            ${HAT_PRICE}
+                        </button>
+                    ` : `
+                        <div class="w-6 h-6 flex items-center justify-center bg-green-500 rounded-full text-white text-[10px] font-black">✓</div>
+                    `}
+                </div>`;
+            }).join('');
+            HATS.forEach(hat => {
+                const pcanv = document.getElementById(`hat-preview-${hat.id}`);
+                if (pcanv) { const pctx = pcanv.getContext('2d'); pctx.clearRect(0,0,64,64); const skin = SKINS.find(s=>s.id==='classic'); drawPigAvatar(pctx, skin, 32, 32, 1.2, -0.2, hat.id); }
+            });
+            uiHats.classList.remove('hidden');
+        }
+
+        function buyHat(id) {
+            const isBezos = isBezosMode();
+            if (!isBezos && state.coins < HAT_PRICE) return showToast("Not enough coins!", "error");
+            
+            if (!isBezos) {
+                state.coins -= HAT_PRICE;
+                localStorage.setItem('oinkCoins', state.coins);
+            }
+            unlockHat(id);
+            playSound('unlock');
+            showToast(`Hat Purchased!`);
+            openHats();
+            refreshUI();
+        }
+
+        function selectHat(id) {
+            state.selectedHatId = id;
+            localStorage.setItem('oinkHatSelected', id);
+            openHats();
+            refreshUI();
+            playSound('land');
+        }
+
+        function unlockHat(id) {
+            if (state.unlockedHats.includes(id)) return;
+            state.unlockedHats.push(id);
+            localStorage.setItem('oinkHats', JSON.stringify(state.unlockedHats));
+            showToast(`Unlocked Hat: ${HATS.find(h=>h.id===id).name}!`, 'info');
+        }
+
+        function closeHats() { uiHats.classList.add('hidden'); }
+
         function openThemes() {
             themesGrid.innerHTML = THEMES.map(theme => {
                 const unlocked = state.unlockedThemes.includes(theme.id);
@@ -793,7 +965,7 @@
 
         function setLeaderboardTab(tab) {
             state.leaderboardTab = tab;
-            ['regular', 'hard', 'superhard', 'sandbox'].forEach(t => {
+            ['regular', 'hard', 'superhard', 'sandbox', 'wealth'].forEach(t => {
                 const el = document.getElementById('tab-'+t);
                 if (t === tab) { el.classList.add('tab-active'); el.classList.remove('opacity-50'); } else { el.classList.remove('tab-active'); el.classList.add('opacity-50'); }
             });
@@ -802,7 +974,9 @@
 
         async function openLeaderboard() {
             const tab = state.leaderboardTab;
-            const path = tab === 'sandbox' ? 'leaderboard/speed' : `leaderboard/${tab}`;
+            let path = `leaderboard/${tab}`;
+            if (tab === 'sandbox') path = 'leaderboard/speed';
+            
             leaderboardList.innerHTML = `<div class="text-center py-10 opacity-50 animate-pulse">Scanning legends...</div>`;
             try {
                 const snap = await db.ref(path).orderByChild('score').limitToLast(10).once('value');
@@ -815,13 +989,16 @@
                     leaderboardList.innerHTML = data.map((e, i) => {
                         const isYou = e.name && state.username && (e.name.toLowerCase() === state.username.toLowerCase());
                         let medal = ''; if (i === 0) medal = '🥇'; else if (i === 1) medal = '🥈'; else if (i === 2) medal = '🥉';
-                        const scoreDisplay = tab === 'sandbox' ? `${e.score.toFixed(1)} u/s` : e.score;
+                        let scoreDisplay = e.score;
+                        if (tab === 'sandbox') scoreDisplay = `${e.score.toFixed(1)} u/s`;
+                        else if (tab === 'wealth') scoreDisplay = `₵${e.score}`;
+
                         return `<div class="flex justify-between items-center p-3 rounded-2xl border ${isYou ? 'border-pink-500 bg-pink-500/20' : 'border-white/5 bg-white/5'} mb-2">
                             <div class="flex items-center gap-4">
                                 <span class="font-black ${i < 3 ? 'text-yellow-400' : 'text-white/20'} text-lg w-6">${medal || (i + 1)}</span>
                                 <span class="font-black text-xs uppercase truncate">${e.name}</span>
                             </div>
-                            <span class="font-black text-pink-400 text-lg">${scoreDisplay}</span>
+                            <span class="font-black ${tab === 'wealth' ? 'text-yellow-400' : 'text-pink-400'} text-lg">${scoreDisplay}</span>
                         </div>`;
                     }).join(''); 
                 }
@@ -877,9 +1054,8 @@
             const locked = THEMES.filter(t => !state.unlockedThemes.includes(t.id));
             if (locked.length === 0) return showToast("All themes owned!");
             const choice = locked[Math.floor(Math.random() * locked.length)];
-            if (!isBezos) { state.coins -= 250; localStorage.setItem('oinkCoins', state.coins); }
-            state.unlockedThemes.push(choice.id);
-            localStorage.setItem('oinkThemesUnlocked', JSON.stringify(state.unlockedThemes));
+            if (!isBezos) { state.coins -= 250; state.unlockedThemes.push(choice.id); localStorage.setItem('oinkThemesUnlocked', JSON.stringify(state.unlockedThemes)); }
+            else { state.unlockedThemes.push(choice.id); localStorage.setItem('oinkThemesUnlocked', JSON.stringify(state.unlockedThemes)); }
             playSound('unlock');
             showToast(`Unlocked ${choice.name} Theme!`);
             openThemes();
@@ -1091,6 +1267,12 @@
                                 scoreVal.innerText = state.score;
                                 playSound('coin'); 
                                 if (isWealthPig) { setTimeout(()=>playSound('coin'), 100); setTimeout(()=>playSound('coin'), 200); }
+                                
+                                // Daily Progression
+                                updateDailyProgress('jumps', 1);
+                                if (state.gameMode === 'hard') updateDailyProgress('hard_jumps', 1);
+                                updateDailyProgress('earn_coins', Math.floor(reward));
+                                
                                 refreshUI(); checkAchievements();
                                 if (state.isTutorial && state.tutorialStep === 2) advanceTutorial();
                             } else if (state.gameMode === 'sandbox') { state.lastClockId = Math.max(state.lastClockId, clock.id); }
@@ -1146,12 +1328,22 @@
             localStorage.setItem('oinkCoins', state.coins); localStorage.setItem('oinkTotalCoins', state.totalCoinsEarned);
             localStorage.setItem('oinkTotalScore', state.totalScore); localStorage.setItem('oinkTotalJumps', state.totalJumps);
 
+            // Wealth Leaderboard Update
+            if (state.username && !isBezosMode()) {
+                db.ref('leaderboard/wealth/'+state.username.toLowerCase()).set({ name: state.username, score: state.totalCoinsEarned }).catch(()=>{});
+            }
+
+            // Daily Check
+            updateDailyProgress('score', state.score);
+
             let isNewBest = false;
             if (state.gameMode === 'regular') { if (state.score > state.best) { state.best = state.score; isNewBest = true; localStorage.setItem('oinkBest', state.best); } }
             else if (state.gameMode === 'hard') { if (state.score > state.bestHard) { state.bestHard = state.score; isNewBest = true; localStorage.setItem('oinkBestHard', state.bestHard); } }
             else if (state.gameMode === 'superhard') { if (state.score > state.bestSuperHard) { state.bestSuperHard = state.score; isNewBest = true; localStorage.setItem('oinkBestSuperHard', state.bestSuperHard); } }
 
-            if (isNewBest && state.username) db.ref(`leaderboard/${state.gameMode}/${state.username.toLowerCase()}`).set({ name: state.username, score: state.score }).catch(()=>{});
+            if (isNewBest && state.username && !isBezosMode()) {
+                db.ref(`leaderboard/${state.gameMode}/${state.username.toLowerCase()}`).set({ name: state.username, score: state.score }).catch(()=>{});
+            }
             document.getElementById('new-best-tag').classList.toggle('hidden', !isNewBest);
 
             earnedCoinsText.innerText = `+${state.score}`; finalScoreLabel.innerText = state.score; 
@@ -1162,18 +1354,32 @@
         function saveSandboxSpeed() {
             if (state.currentMaxSpeed > state.bestSpeed) {
                 state.bestSpeed = state.currentMaxSpeed; localStorage.setItem('oinkBestSpeed', state.bestSpeed);
-                if (state.username) db.ref('leaderboard/speed/'+state.username.toLowerCase()).set({ name: state.username, score: state.bestSpeed }).catch(()=>{});
+                if (state.username && !isBezosMode()) {
+                    db.ref('leaderboard/speed/'+state.username.toLowerCase()).set({ name: state.username, score: state.bestSpeed }).catch(()=>{});
+                }
             }
         }
 
         function checkAchievements() { 
             if (state.gameMode === 'sandbox') return; 
-            if (state.score >= 10) unlockAchievement('height_10'); if (state.score >= 25) unlockAchievement('height_25'); if (state.score >= 50) unlockAchievement('height_50');
-            if (state.totalScore >= 200) unlockAchievement('total_score_200'); if (state.totalCoinsEarned >= 150) unlockAchievement('coins_150'); 
-            if (state.bestStreak >= 3) unlockAchievement('perfect_3'); if (state.unlockedThemes.length >= 2) unlockAchievement('themes_2');
-            if (state.totalJumps >= 30) unlockAchievement('jumps_30'); if (state.hardJumps >= 2) unlockAchievement('hard_2');
-            const normalSkinsCount = state.unlockedSkins.filter(id => !SKINS.find(s => s.id === id)?.isAchievement).length; 
-            if (normalSkinsCount >= 2) unlockAchievement('skins_2'); if (state.unlockedAchievements.length >= 9) unlockAchievement('mastery');
+            ACHIEVEMENTS.forEach(ach => {
+                let currentVal = 0;
+                switch(ach.type) {
+                    case 'score': currentVal = state.best; break;
+                    case 'total_coins': currentVal = state.totalCoinsEarned; break;
+                    case 'cumulative_score': currentVal = state.totalScore; break;
+                    case 'total_jumps': currentVal = state.totalJumps; break;
+                    case 'perfect_streak': currentVal = state.bestStreak; break;
+                    case 'themes': currentVal = state.unlockedThemes.length; break;
+                    case 'skins_normal': currentVal = state.unlockedSkins.filter(id => !SKINS.find(s => s.id === id)?.isAchievement).length; break;
+                    case 'all_achievements': currentVal = state.unlockedAchievements.length; break;
+                    case 'hard_jumps': currentVal = state.hardJumps; break;
+                }
+                if (currentVal >= ach.goal) {
+                    unlockAchievement(ach.id);
+                    if (ach.rewardHat) unlockHat(ach.rewardHat);
+                }
+            });
         }
 
         function unlockAchievement(id) {
@@ -1188,7 +1394,7 @@
             container.appendChild(popup); setTimeout(() => popup.remove(), 4000); refreshUI(); playSound('unlock');
         }
 
-        function drawPigAvatar(pctx, skin, x, y, scale = 1, rotation = 0) {
+        function drawPigAvatar(pctx, skin, x, y, scale = 1, rotation = 0, hatId = null) {
             if (!skin) return; pctx.save(); pctx.translate(x, y); pctx.scale(scale, scale); pctx.rotate(rotation);
             let bodyColor = skin.body; let earColor = skin.ears; let snoutColor = skin.snout;
             if (skin.id === 'rainbow' || skin.id === 'omega') { bodyColor = `hsl(${state.rainbowHue}, 80%, 70%)`; earColor = `hsl(${state.rainbowHue + 30}, 80%, 40%)`; snoutColor = `hsl(${state.rainbowHue + 60}, 80%, 80%)`; }
@@ -1213,6 +1419,37 @@
             pctx.fillStyle = snoutColor; pctx.beginPath(); pctx.ellipse(0, 4, 8, 6, 0, 0, Math.PI * 2); pctx.fill();
             pctx.fillStyle = skin.snoutDots || 'rgba(0,0,0,0.3)'; pctx.beginPath(); pctx.arc(-3, 4, 1.5, 0, Math.PI * 2); pctx.fill(); pctx.beginPath(); pctx.arc(3, 4, 1.5, 0, Math.PI * 2); pctx.fill();
             const eyeColor = (skin.id === 'void' || skin.id === 'neon' || skin.id === 'omega' || skin.id === 'rocket') ? 'white' : 'black'; pctx.fillStyle = eyeColor; pctx.beginPath(); pctx.arc(-7, -4, 2.5, 0, Math.PI * 2); pctx.fill(); pctx.beginPath(); pctx.arc(7, -4, 2.5, 0, Math.PI * 2); pctx.fill();
+            
+            // Draw Hat
+            const currentHatId = hatId || state.selectedHatId;
+            if (currentHatId && currentHatId !== 'none') {
+                pctx.save();
+                pctx.translate(0, -14);
+                switch(currentHatId) {
+                    case 'tophat':
+                        pctx.fillStyle = '#000000'; pctx.fillRect(-10, -15, 20, 15); pctx.fillRect(-15, -2, 30, 4); break;
+                    case 'propeller':
+                        pctx.fillStyle = '#ef4444'; pctx.beginPath(); pctx.arc(0, 0, 10, Math.PI, 0); pctx.fill();
+                        pctx.strokeStyle = '#ffffff'; pctx.lineWidth = 2; pctx.beginPath(); pctx.moveTo(0, 0); pctx.lineTo(0, -6); pctx.stroke();
+                        pctx.save(); pctx.rotate(Date.now() * 0.02); pctx.fillStyle = '#fbbf24'; pctx.fillRect(-8, -7, 16, 2); pctx.restore(); break;
+                    case 'crown':
+                        pctx.fillStyle = '#fbbf24'; pctx.beginPath(); pctx.moveTo(-12, 0); pctx.lineTo(-12, -10); pctx.lineTo(-6, -5); pctx.lineTo(0, -15); pctx.lineTo(6, -5); pctx.lineTo(12, -10); pctx.lineTo(12, 0); pctx.closePath(); pctx.fill(); break;
+                    case 'chef':
+                        pctx.fillStyle = '#ffffff'; pctx.beginPath(); pctx.moveTo(-8, 0); pctx.lineTo(-8, -10); pctx.bezierCurveTo(-15, -25, 15, -25, 8, -10); pctx.lineTo(8, 0); pctx.fill(); break;
+                    case 'viking':
+                        pctx.fillStyle = '#64748b'; pctx.beginPath(); pctx.arc(0, 0, 10, Math.PI, 0); pctx.fill();
+                        pctx.fillStyle = '#ffffff'; pctx.beginPath(); pctx.moveTo(-8, -4); pctx.lineTo(-15, -15); pctx.lineTo(-5, -8); pctx.fill();
+                        pctx.beginPath(); pctx.moveTo(8, -4); pctx.lineTo(15, -15); pctx.lineTo(5, -8); pctx.fill(); break;
+                    case 'detective':
+                        pctx.fillStyle = '#451a03'; pctx.beginPath(); pctx.ellipse(0, 0, 12, 6, 0, Math.PI, 0); pctx.fill(); pctx.fillRect(-12, -4, 24, 4); pctx.fillRect(8, -2, 8, 3); break;
+                    case 'party':
+                        pctx.fillStyle = `hsl(${state.rainbowHue}, 80%, 60%)`; pctx.beginPath(); pctx.moveTo(-8, 0); pctx.lineTo(0, -18); pctx.lineTo(8, 0); pctx.fill(); break;
+                    case 'halo':
+                        pctx.strokeStyle = '#fde68a'; pctx.lineWidth = 3; pctx.shadowBlur = 10; pctx.shadowColor = '#fbbf24'; pctx.beginPath(); pctx.ellipse(0, -8, 12, 4, 0, 0, Math.PI*2); pctx.stroke(); break;
+                }
+                pctx.restore();
+            }
+
             if (skin.id === 'rocket') { pctx.fillStyle = '#EF4444'; pctx.beginPath(); pctx.moveTo(-5, 16); pctx.lineTo(0, 25); pctx.lineTo(5, 16); pctx.fill(); }
             if (skin.id === 'smoking') { pctx.fillStyle = 'black'; pctx.fillRect(-10, -6, 20, 2); }
             if (skin.id === 'lava') { pctx.shadowBlur = 10; pctx.shadowColor = '#F97316'; pctx.fillStyle = '#FB923C'; pctx.beginPath(); pctx.arc(0, 0, 12, 0, Math.PI*2); pctx.fill(); pctx.shadowBlur = 0; }
@@ -1306,6 +1543,7 @@
         canvas.addEventListener('mousedown', () => { initAudio(); jump(); });
         canvas.addEventListener('touchstart', (e) => { e.preventDefault(); initAudio(); const rect = canvas.getBoundingClientRect(); state.mouse.x = (e.touches[0].clientX - rect.left) * (WIDTH / rect.width); state.mouse.y = (e.touches[0].clientY - rect.top) * (HEIGHT / rect.height); jump(); });
 
+        generateDailyChallenge();
         requestAnimationFrame(loop);
         refreshUI();
     </script>
