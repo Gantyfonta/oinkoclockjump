@@ -201,6 +201,17 @@
             <button onclick="resetAllData()" class="absolute bottom-6 left-6 text-[8px] font-black uppercase tracking-tighter text-white/20 hover:text-red-500 transition-colors pointer-events-auto">Reset Data</button>
         </div>
 
+        <!-- Bezos Mode Console -->
+        <div id="bezos-console" class="absolute bottom-4 right-4 bg-black/80 backdrop-blur-md border border-yellow-500/50 p-3 rounded-2xl z-[100] text-white w-48 hidden pointer-events-auto shadow-2xl">
+            <div class="text-[8px] font-black uppercase tracking-widest text-yellow-500 mb-2">Bezos Admin Tool</div>
+            <input type="text" id="bezos-input" placeholder="Skin/Hat/Level..." class="w-full bg-white/10 border border-white/20 rounded-lg px-2 py-1.5 text-[10px] focus:outline-none focus:border-yellow-500 mb-2">
+            <div class="flex gap-1">
+                <button onclick="applyBezosCommand(true)" class="flex-1 bg-yellow-600 hover:bg-yellow-500 text-[8px] font-black py-1.5 rounded uppercase">Grant</button>
+                <button onclick="applyBezosCommand(false)" class="flex-1 bg-red-900 hover:bg-red-800 text-[8px] font-black py-1.5 rounded uppercase">Revoke</button>
+            </div>
+            <p class="text-[6px] text-white/40 mt-2 italic leading-none">Type full name (e.g. "Cat Ears", "Cosmic Magnet 5")</p>
+        </div>
+
         <!-- Mode Select Popup -->
         <div id="ui-modeselect" class="absolute inset-0 flex flex-col items-center justify-center bg-indigo-950/95 backdrop-blur-md z-[60] text-white p-8 text-center hidden">
             <h2 class="text-3xl font-black mb-6 italic uppercase tracking-tighter">SELECT MODE</h2>
@@ -687,6 +698,9 @@
             document.getElementById('upgrade-wallet').innerText = coinText;
             document.getElementById('hats-wallet').innerText = coinText;
             
+            // Toggle Bezos Console
+            document.getElementById('bezos-console').classList.toggle('hidden', !isBezos);
+
             if (state.gameMode === 'hard') {
                 homeBestVal.innerText = state.bestHard;
                 btnPlay.innerText = "PLAY HARD";
@@ -754,6 +768,78 @@
                 document.getElementById('score-label').innerText = "SCORE";
                 bestVal.innerText = state.best;
             }
+        }
+
+        function applyBezosCommand(unlock) {
+            const input = document.getElementById('bezos-input').value.trim();
+            if (!input) return;
+
+            const nameToId = (name) => name.toLowerCase().replace(/[^a-z0-9]/g, '');
+            const inputLower = input.toLowerCase();
+            
+            // Check Upgrades first (special case for levels)
+            // Example: "Cosmic Magnet 10"
+            const upgradeMatch = GLOBAL_UPGRADES.find(u => inputLower.includes(u.name.toLowerCase()));
+            if (upgradeMatch) {
+                const parts = input.split(' ');
+                const level = parseInt(parts[parts.length - 1]);
+                if (!isNaN(level)) {
+                    state.upgrades[upgradeMatch.id] = level;
+                    showToast(`${upgradeMatch.name} Level set to ${level}!`);
+                } else {
+                    state.upgrades[upgradeMatch.id] = unlock ? 5 : 0;
+                    showToast(`${upgradeMatch.name} set to ${state.upgrades[upgradeMatch.id]}!`);
+                }
+                localStorage.setItem('oinkUpgrades', JSON.stringify(state.upgrades));
+                refreshUI();
+                return;
+            }
+
+            // Check Skins
+            const skinMatch = SKINS.find(s => s.name.toLowerCase() === inputLower);
+            if (skinMatch) {
+                if (unlock && !state.unlockedSkins.includes(skinMatch.id)) state.unlockedSkins.push(skinMatch.id);
+                else if (!unlock) state.unlockedSkins = state.unlockedSkins.filter(id => id !== skinMatch.id);
+                localStorage.setItem('oinkUnlocked', JSON.stringify(state.unlockedSkins));
+                showToast(`Skin ${skinMatch.name} ${unlock ? 'Unlocked' : 'Locked'}!`);
+                refreshUI();
+                return;
+            }
+
+            // Check Hats
+            const hatMatch = HATS.find(h => h.name.toLowerCase() === inputLower);
+            if (hatMatch) {
+                if (unlock && !state.unlockedHats.includes(hatMatch.id)) state.unlockedHats.push(hatMatch.id);
+                else if (!unlock) state.unlockedHats = state.unlockedHats.filter(id => id !== hatMatch.id);
+                localStorage.setItem('oinkHats', JSON.stringify(state.unlockedHats));
+                showToast(`Hat ${hatMatch.name} ${unlock ? 'Unlocked' : 'Locked'}!`);
+                refreshUI();
+                return;
+            }
+
+            // Check Themes
+            const themeMatch = THEMES.find(t => t.name.toLowerCase() === inputLower);
+            if (themeMatch) {
+                if (unlock && !state.unlockedThemes.includes(themeMatch.id)) state.unlockedThemes.push(themeMatch.id);
+                else if (!unlock) state.unlockedThemes = state.unlockedThemes.filter(id => id !== themeMatch.id);
+                localStorage.setItem('oinkThemesUnlocked', JSON.stringify(state.unlockedThemes));
+                showToast(`Theme ${themeMatch.name} ${unlock ? 'Unlocked' : 'Locked'}!`);
+                refreshUI();
+                return;
+            }
+
+            // Check Achievements (Goals)
+            const achMatch = ACHIEVEMENTS.find(a => a.name.toLowerCase() === inputLower);
+            if (achMatch) {
+                if (unlock && !state.unlockedAchievements.includes(achMatch.id)) state.unlockedAchievements.push(achMatch.id);
+                else if (!unlock) state.unlockedAchievements = state.unlockedAchievements.filter(id => id !== achMatch.id);
+                localStorage.setItem('oinkAchieved', JSON.stringify(state.unlockedAchievements));
+                showToast(`Goal ${achMatch.name} ${unlock ? 'Complete' : 'Reset'}!`);
+                refreshUI();
+                return;
+            }
+
+            showToast("Item not found. Check spelling!", "error");
         }
 
         function openDaily() {
