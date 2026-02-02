@@ -1756,7 +1756,15 @@
         }
 
         window.addEventListener('mousemove', (e) => { const rect = canvas.getBoundingClientRect(); state.mouse.x = (e.clientX - rect.left) * (WIDTH / rect.width); state.mouse.y = (e.clientY - rect.top) * (HEIGHT / rect.height); });
-        window.addEventListener('keydown', (e) => { if (document.activeElement.tagName === 'INPUT') return; if (e.code === 'Space') { e.preventDefault(); if (state.status === 'PLAYING') jump(); else if (state.status === 'HOME' || state.status === 'GAMEOVER') handleMainPlay(); } });
+        window.addEventListener('keydown', (e) => { 
+            if (document.activeElement.tagName === 'INPUT') return; 
+            if (e.code === 'Space') { 
+                e.preventDefault(); 
+                if (state.status === 'PLAYING') jump(); 
+                else if (state.status === 'HOME') handleMainPlay(); 
+                else if (state.status === 'GAMEOVER') retryGame();
+            } 
+        });
         canvas.addEventListener('mousedown', () => { initAudio(); jump(); });
         canvas.addEventListener('touchstart', (e) => { e.preventDefault(); initAudio(); const rect = canvas.getBoundingClientRect(); state.mouse.x = (e.touches[0].clientX - rect.left) * (WIDTH / rect.width); state.mouse.y = (e.touches[0].clientY - rect.top) * (HEIGHT / rect.height); jump(); });
 
