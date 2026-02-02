@@ -183,6 +183,7 @@
                     <button id="btn-themes" onclick="openThemes()" class="bg-indigo-800 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-[10px] transition-transform active:scale-95 uppercase">THEMES</button>
                     <button id="btn-goals" onclick="openAchievements()" class="bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-3 rounded-xl text-[10px] transition-transform active:scale-95 uppercase">GOALS</button>
                     <button id="btn-upgrades" onclick="openUpgrades()" class="bg-cyan-700 hover:bg-cyan-600 text-white font-bold py-3 rounded-xl text-[10px] transition-transform active:scale-95 uppercase">UPGRADES</button>
+                    <button id="btn-lore" onclick="openLore()" class="bg-purple-800 hover:bg-purple-700 text-white font-bold py-3 rounded-xl text-[10px] transition-transform active:scale-95 uppercase">LORE</button>
                     <button id="btn-rankings" onclick="openLeaderboardUI()" class="bg-indigo-800 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-[10px] transition-transform active:scale-95 uppercase">LIST</button>
                 </div>
                 <button id="btn-how" onclick="startTutorial()" class="mt-1 text-[10px] font-black uppercase text-white/30 hover:text-white transition-colors tracking-widest">How to Play?</button>
@@ -199,6 +200,35 @@
 
             <!-- Reset Button -->
             <button onclick="resetAllData()" class="absolute bottom-6 left-6 text-[8px] font-black uppercase tracking-tighter text-white/20 hover:text-red-500 transition-colors pointer-events-auto">Reset Data</button>
+        </div>
+
+        <!-- Lore Menu -->
+        <div id="ui-lore" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-3xl font-black italic uppercase tracking-tighter text-purple-400">Chronicles</h2>
+                <button onclick="closeLore()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            </div>
+            <div class="flex-1 overflow-y-auto space-y-6 pr-1 text-left leading-relaxed">
+                <div>
+                    <h3 class="text-pink-400 font-black uppercase text-xs tracking-widest mb-2">The Genesis</h3>
+                    <p class="text-[11px] text-white/70">Long ago, before the hands of time even existed, there was only the Void. Into this silence, a single Oink echoed. From that sound, the Clockwork Nebula was born—a realm where gravity is a suggestion and time is the only path forward.</p>
+                </div>
+                <div>
+                    <h3 class="text-cyan-400 font-black uppercase text-xs tracking-widest mb-2">The Leap of Faith</h3>
+                    <p class="text-[11px] text-white/70">The Great Pig was the first to realize that by jumping on the turning gears of the universe, one could ascend to higher dimensions. Each clock is a localized pocket of existence. To miss a leap is to be forgotten by history, falling back into the formless depths.</p>
+                </div>
+                <div>
+                    <h3 class="text-yellow-400 font-black uppercase text-xs tracking-widest mb-2">The Omega Pig</h3>
+                    <p class="text-[11px] text-white/70">Legend speaks of a pig who ascended so high that they became one with the rainbow. This "Omega Hog" no longer sees time as linear, but as a spectrum. They move with the grace of 4.0x multiplier efficiency, harvesting the very energy of the cosmos with every successful leap.</p>
+                </div>
+                <div>
+                    <h3 class="text-orange-400 font-black uppercase text-xs tracking-widest mb-2">The Hard Truth</h3>
+                    <p class="text-[11px] text-white/70">Those who seek greater rewards must brave the "Hard Realities." Here, gravity pulls with the weight of regrets, and the clocks spin with the frantic speed of a closing deadline. Only the most precise leapers survive the spike-laden paths of the Super Hard realm.</p>
+                </div>
+            </div>
+            <div class="mt-6 p-4 bg-purple-900/30 rounded-2xl border border-white/5 text-center">
+                <p class="text-[9px] font-black uppercase text-purple-300/50 italic tracking-widest">Keep Leaping, Chronos-Swine.</p>
+            </div>
         </div>
 
         <!-- Bezos Mode Console -->
@@ -240,7 +270,7 @@
         <div id="ui-upgrades" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-3xl font-black italic uppercase tracking-tighter text-cyan-400">Global Upgrades</h2>
-                <button onclick="closeUpgrades()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                <button onclick="closeUpgrades()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" x2="6" y1="6" y2="18"></line><line x1="6" x2="18" y1="6" y2="18"></line></svg></button>
             </div>
             <div id="upgrades-list" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
             <div class="mt-4 p-4 bg-indigo-900/50 rounded-2xl flex justify-between items-center border border-white/5">
@@ -429,7 +459,7 @@
             { id: 'king', name: 'King Swine', ability: 'Royalty', desc: 'Collection Reward. +5 Coins/Jump.', body: '#7C3AED', ears: '#C084FC', snout: '#DDD6FE', snoutDots: '#4C1D95', isAchievement: true },
             { id: 'rocket', name: 'Rocket Pig', ability: 'Thrust', desc: 'Hard Mode Reward. Air Control.', body: '#94A3B8', ears: '#EF4444', snout: '#F1F5F9', snoutDots: '#000000', isAchievement: true },
             { id: 'smoking', name: 'Cool Swine', ability: 'Cloud', desc: 'Leaves a mysterious trail.', body: '#475569', ears: '#1E293B', snout: '#94A3B8', snoutDots: '#000000' },
-            { id: 'omega', name: 'Omega Hog', ability: 'Omni', desc: 'The Ultimate. +10 Coins/Jump & 10x Score!', body: '#FFFFFF', ears: '#FBBF24', snout: '#FDE68A', snoutDots: '#000000', isAchievement: true }
+            { id: 'omega', name: 'Omega Hog', ability: 'Omni', desc: 'The Ultimate. +10 Coins/Jump & 4x Score!', body: '#FFFFFF', ears: '#FBBF24', snout: '#FDE68A', snoutDots: '#000000', isAchievement: true }
         ];
 
         const HATS = [
@@ -535,6 +565,7 @@
         const uiGameOver = document.getElementById('ui-gameover');
         const uiLeaderboard = document.getElementById('ui-leaderboard');
         const uiThemes = document.getElementById('ui-themes');
+        const uiLore = document.getElementById('ui-lore');
         const uiUpgrades = document.getElementById('ui-upgrades');
         const uiAchievements = document.getElementById('ui-achievements');
         const uiTutorial = document.getElementById('ui-tutorial');
@@ -774,11 +805,8 @@
             const input = document.getElementById('bezos-input').value.trim();
             if (!input) return;
 
-            const nameToId = (name) => name.toLowerCase().replace(/[^a-z0-9]/g, '');
             const inputLower = input.toLowerCase();
             
-            // Check Upgrades first (special case for levels)
-            // Example: "Cosmic Magnet 10"
             const upgradeMatch = GLOBAL_UPGRADES.find(u => inputLower.includes(u.name.toLowerCase()));
             if (upgradeMatch) {
                 const parts = input.split(' ');
@@ -795,7 +823,6 @@
                 return;
             }
 
-            // Check Skins
             const skinMatch = SKINS.find(s => s.name.toLowerCase() === inputLower);
             if (skinMatch) {
                 if (unlock && !state.unlockedSkins.includes(skinMatch.id)) state.unlockedSkins.push(skinMatch.id);
@@ -806,7 +833,6 @@
                 return;
             }
 
-            // Check Hats
             const hatMatch = HATS.find(h => h.name.toLowerCase() === inputLower);
             if (hatMatch) {
                 if (unlock && !state.unlockedHats.includes(hatMatch.id)) state.unlockedHats.push(hatMatch.id);
@@ -817,7 +843,6 @@
                 return;
             }
 
-            // Check Themes
             const themeMatch = THEMES.find(t => t.name.toLowerCase() === inputLower);
             if (themeMatch) {
                 if (unlock && !state.unlockedThemes.includes(themeMatch.id)) state.unlockedThemes.push(themeMatch.id);
@@ -828,7 +853,6 @@
                 return;
             }
 
-            // Check Achievements (Goals)
             const achMatch = ACHIEVEMENTS.find(a => a.name.toLowerCase() === inputLower);
             if (achMatch) {
                 if (unlock && !state.unlockedAchievements.includes(achMatch.id)) state.unlockedAchievements.push(achMatch.id);
@@ -922,6 +946,9 @@
         }
 
         function closeUpgrades() { uiUpgrades.classList.add('hidden'); }
+
+        function openLore() { uiLore.classList.remove('hidden'); }
+        function closeLore() { uiLore.classList.add('hidden'); }
 
         function startGame(mode = 'regular') {
             initAudio(); 
@@ -1322,7 +1349,6 @@
 
             if (state.pig.jumpCooldown > 0) state.pig.jumpCooldown -= timeScale;
 
-            // Environmental Particles
             if (state.selectedThemeId === 'planets' && state.stars) {
                 state.stars.forEach(s => { s.y += s.speed * timeScale; if (s.y > HEIGHT) s.y = 0; });
             }
@@ -1393,7 +1419,7 @@
                             state.pig.attachedTo = clock.id; state.pig.vx = 0; state.pig.vy = 0;
                             if (clock.id > state.lastClockId && state.gameMode !== 'sandbox') {
                                 let scoreMultiplier = (skinId === 'golden' || skinId === 'king') ? 2 : (skinId === 'devil' || skinId === 'steampunk' ? 3 : 1);
-                                if (skinId === 'omega') scoreMultiplier = 10;
+                                if (skinId === 'omega') scoreMultiplier = 4;
                                 if (state.gameMode === 'hard') scoreMultiplier *= 2;
                                 if (state.gameMode === 'superhard') scoreMultiplier *= 5;
                                 scoreMultiplier *= (1 + (state.upgrades.score_bonus || 0) * 0.05);
@@ -1655,7 +1681,6 @@
             const theme = THEMES.find(t => t.id === state.selectedThemeId) || THEMES[0];
             ctx.fillStyle = theme.bg; ctx.fillRect(0,0,WIDTH,HEIGHT);
             
-            // Background environmental details
             if (theme.type === 'PLANET') {
                 ctx.fillStyle = 'white';
                 state.stars.forEach(s => { ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI*2); ctx.fill(); });
