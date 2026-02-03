@@ -133,6 +133,9 @@
             border-bottom: 2px solid #F472B6;
             color: #F472B6;
         }
+        .bezos-transition {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
     </style>
 </head>
 <body>
@@ -206,7 +209,7 @@
         <div id="ui-lore" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-3xl font-black italic uppercase tracking-tighter text-purple-400">Chronicles</h2>
-                <button onclick="closeLore()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                <button onclick="closeLore()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" x2="6" y1="6" x2="18" y2="18"></line><line x1="6" x2="18" y1="6" x2="18" y2="18"></line></svg></button>
             </div>
             <div class="flex-1 overflow-y-auto space-y-6 pr-1 text-left leading-relaxed">
                 <div>
@@ -232,14 +235,19 @@
         </div>
 
         <!-- Bezos Mode Console -->
-        <div id="bezos-console" class="absolute bottom-4 right-4 bg-black/80 backdrop-blur-md border border-yellow-500/50 p-3 rounded-2xl z-[100] text-white w-48 hidden pointer-events-auto shadow-2xl">
-            <div class="text-[8px] font-black uppercase tracking-widest text-yellow-500 mb-2">Bezos Admin Tool</div>
-            <input type="text" id="bezos-input" placeholder="Skin/Hat/Level..." class="w-full bg-white/10 border border-white/20 rounded-lg px-2 py-1.5 text-[10px] focus:outline-none focus:border-yellow-500 mb-2">
-            <div class="flex gap-1">
-                <button onclick="applyBezosCommand(true)" class="flex-1 bg-yellow-600 hover:bg-yellow-500 text-[8px] font-black py-1.5 rounded uppercase">Grant</button>
-                <button onclick="applyBezosCommand(false)" class="flex-1 bg-red-900 hover:bg-red-800 text-[8px] font-black py-1.5 rounded uppercase">Revoke</button>
+        <div id="bezos-console" class="absolute bottom-4 right-4 bg-black/80 backdrop-blur-md border border-yellow-500/50 rounded-2xl z-[100] text-white w-48 hidden pointer-events-auto shadow-2xl bezos-transition overflow-hidden">
+            <div id="bezos-header" onclick="toggleBezosConsole()" class="flex items-center justify-between p-3 bg-yellow-500/10 cursor-pointer border-b border-yellow-500/20">
+                <div class="text-[8px] font-black uppercase tracking-widest text-yellow-500">Bezos Admin Tool</div>
+                <div id="bezos-toggle-icon" class="text-yellow-500 text-[10px]">▼</div>
             </div>
-            <p class="text-[6px] text-white/40 mt-2 italic leading-none">Type full name (e.g. "Cat Ears", "Cosmic Magnet 5")</p>
+            <div id="bezos-body" class="p-3">
+                <input type="text" id="bezos-input" placeholder="Skin/Hat/Level..." class="w-full bg-white/10 border border-white/20 rounded-lg px-2 py-1.5 text-[10px] focus:outline-none focus:border-yellow-500 mb-2">
+                <div class="flex gap-1">
+                    <button onclick="applyBezosCommand(true)" class="flex-1 bg-yellow-600 hover:bg-yellow-500 text-[8px] font-black py-1.5 rounded uppercase">Grant</button>
+                    <button onclick="applyBezosCommand(false)" class="flex-1 bg-red-900 hover:bg-red-800 text-[8px] font-black py-1.5 rounded uppercase">Revoke</button>
+                </div>
+                <p class="text-[6px] text-white/40 mt-2 italic leading-none">Type full name (e.g. "Cat Ears", "Cosmic Magnet 5")</p>
+            </div>
         </div>
 
         <!-- Mode Select Popup -->
@@ -286,7 +294,7 @@
         <div id="ui-leaderboard" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
             <div class="flex justify-between items-center mb-4">
                 <h2 id="title-rankings" class="text-3xl font-black italic uppercase tracking-tighter">Legends</h2>
-                <button onclick="closeLeaderboard()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" x2="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                <button onclick="closeLeaderboard()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" x2="6" y1="6" x2="18" y2="18"></line><line x1="6" x2="18" y1="6" x2="18" y2="18"></line></svg></button>
             </div>
             <div class="flex gap-1 mb-4">
                 <button onclick="setLeaderboardTab('regular')" id="tab-regular" class="flex-1 py-2 text-[7px] font-black uppercase border-b-2 border-white/5 opacity-50">Score</button>
@@ -302,7 +310,7 @@
         <div id="ui-hats" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-3xl font-black italic uppercase tracking-tighter text-pink-400">Headwear Shop</h2>
-                <button onclick="closeHats()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                <button onclick="closeHats()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" x2="6" y1="6" x2="18" y2="18"></line><line x1="6" x2="18" y1="6" x2="18" y2="18"></line></svg></button>
             </div>
             <div id="hats-grid" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
             <div class="mt-4 p-4 bg-indigo-900/50 rounded-2xl flex justify-between items-center border border-white/5">
@@ -318,7 +326,7 @@
         <div id="ui-achievements" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
             <div class="flex justify-between items-center mb-4">
                 <h2 id="title-milestones" class="text-3xl font-black italic uppercase tracking-tighter text-yellow-500">Milestones</h2>
-                <button onclick="closeAchievements()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                <button onclick="closeAchievements()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" x2="6" y1="6" x2="18" y2="18"></line><line x1="6" x2="18" y1="6" x2="18" y2="18"></line></svg></button>
             </div>
             <div id="achievements-list" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
         </div>
@@ -327,7 +335,7 @@
         <div id="ui-skins" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
             <div class="flex justify-between items-center mb-4">
                 <h2 id="title-skins" class="text-3xl font-black italic uppercase tracking-tighter">Skins</h2>
-                <button onclick="closeSkins()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                <button onclick="closeSkins()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" x2="6" y1="6" x2="18" y2="18"></line><line x1="6" x2="18" y1="6" x2="18" y2="18"></line></svg></button>
             </div>
             <div id="skins-grid" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
             <button id="buy-skin-btn" onclick="buyRandomSkin()" class="mt-4 w-full bg-pink-500 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 active:scale-95 transition-transform disabled:opacity-50">
@@ -340,10 +348,10 @@
         <div id="ui-themes" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
             <div class="flex justify-between items-center mb-4">
                 <h2 id="title-themes" class="text-3xl font-black italic uppercase tracking-tighter">Themes</h2>
-                <button onclick="closeThemes()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                <button onclick="closeThemes()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" x2="6" y1="6" x2="18" y2="18"></line><line x1="6" x2="18" y1="6" x2="18" y2="18"></line></svg></button>
             </div>
             <div id="themes-grid" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
-            <button id="buy-theme-btn" onclick="buyRandomTheme()" class="mt-4 w-full bg-pink-500 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 active:scale-95 transition-transform disabled:opacity-50">
+            <button id="buy-theme-btn" onclick="buyRandomTheme()" class="mt-4 w-full bg-indigo-500 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 active:scale-95 transition-transform disabled:opacity-50">
                 <div class="w-6 h-6 bg-yellow-400 rounded-full text-black font-black flex items-center justify-center text-xs">₵</div>
                 <span id="buy-theme-label">UNLOCK THEME (250)</span>
             </button>
@@ -427,10 +435,10 @@
         const CLOCK_COLORS = ['#F472B6', '#60A5FA', '#34D399', '#FBBF24', '#A78BFA', '#FB923C'];
 
         const FAMILY_MEMBERS = [
-            { name: 'George', scale: 0.7, grab: 0, body: '#F472B6' },
-            { name: 'Peppa', scale: 1.0, grab: 8, body: '#F472B6' },
-            { name: 'Mummy', scale: 1.3, grab: 18, body: '#EC4899' },
-            { name: 'Daddy', scale: 1.6, grab: 30, body: '#BE185D' }
+            { name: 'George', scale: 0.6, grab: 0, body: '#F472B6' },
+            { name: 'Peppa', scale: 0.9, grab: 8, body: '#F472B6' },
+            { name: 'Mummy', scale: 1.2, grab: 20, body: '#EC4899' },
+            { name: 'Daddy', scale: 1.5, grab: 35, body: '#BE185D' }
         ];
 
         const GLOBAL_UPGRADES = [
@@ -442,6 +450,7 @@
 
         const SKINS = [
             { id: 'classic', name: 'Classic Oink', ability: 'Standard', desc: 'A well-rounded pig.', body: '#F472B6', ears: '#EC4899', snout: '#F9A8D4', snoutDots: '#BE185D' },
+            { id: 'spider', name: 'Spider Guy', ability: 'Crawl', desc: 'Procedural legs that grip clocks! High grab range.', body: '#0f172a', ears: '#1e293b', snout: '#ef4444', snoutDots: '#000000' },
             { id: 'family', name: 'The Family', ability: 'Ancestry', desc: 'Switches member every jump! Varies size and grab.', body: '#F472B6', ears: '#EC4899', snout: '#F9A8D4', snoutDots: '#BE185D' },
             { id: 'frog', name: 'Leap Frog', ability: 'Aqua', desc: 'Slightly higher mid-air jumps.', body: '#22C55E', ears: '#166534', snout: '#86EFAC', snoutDots: '#064E3B' },
             { id: 'ghost', name: 'Spectral Pig', ability: 'Phaze', desc: 'Cumulative Reward. Translucent.', body: 'rgba(255,255,255,0.35)', ears: 'rgba(200,200,255,0.3)', snout: 'rgba(255,255,255,0.5)', snoutDots: 'rgba(0,0,0,0.1)', isAchievement: true },
@@ -559,7 +568,8 @@
             isTutorial: false,
             tutorialStep: 0,
             mouse: { x: 0, y: 0 },
-            lastTime: 0
+            lastTime: 0,
+            bezosConsoleCollapsed: false
         };
 
         const canvas = document.getElementById('gameCanvas');
@@ -662,6 +672,14 @@
             return state.username.toLowerCase() === 'bezos';
         }
 
+        function toggleBezosConsole() {
+            state.bezosConsoleCollapsed = !state.bezosConsoleCollapsed;
+            const body = document.getElementById('bezos-body');
+            const icon = document.getElementById('bezos-toggle-icon');
+            body.classList.toggle('hidden', state.bezosConsoleCollapsed);
+            icon.innerText = state.bezosConsoleCollapsed ? '▲' : '▼';
+        }
+
         function showToast(msg, type = 'info') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -735,7 +753,6 @@
             document.getElementById('upgrade-wallet').innerText = coinText;
             document.getElementById('hats-wallet').innerText = coinText;
             
-            // Toggle Bezos Console
             document.getElementById('bezos-console').classList.toggle('hidden', !isBezos);
 
             if (state.gameMode === 'hard') {
@@ -755,7 +772,6 @@
             const displayUser = document.getElementById('display-username');
             displayUser.innerText = state.username || 'Identify Yourself';
             
-            // Daily Challenge UI
             const daily = state.dailyChallenge;
             document.getElementById('daily-text').innerText = daily.completed ? "Mission Accomplished!" : daily.text;
             document.getElementById('daily-progress').innerText = daily.completed ? "DONE" : `${daily.current}/${daily.goal}`;
@@ -810,9 +826,7 @@
         function applyBezosCommand(unlock) {
             const input = document.getElementById('bezos-input').value.trim();
             if (!input) return;
-
             const inputLower = input.toLowerCase();
-            
             const upgradeMatch = GLOBAL_UPGRADES.find(u => inputLower.includes(u.name.toLowerCase()));
             if (upgradeMatch) {
                 const parts = input.split(' ');
@@ -828,7 +842,6 @@
                 refreshUI();
                 return;
             }
-
             const skinMatch = SKINS.find(s => s.name.toLowerCase() === inputLower);
             if (skinMatch) {
                 if (unlock && !state.unlockedSkins.includes(skinMatch.id)) state.unlockedSkins.push(skinMatch.id);
@@ -838,7 +851,6 @@
                 refreshUI();
                 return;
             }
-
             const hatMatch = HATS.find(h => h.name.toLowerCase() === inputLower);
             if (hatMatch) {
                 if (unlock && !state.unlockedHats.includes(hatMatch.id)) state.unlockedHats.push(hatMatch.id);
@@ -848,7 +860,6 @@
                 refreshUI();
                 return;
             }
-
             const themeMatch = THEMES.find(t => t.name.toLowerCase() === inputLower);
             if (themeMatch) {
                 if (unlock && !state.unlockedThemes.includes(themeMatch.id)) state.unlockedThemes.push(themeMatch.id);
@@ -858,7 +869,6 @@
                 refreshUI();
                 return;
             }
-
             const achMatch = ACHIEVEMENTS.find(a => a.name.toLowerCase() === inputLower);
             if (achMatch) {
                 if (unlock && !state.unlockedAchievements.includes(achMatch.id)) state.unlockedAchievements.push(achMatch.id);
@@ -868,390 +878,124 @@
                 refreshUI();
                 return;
             }
-
             showToast("Item not found. Check spelling!", "error");
         }
 
         function openDaily() {
-            if (state.dailyChallenge.completed) {
-                showToast("Already finished today. Come back tomorrow!", "info");
-            } else {
-                showToast(`Current Objective: ${state.dailyChallenge.text}`, "info");
-            }
+            if (state.dailyChallenge.completed) showToast("Already finished today. Come back tomorrow!", "info");
+            else showToast(`Current Objective: ${state.dailyChallenge.text}`, "info");
         }
-
-        function openModeSelect() {
-            if (!state.username) return showUsernameEntry();
-            uiModeSelect.classList.remove('hidden');
-        }
-
-        function closeModeSelect() {
-            uiModeSelect.classList.add('hidden');
-        }
-
-        function showUsernameEntry() {
-            document.getElementById('username-input').value = state.username;
-            document.getElementById('ui-username').classList.remove('hidden');
-        }
-
+        function openModeSelect() { if (!state.username) return showUsernameEntry(); uiModeSelect.classList.remove('hidden'); }
+        function closeModeSelect() { uiModeSelect.classList.add('hidden'); }
+        function showUsernameEntry() { document.getElementById('username-input').value = state.username; document.getElementById('ui-username').classList.remove('hidden'); }
         function saveUsername() {
             const val = document.getElementById('username-input').value.trim();
             if (val.length < 2) return showToast("Too short!", "error");
-            state.username = val; 
-            localStorage.setItem('oinkUser', val);
-            document.getElementById('ui-username').classList.add('hidden');
-            refreshUI();
-            if(state.best > 0 && !isBezosMode()) {
-                db.ref('leaderboard/regular/'+state.username.toLowerCase()).set({ name: state.username, score: state.best }).catch(()=>{});
-            }
+            state.username = val; localStorage.setItem('oinkUser', val);
+            document.getElementById('ui-username').classList.add('hidden'); refreshUI();
+            if(state.best > 0 && !isBezosMode()) db.ref('leaderboard/regular/'+state.username.toLowerCase()).set({ name: state.username, score: state.best }).catch(()=>{});
             if (!state.hasSeenTutorial) startTutorial();
             if (isBezosMode()) showToast("Welcome Master Bezos! (Rankings Disabled)", "info");
         }
-
         function openUpgrades() {
             const isBezos = isBezosMode();
             upgradesList.innerHTML = GLOBAL_UPGRADES.map(up => {
                 const currentLevel = state.upgrades[up.id] || 0;
                 const price = Math.floor(up.basePrice * Math.pow(up.multiplier, currentLevel));
                 const canAfford = isBezos || state.coins >= price;
-                return `
-                <div class="card-item border-2 border-white/10 bg-white/5 p-4 rounded-2xl flex items-center justify-between gap-4">
-                    <div class="flex-1">
-                        <div class="flex items-center gap-2">
-                            <span class="text-sm font-black uppercase tracking-tight text-cyan-400">${up.name}</span>
-                            <span class="text-[8px] bg-white/10 px-1.5 py-0.5 rounded font-black">LVL ${currentLevel}</span>
-                        </div>
-                        <p class="text-[10px] text-white/50 leading-tight mt-1">${up.desc}</p>
-                    </div>
-                    <button onclick="buyUpgrade('${up.id}')" ${!canAfford ? 'disabled' : ''} class="bg-cyan-600 hover:bg-cyan-500 disabled:opacity-30 disabled:grayscale text-white font-black py-2 px-4 rounded-xl text-[10px] flex items-center gap-1 active:scale-95 transition-all">
-                        <div class="w-3 h-3 bg-yellow-400 rounded-full text-black font-black flex items-center justify-center text-[7px]">₵</div>
-                        ${price}
-                    </button>
-                </div>`;
+                return `<div class="card-item border-2 border-white/10 bg-white/5 p-4 rounded-2xl flex items-center justify-between gap-4"><div class="flex-1"><div class="flex items-center gap-2"><span class="text-sm font-black uppercase tracking-tight text-cyan-400">${up.name}</span><span class="text-[8px] bg-white/10 px-1.5 py-0.5 rounded font-black">LVL ${currentLevel}</span></div><p class="text-[10px] text-white/50 leading-tight mt-1">${up.desc}</p></div><button onclick="buyUpgrade('${up.id}')" ${!canAfford ? 'disabled' : ''} class="bg-cyan-600 hover:bg-cyan-500 disabled:opacity-30 disabled:grayscale text-white font-black py-2 px-4 rounded-xl text-[10px] flex items-center gap-1 active:scale-95 transition-all"><div class="w-3 h-3 bg-yellow-400 rounded-full text-black font-black flex items-center justify-center text-[7px]">₵</div>${price}</button></div>`;
             }).join('');
             uiUpgrades.classList.remove('hidden');
         }
-
         function buyUpgrade(id) {
             const up = GLOBAL_UPGRADES.find(u => u.id === id);
             const currentLevel = state.upgrades[id] || 0;
             const price = Math.floor(up.basePrice * Math.pow(up.multiplier, currentLevel));
             const isBezos = isBezosMode();
             if (!isBezos && state.coins < price) return showToast("Not enough coins!", "error");
-            
-            if (!isBezos) {
-                state.coins -= price;
-                localStorage.setItem('oinkCoins', state.coins);
-            }
-            state.upgrades[id] = currentLevel + 1;
-            localStorage.setItem('oinkUpgrades', JSON.stringify(state.upgrades));
-            playSound('unlock');
-            showToast(`${up.name} Upgraded!`);
-            openUpgrades();
-            refreshUI();
+            if (!isBezos) { state.coins -= price; localStorage.setItem('oinkCoins', state.coins); }
+            state.upgrades[id] = currentLevel + 1; localStorage.setItem('oinkUpgrades', JSON.stringify(state.upgrades));
+            playSound('unlock'); showToast(`${up.name} Upgraded!`); openUpgrades(); refreshUI();
         }
-
         function closeUpgrades() { uiUpgrades.classList.add('hidden'); }
-
         function openLore() { uiLore.classList.remove('hidden'); }
         function closeLore() { uiLore.classList.add('hidden'); }
-
         function startGame(mode = 'regular') {
-            initAudio(); 
-            closeModeSelect();
-            state.gameMode = mode;
-            state.status = 'PLAYING'; 
-            state.score = 0; 
-            state.currentMaxSpeed = 0;
-            state.cameraY = 0; 
-            state.cameraX = 0; 
-            state.clocks = []; 
-            state.lastClockId = 0;
-            state.consecutiveJumps = 0;
+            initAudio(); closeModeSelect();
+            state.gameMode = mode; state.status = 'PLAYING'; state.score = 0; state.currentMaxSpeed = 0; state.cameraY = 0; state.cameraX = 0; state.clocks = []; state.lastClockId = 0; state.consecutiveJumps = 0;
             state.stars = Array.from({length: 30}, () => ({x: Math.random()*WIDTH, y: Math.random()*HEIGHT, size: Math.random()*2, speed: Math.random()*0.5}));
             state.bubbles = Array.from({length: 15}, () => ({x: Math.random()*WIDTH, y: Math.random()*HEIGHT, size: Math.random()*4+2, speed: Math.random()*1+0.5}));
             state.pig = { x: WIDTH/2, y: HEIGHT-150-60, vx: 0, vy: 0, attachedTo: 0, slimeUsed: false, zombieUsed: false, jumpCooldown: 0, trail: [], coinParticles: [], familyMember: 1 };
-            
             state.clocks.push({ id: 0, x: WIDTH/2, y: HEIGHT-150, radius: 60, angle: -Math.PI/2, speed: 0.04, color: CLOCK_COLORS[0], isFrozen: false, features: [], hasSpikes: false });
-            
-            if (mode === 'sandbox') {
-                for(let i=1; i<15; i++) {
-                    const angle = Math.random() * Math.PI * 2; 
-                    const dist = 150 + Math.random() * 400; 
-                    const nx = WIDTH/2 + Math.cos(angle) * dist; 
-                    const ny = (HEIGHT-150) + Math.sin(angle) * dist;
-                    state.clocks.push(createClock(i, ny, i, nx)); 
-                    state.lastClockId = i;
-                }
-                scoreVal.innerText = "0.0"; 
-            } else {
-                for(let i=1; i<6; i++) state.clocks.push(createClock(i, HEIGHT-150-i*CLOCK_SPACING, i));
-                scoreVal.innerText = "0"; 
-            }
-
-            uiHome.classList.add('hidden'); 
-            uiGameOver.classList.add('hidden'); 
-            uiHUD.classList.remove('hidden');
-            refreshUI();
+            if (mode === 'sandbox') { for(let i=1; i<15; i++) { const angle = Math.random() * Math.PI * 2; const dist = 150 + Math.random() * 400; const nx = WIDTH/2 + Math.cos(angle) * dist; const ny = (HEIGHT-150) + Math.sin(angle) * dist; state.clocks.push(createClock(i, ny, i, nx)); state.lastClockId = i; } scoreVal.innerText = "0.0"; }
+            else { for(let i=1; i<6; i++) state.clocks.push(createClock(i, HEIGHT-150-i*CLOCK_SPACING, i)); scoreVal.innerText = "0"; }
+            uiHome.classList.add('hidden'); uiGameOver.classList.add('hidden'); uiHUD.classList.remove('hidden'); refreshUI();
         }
-
         function startSandbox() { startGame('sandbox'); }
-
         function openSkins() {
             skinsGrid.innerHTML = SKINS.map(skin => {
                 const unlocked = state.unlockedSkins.includes(skin.id);
                 const isSelected = state.selectedSkinId === skin.id;
-                return `
-                <div onclick="${unlocked ? `selectSkin('${skin.id}')` : ''}" class="card-item border-2 border-white/10 bg-white/5 p-4 rounded-2xl flex items-center gap-4 ${isSelected ? 'selected' : ''} ${!unlocked ? 'locked' : ''}">
-                    <div class="w-16 h-16 relative flex items-center justify-center bg-indigo-900/50 rounded-xl overflow-hidden shrink-0">
-                        <canvas class="pig-preview-canvas" id="preview-${skin.id}" width="64" height="64"></canvas>
-                        ${!unlocked ? '<div class="absolute inset-0 flex items-center justify-center bg-black/40 text-xl">🔒</div>' : ''}
-                    </div>
-                    <div class="text-left flex-1 min-w-0">
-                        <div class="flex justify-between items-start gap-2">
-                            <span class="text-sm font-black uppercase tracking-tight truncate">${unlocked ? skin.name : 'Locked Pig'}</span>
-                            ${unlocked ? `<span class="text-[8px] bg-pink-500/20 text-pink-400 px-1.5 py-0.5 rounded border border-pink-500/30 whitespace-nowrap font-black uppercase tracking-widest">${skin.ability}</span>` : ''}
-                        </div>
-                        <p class="text-[10px] text-white/60 mt-1 leading-tight font-medium">
-                            ${unlocked ? skin.desc : (skin.isAchievement ? 'Milestone Reward (Locked)' : 'Unlock for 100 Coins')}
-                        </p>
-                    </div>
-                </div>`;
+                return `<div onclick="${unlocked ? `selectSkin('${skin.id}')` : ''}" class="card-item border-2 border-white/10 bg-white/5 p-4 rounded-2xl flex items-center gap-4 ${isSelected ? 'selected' : ''} ${!unlocked ? 'locked' : ''}"><div class="w-16 h-16 relative flex items-center justify-center bg-indigo-900/50 rounded-xl overflow-hidden shrink-0"><canvas class="pig-preview-canvas" id="preview-${skin.id}" width="64" height="64"></canvas>${!unlocked ? '<div class="absolute inset-0 flex items-center justify-center bg-black/40 text-xl">🔒</div>' : ''}</div><div class="text-left flex-1 min-w-0"><div class="flex justify-between items-start gap-2"><span class="text-sm font-black uppercase tracking-tight truncate">${unlocked ? skin.name : 'Locked Pig'}</span>${unlocked ? `<span class="text-[8px] bg-pink-500/20 text-pink-400 px-1.5 py-0.5 rounded border border-pink-500/30 whitespace-nowrap font-black uppercase tracking-widest">${skin.ability}</span>` : ''}</div><p class="text-[10px] text-white/60 mt-1 leading-tight font-medium">${unlocked ? skin.desc : (skin.isAchievement ? 'Milestone Reward (Locked)' : 'Unlock for 100 Coins')}</p></div></div>`;
             }).join('');
-            SKINS.forEach(skin => {
-                const pcanv = document.getElementById(`preview-${skin.id}`);
-                if (pcanv) { const pctx = pcanv.getContext('2d'); pctx.clearRect(0,0,64,64); drawPigAvatar(pctx, skin, 32, 32, 1.2, -0.2); }
-            });
+            SKINS.forEach(skin => { const pcanv = document.getElementById(`preview-${skin.id}`); if (pcanv) { const pctx = pcanv.getContext('2d'); pctx.clearRect(0,0,64,64); drawPigAvatar(pctx, skin, 32, 32, 1.2, -0.2); } });
             document.getElementById('ui-skins').classList.remove('hidden');
         }
-
-        function selectSkin(id) { 
-            state.selectedSkinId = id; 
-            localStorage.setItem('oinkSkin', id); 
-            openSkins(); 
-            refreshUI(); 
-            playSound('land'); 
-        }
-
+        function selectSkin(id) { state.selectedSkinId = id; localStorage.setItem('oinkSkin', id); openSkins(); refreshUI(); playSound('land'); }
         function openHats() {
             const isBezos = isBezosMode();
             hatsGrid.innerHTML = HATS.map(hat => {
-                if (hat.id === 'none') {
-                    const isSelected = state.selectedHatId === 'none';
-                    return `
-                    <div onclick="selectHat('none')" class="card-item border-2 ${isSelected ? 'selected border-pink-500' : 'border-white/10'} bg-white/5 p-4 rounded-2xl flex items-center gap-4">
-                        <div class="w-16 h-16 relative flex items-center justify-center bg-indigo-900/50 rounded-xl overflow-hidden shrink-0">
-                            <canvas class="pig-preview-canvas" id="hat-preview-none" width="64" height="64"></canvas>
-                        </div>
-                        <div class="text-left flex-1 min-w-0">
-                            <span class="text-sm font-black uppercase tracking-tight truncate">No Hat</span>
-                            <p class="text-[9px] text-white/50 mt-0.5 leading-tight uppercase font-black">Default look</p>
-                        </div>
-                        <div class="w-6 h-6 flex items-center justify-center bg-green-500 rounded-full text-white text-[10px] font-black ${isSelected ? '' : 'hidden'}">✓</div>
-                    </div>`;
-                }
-
-                const unlocked = state.unlockedHats.includes(hat.id);
-                const isSelected = state.selectedHatId === hat.id;
-                const canAfford = isBezos || state.coins >= hat.price;
-
-                return `
-                <div class="card-item border-2 ${isSelected ? 'selected border-pink-500' : 'border-white/10'} bg-white/5 p-4 rounded-2xl flex items-center gap-4 ${!unlocked ? 'locked' : ''}">
-                    <div class="w-16 h-16 relative flex items-center justify-center bg-indigo-900/50 rounded-xl overflow-hidden shrink-0" onclick="${unlocked ? `selectHat('${hat.id}')` : ''}">
-                        <canvas class="pig-preview-canvas" id="hat-preview-${hat.id}" width="64" height="64"></canvas>
-                        ${!unlocked ? '<div class="absolute inset-0 flex items-center justify-center bg-black/40 text-[8px] font-black text-yellow-400">PREMIUM</div>' : ''}
-                    </div>
-                    <div class="text-left flex-1 min-w-0" onclick="${unlocked ? `selectHat('${hat.id}')` : ''}">
-                        <span class="text-sm font-black uppercase tracking-tight truncate">${hat.name}</span>
-                        <p class="text-[9px] text-white/50 mt-0.5 leading-tight uppercase font-black">
-                            ${unlocked ? 'Equipped' : 'Coin Exclusive'}
-                        </p>
-                    </div>
-                    ${!unlocked ? `
-                        <button onclick="buyHat('${hat.id}')" ${!canAfford ? 'disabled' : ''} class="bg-yellow-500 hover:bg-yellow-400 disabled:opacity-30 disabled:grayscale text-black font-black py-2 px-3 rounded-xl text-[10px] flex items-center gap-1 active:scale-95 transition-all">
-                            <div class="w-3 h-3 bg-black rounded-full text-yellow-500 font-black flex items-center justify-center text-[7px]">₵</div>
-                            ${hat.price.toLocaleString()}
-                        </button>
-                    ` : `
-                        <div class="w-6 h-6 flex items-center justify-center bg-green-500 rounded-full text-white text-[10px] font-black ${isSelected ? '' : 'invisible'}">✓</div>
-                    `}
-                </div>`;
+                if (hat.id === 'none') { const isSelected = state.selectedHatId === 'none'; return `<div onclick="selectHat('none')" class="card-item border-2 ${isSelected ? 'selected border-pink-500' : 'border-white/10'} bg-white/5 p-4 rounded-2xl flex items-center gap-4"><div class="w-16 h-16 relative flex items-center justify-center bg-indigo-900/50 rounded-xl overflow-hidden shrink-0"><canvas class="pig-preview-canvas" id="hat-preview-none" width="64" height="64"></canvas></div><div class="text-left flex-1 min-w-0"><span class="text-sm font-black uppercase tracking-tight truncate">No Hat</span><p class="text-[9px] text-white/50 mt-0.5 leading-tight uppercase font-black">Default look</p></div><div class="w-6 h-6 flex items-center justify-center bg-green-500 rounded-full text-white text-[10px] font-black ${isSelected ? '' : 'hidden'}">✓</div></div>`; }
+                const unlocked = state.unlockedHats.includes(hat.id); const isSelected = state.selectedHatId === hat.id; const canAfford = isBezos || state.coins >= hat.price;
+                return `<div class="card-item border-2 ${isSelected ? 'selected border-pink-500' : 'border-white/10'} bg-white/5 p-4 rounded-2xl flex items-center gap-4 ${!unlocked ? 'locked' : ''}"><div class="w-16 h-16 relative flex items-center justify-center bg-indigo-900/50 rounded-xl overflow-hidden shrink-0" onclick="${unlocked ? `selectHat('${hat.id}')` : ''}"><canvas class="pig-preview-canvas" id="hat-preview-${hat.id}" width="64" height="64"></canvas>${!unlocked ? '<div class="absolute inset-0 flex items-center justify-center bg-black/40 text-[8px] font-black text-yellow-400">PREMIUM</div>' : ''}</div><div class="text-left flex-1 min-w-0" onclick="${unlocked ? `selectHat('${hat.id}')` : ''}"><span class="text-sm font-black uppercase tracking-tight truncate">${hat.name}</span><p class="text-[9px] text-white/50 mt-0.5 leading-tight uppercase font-black">${unlocked ? 'Equipped' : 'Coin Exclusive'}</p></div>${!unlocked ? `<button onclick="buyHat('${hat.id}')" ${!canAfford ? 'disabled' : ''} class="bg-yellow-500 hover:bg-yellow-400 disabled:opacity-30 disabled:grayscale text-black font-black py-2 px-3 rounded-xl text-[10px] flex items-center gap-1 active:scale-95 transition-all"><div class="w-3 h-3 bg-black rounded-full text-yellow-500 font-black flex items-center justify-center text-[7px]">₵</div>${hat.price.toLocaleString()}</button>` : `<div class="w-6 h-6 flex items-center justify-center bg-green-500 rounded-full text-white text-[10px] font-black ${isSelected ? '' : 'invisible'}">✓</div>`}</div>`;
             }).join('');
-            HATS.forEach(hat => {
-                const pcanv = document.getElementById(`hat-preview-${hat.id}`);
-                if (pcanv) { const pctx = pcanv.getContext('2d'); pctx.clearRect(0,0,64,64); const skin = SKINS.find(s=>s.id==='classic'); drawPigAvatar(pctx, skin, 32, 32, 1.2, -0.2, hat.id); }
-            });
+            HATS.forEach(hat => { const pcanv = document.getElementById(`hat-preview-${hat.id}`); if (pcanv) { const pctx = pcanv.getContext('2d'); pctx.clearRect(0,0,64,64); const skin = SKINS.find(s=>s.id==='classic'); drawPigAvatar(pctx, skin, 32, 32, 1.2, -0.2, hat.id); } });
             uiHats.classList.remove('hidden');
         }
-
-        function buyHat(id) {
-            const hat = HATS.find(h => h.id === id);
-            const isBezos = isBezosMode();
-            if (!isBezos && state.coins < hat.price) return showToast("Not enough coins!", "error");
-            
-            if (!isBezos) {
-                state.coins -= hat.price;
-                localStorage.setItem('oinkCoins', state.coins);
-            }
-            unlockHat(id);
-            playSound('unlock');
-            showToast(`${hat.name} Purchased!`);
-            openHats();
-            refreshUI();
-        }
-
-        function selectHat(id) {
-            state.selectedHatId = id;
-            localStorage.setItem('oinkHatSelected', id);
-            openHats();
-            refreshUI();
-            playSound('land');
-        }
-
-        function unlockHat(id) {
-            if (state.unlockedHats.includes(id)) return;
-            state.unlockedHats.push(id);
-            localStorage.setItem('oinkHats', JSON.stringify(state.unlockedHats));
-        }
-
+        function buyHat(id) { const hat = HATS.find(h => h.id === id); const isBezos = isBezosMode(); if (!isBezos && state.coins < hat.price) return showToast("Not enough coins!", "error"); if (!isBezos) { state.coins -= hat.price; localStorage.setItem('oinkCoins', state.coins); } unlockHat(id); playSound('unlock'); showToast(`${hat.name} Purchased!`); openHats(); refreshUI(); }
+        function selectHat(id) { state.selectedHatId = id; localStorage.setItem('oinkHatSelected', id); openHats(); refreshUI(); playSound('land'); }
+        function unlockHat(id) { if (state.unlockedHats.includes(id)) return; state.unlockedHats.push(id); localStorage.setItem('oinkHats', JSON.stringify(state.unlockedHats)); }
         function closeHats() { uiHats.classList.add('hidden'); }
-
-        function openThemes() {
-            themesGrid.innerHTML = THEMES.map(theme => {
-                const unlocked = state.unlockedThemes.includes(theme.id);
-                return `<div onclick="${unlocked?`selectTheme('${theme.id}')`:''}" class="card-item border-2 border-white/10 bg-white/5 p-4 rounded-2xl flex items-center gap-4 ${state.selectedThemeId===theme.id?'selected':''} ${!unlocked?'locked':''}"><div class="w-12 h-12 relative rounded-lg border border-white/20" style="background:${theme.bg}"><div class="absolute inset-0 flex items-center justify-center">${!unlocked?'🔒':''}</div></div><div class="text-left flex-1"><span class="text-sm font-black uppercase">${unlocked?theme.name:'Locked Theme'}</span><div class="text-[9px] text-indigo-400 font-bold uppercase">${theme.type} STYLE</div></div></div>`;
-            }).join('');
-            document.getElementById('ui-themes').classList.remove('hidden');
-        }
-
-        function selectTheme(id) { 
-            state.selectedThemeId = id; 
-            localStorage.setItem('oinkTheme', id); 
-            openThemes(); 
-            refreshUI(); 
-            playSound('land'); 
-        }
-
-        function openLeaderboardUI() {
-            setLeaderboardTab(state.leaderboardTab);
-            uiLeaderboard.classList.remove('hidden');
-        }
-
-        function setLeaderboardTab(tab) {
-            state.leaderboardTab = tab;
-            ['regular', 'hard', 'superhard', 'sandbox', 'wealth'].forEach(t => {
-                const el = document.getElementById('tab-'+t);
-                if (t === tab) { el.classList.add('tab-active'); el.classList.remove('opacity-50'); } else { el.classList.remove('tab-active'); el.classList.add('opacity-50'); }
-            });
-            openLeaderboard();
-        }
-
+        function openThemes() { themesGrid.innerHTML = THEMES.map(theme => { const unlocked = state.unlockedThemes.includes(theme.id); return `<div onclick="${unlocked?`selectTheme('${theme.id}')`:''}" class="card-item border-2 border-white/10 bg-white/5 p-4 rounded-2xl flex items-center gap-4 ${state.selectedThemeId===theme.id?'selected':''} ${!unlocked?'locked':''}"><div class="w-12 h-12 relative rounded-lg border border-white/20" style="background:${theme.bg}"><div class="absolute inset-0 flex items-center justify-center">${!unlocked?'🔒':''}</div></div><div class="text-left flex-1"><span class="text-sm font-black uppercase">${unlocked?theme.name:'Locked Theme'}</span><div class="text-[9px] text-indigo-400 font-bold uppercase">${theme.type} STYLE</div></div></div>`; }).join(''); document.getElementById('ui-themes').classList.remove('hidden'); }
+        function selectTheme(id) { state.selectedThemeId = id; localStorage.setItem('oinkTheme', id); openThemes(); refreshUI(); playSound('land'); }
+        function openLeaderboardUI() { setLeaderboardTab(state.leaderboardTab); uiLeaderboard.classList.remove('hidden'); }
+        function setLeaderboardTab(tab) { state.leaderboardTab = tab; ['regular', 'hard', 'superhard', 'sandbox', 'wealth'].forEach(t => { const el = document.getElementById('tab-'+t); if (t === tab) { el.classList.add('tab-active'); el.classList.remove('opacity-50'); } else { el.classList.remove('tab-active'); el.classList.add('opacity-50'); } }); openLeaderboard(); }
         async function openLeaderboard() {
-            const tab = state.leaderboardTab;
-            let path = `leaderboard/${tab}`;
-            if (tab === 'sandbox') path = 'leaderboard/speed';
-            
-            leaderboardList.innerHTML = `<div class="text-center py-10 opacity-50 animate-pulse">Scanning legends...</div>`;
+            const tab = state.leaderboardTab; let path = `leaderboard/${tab}`; if (tab === 'sandbox') path = 'leaderboard/speed'; leaderboardList.innerHTML = `<div class="text-center py-10 opacity-50 animate-pulse">Scanning legends...</div>`;
             try {
-                const snap = await db.ref(path).orderByChild('score').limitToLast(10).once('value');
-                const data = []; 
-                snap.forEach(c => { const val = c.val(); if (val && val.name && typeof val.score === 'number') data.push(val); });
-                data.sort((a, b) => b.score - a.score);
-                if (data.length === 0) { 
-                    leaderboardList.innerHTML = `<div class="text-center py-10 opacity-30 font-black tracking-widest text-sm">NO DATA YET</div>`; 
-                } else { 
-                    leaderboardList.innerHTML = data.map((e, i) => {
-                        const isYou = e.name && state.username && (e.name.toLowerCase() === state.username.toLowerCase());
-                        let medal = ''; if (i === 0) medal = '🥇'; else if (i === 1) medal = '🥈'; else if (i === 2) medal = '🥉';
-                        let scoreDisplay = e.score;
-                        if (tab === 'sandbox') scoreDisplay = `${e.score.toFixed(1)} u/s`;
-                        else if (tab === 'wealth') scoreDisplay = `₵${e.score.toLocaleString()}`;
-
-                        return `<div class="flex justify-between items-center p-3 rounded-2xl border ${isYou ? 'border-pink-500 bg-pink-500/20' : 'border-white/5 bg-white/5'} mb-2">
-                            <div class="flex items-center gap-4">
-                                <span class="font-black ${i < 3 ? 'text-yellow-400' : 'text-white/20'} text-lg w-6">${medal || (i + 1)}</span>
-                                <span class="font-black text-xs uppercase truncate">${e.name}</span>
-                            </div>
-                            <span class="font-black ${tab === 'wealth' ? 'text-yellow-400' : 'text-pink-400'} text-lg">${scoreDisplay}</span>
-                        </div>`;
-                    }).join(''); 
-                }
+                const snap = await db.ref(path).orderByChild('score').limitToLast(10).once('value'); const data = []; snap.forEach(c => { const val = c.val(); if (val && val.name && typeof val.score === 'number') data.push(val); }); data.sort((a, b) => b.score - a.score);
+                if (data.length === 0) leaderboardList.innerHTML = `<div class="text-center py-10 opacity-30 font-black tracking-widest text-sm">NO DATA YET</div>`;
+                else leaderboardList.innerHTML = data.map((e, i) => { const isYou = e.name && state.username && (e.name.toLowerCase() === state.username.toLowerCase()); let medal = ''; if (i === 0) medal = '🥇'; else if (i === 1) medal = '🥈'; else if (i === 2) medal = '🥉'; let scoreDisplay = e.score; if (tab === 'sandbox') scoreDisplay = `${e.score.toFixed(1)} u/s`; else if (tab === 'wealth') scoreDisplay = `₵${e.score.toLocaleString()}`; return `<div class="flex justify-between items-center p-3 rounded-2xl border ${isYou ? 'border-pink-500 bg-pink-500/20' : 'border-white/5 bg-white/5'} mb-2"><div class="flex items-center gap-4"><span class="font-black ${i < 3 ? 'text-yellow-400' : 'text-white/20'} text-lg w-6">${medal || (i + 1)}</span><span class="font-black text-xs uppercase truncate">${e.name}</span></div><span class="font-black ${tab === 'wealth' ? 'text-yellow-400' : 'text-pink-400'} text-lg">${scoreDisplay}</span></div>`; }).join('');
             } catch (err) { leaderboardList.innerHTML = `<div class="text-center py-10 opacity-30">OFFLINE</div>`; }
         }
-
         function openAchievements() {
             achievementsList.innerHTML = ACHIEVEMENTS.map(ach => {
-                const unlocked = state.unlockedAchievements.includes(ach.id);
-                let progress = 0;
-                switch(ach.type) {
-                    case 'score': progress = Math.min(100, (state.best / ach.goal) * 100); break;
-                    case 'total_coins': progress = Math.min(100, (state.totalCoinsEarned / ach.goal) * 100); break;
-                    case 'cumulative_score': progress = Math.min(100, (state.totalScore / ach.goal) * 100); break;
-                    case 'total_jumps': progress = Math.min(100, (state.totalJumps / ach.goal) * 100); break;
-                    case 'perfect_streak': progress = Math.min(100, (state.bestStreak / ach.goal) * 100); break;
-                    case 'themes': progress = Math.min(100, (state.unlockedThemes.length / ach.goal) * 100); break;
-                    case 'skins_normal': progress = Math.min(100, (state.unlockedSkins.filter(id => !SKINS.find(s => s.id === id)?.isAchievement).length / ach.goal) * 100); break;
-                    case 'all_achievements': progress = Math.min(100, (state.unlockedAchievements.length / ach.goal) * 100); break;
-                    case 'hard_jumps': progress = Math.min(100, (state.hardJumps / ach.goal) * 100); break;
-                }
+                const unlocked = state.unlockedAchievements.includes(ach.id); let progress = 0;
+                switch(ach.type) { case 'score': progress = Math.min(100, (state.best / ach.goal) * 100); break; case 'total_coins': progress = Math.min(100, (state.totalCoinsEarned / ach.goal) * 100); break; case 'cumulative_score': progress = Math.min(100, (state.totalScore / ach.goal) * 100); break; case 'total_jumps': progress = Math.min(100, (state.totalJumps / ach.goal) * 100); break; case 'perfect_streak': progress = Math.min(100, (state.bestStreak / ach.goal) * 100); break; case 'themes': progress = Math.min(100, (state.unlockedThemes.length / ach.goal) * 100); break; case 'skins_normal': progress = Math.min(100, (state.unlockedSkins.filter(id => !SKINS.find(s => s.id === id)?.isAchievement).length / ach.goal) * 100); break; case 'all_achievements': progress = Math.min(100, (state.unlockedAchievements.length / ach.goal) * 100); break; case 'hard_jumps': progress = Math.min(100, (state.hardJumps / ach.goal) * 100); break; }
                 if (unlocked) progress = 100;
                 return `<div class="border-2 ${unlocked?'border-yellow-500/50 bg-yellow-500/10':'border-white/5 bg-white/5'} p-4 rounded-2xl flex items-center gap-4"><div class="text-2xl">${unlocked?'🏆':'🔒'}</div><div class="flex-1"><div class="flex justify-between items-center mb-1"><span class="text-xs font-black uppercase ${unlocked?'text-yellow-400':'text-white'}">${ach.name}</span></div><p class="text-[9px] text-white/50 mb-2 leading-tight">${ach.desc}</p><div class="h-1 bg-white/10 rounded-full overflow-hidden"><div class="h-full bg-yellow-500 transition-all duration-1000" style="width: ${progress}%"></div></div></div><div class="flex flex-col items-center gap-1 opacity-80"><div class="w-8 h-8 rounded-lg bg-indigo-900 border border-white/10 flex items-center justify-center overflow-hidden"><canvas id="ach-prev-${ach.id}" width="32" height="32"></canvas></div></div></div>`;
             }).join('');
-            ACHIEVEMENTS.forEach(ach => {
-                const rewardSkin = SKINS.find(s => s.id === ach.rewardSkin);
-                const pcanv = document.getElementById(`ach-prev-${ach.id}`);
-                if (pcanv) { const pctx = pcanv.getContext('2d'); pctx.clearRect(0,0,32,32); drawPigAvatar(pctx, rewardSkin, 16, 16, 0.6, -0.2); }
-            });
+            ACHIEVEMENTS.forEach(ach => { const rewardSkin = SKINS.find(s => s.id === ach.rewardSkin); const pcanv = document.getElementById(`ach-prev-${ach.id}`); if (pcanv) { const pctx = pcanv.getContext('2d'); pctx.clearRect(0,0,32,32); drawPigAvatar(pctx, rewardSkin, 16, 16, 0.6, -0.2); } });
             uiAchievements.classList.remove('hidden');
         }
-
         function buyRandomSkin() {
-            const isBezos = isBezosMode();
-            if (!isBezos && state.coins < 100) return showToast("Not enough coins!", "error");
-            const purchasable = SKINS.filter(s => !s.isAchievement);
-            const locked = purchasable.filter(s => !state.unlockedSkins.includes(s.id));
-            if (locked.length === 0) return showToast("All normal skins owned!");
-            const choice = locked[Math.floor(Math.random() * locked.length)];
-            if (!isBezos) { state.coins -= 100; localStorage.setItem('oinkCoins', state.coins); }
-            state.unlockedSkins.push(choice.id);
-            localStorage.setItem('oinkUnlocked', JSON.stringify(state.unlockedSkins));
-            playSound('unlock');
-            showToast(`Unlocked ${choice.name}!`);
-            openSkins();
-            refreshUI();
-            checkAchievements();
+            const isBezos = isBezosMode(); if (!isBezos && state.coins < 100) return showToast("Not enough coins!", "error");
+            const purchasable = SKINS.filter(s => !s.isAchievement); const locked = purchasable.filter(s => !state.unlockedSkins.includes(s.id)); if (locked.length === 0) return showToast("All normal skins owned!");
+            const choice = locked[Math.floor(Math.random() * locked.length)]; if (!isBezos) { state.coins -= 100; localStorage.setItem('oinkCoins', state.coins); }
+            state.unlockedSkins.push(choice.id); localStorage.setItem('oinkUnlocked', JSON.stringify(state.unlockedSkins)); playSound('unlock'); showToast(`Unlocked ${choice.name}!`); openSkins(); refreshUI(); checkAchievements();
         }
-
         function buyRandomTheme() {
-            const isBezos = isBezosMode();
-            if (!isBezos && state.coins < 250) return showToast("Not enough coins!", "error");
-            const locked = THEMES.filter(t => !state.unlockedThemes.includes(t.id));
-            if (locked.length === 0) return showToast("All themes owned!");
-            const choice = locked[Math.floor(Math.random() * locked.length)];
-            if (!isBezos) { state.coins -= 250; }
-            state.unlockedThemes.push(choice.id); 
-            localStorage.setItem('oinkThemesUnlocked', JSON.stringify(state.unlockedThemes));
-            playSound('unlock');
-            showToast(`Unlocked ${choice.name} Theme!`);
-            openThemes();
-            refreshUI();
-            checkAchievements();
+            const isBezos = isBezosMode(); if (!isBezos && state.coins < 250) return showToast("Not enough coins!", "error");
+            const locked = THEMES.filter(t => !state.unlockedThemes.includes(t.id)); if (locked.length === 0) return showToast("All themes owned!");
+            const choice = locked[Math.floor(Math.random() * locked.length)]; if (!isBezos) state.coins -= 250;
+            state.unlockedThemes.push(choice.id); localStorage.setItem('oinkThemesUnlocked', JSON.stringify(state.unlockedThemes)); playSound('unlock'); showToast(`Unlocked ${choice.name} Theme!`); openThemes(); refreshUI(); checkAchievements();
         }
-
         function startTutorial() { state.isTutorial = true; state.tutorialStep = 0; startGame('regular'); updateTutorialUI(); }
         function advanceTutorial() {
-            state.tutorialStep++;
-            if (state.tutorialStep >= TUTORIAL_STEPS.length) { state.isTutorial = false; state.hasSeenTutorial = true; localStorage.setItem('oinkTutorialSeen', 'true'); uiTutorial.classList.add('hidden'); return; }
+            state.tutorialStep++; if (state.tutorialStep >= TUTORIAL_STEPS.length) { state.isTutorial = false; state.hasSeenTutorial = true; localStorage.setItem('oinkTutorialSeen', 'true'); uiTutorial.classList.add('hidden'); return; }
             updateTutorialUI(); playSound('land');
         }
-        function updateTutorialUI() {
-            const step = TUTORIAL_STEPS[state.tutorialStep];
-            document.getElementById('tut-title').innerText = step.title;
-            document.getElementById('tut-desc').innerText = step.desc;
-            document.getElementById('tut-btn').innerText = step.btn;
-            uiTutorial.classList.remove('hidden');
-            if (state.tutorialStep === 2) { uiTutorial.classList.add('pointer-events-none'); document.getElementById('tut-btn').classList.add('hidden'); } else { uiTutorial.classList.remove('pointer-events-none'); document.getElementById('tut-btn').classList.remove('hidden'); }
-        }
+        function updateTutorialUI() { const step = TUTORIAL_STEPS[state.tutorialStep]; document.getElementById('tut-title').innerText = step.title; document.getElementById('tut-desc').innerText = step.desc; document.getElementById('tut-btn').innerText = step.btn; uiTutorial.classList.remove('hidden'); if (state.tutorialStep === 2) { uiTutorial.classList.add('pointer-events-none'); document.getElementById('tut-btn').classList.add('hidden'); } else { uiTutorial.classList.remove('pointer-events-none'); document.getElementById('tut-btn').classList.remove('hidden'); } }
         function skipTutorial() { state.isTutorial = false; state.hasSeenTutorial = true; localStorage.setItem('oinkTutorialSeen', 'true'); uiTutorial.classList.add('hidden'); startGame('regular'); }
 
         const TUTORIAL_STEPS = [
@@ -1265,34 +1009,15 @@
         function closeThemes() { uiThemes.classList.add('hidden'); }
         function closeLeaderboard() { uiLeaderboard.classList.add('hidden'); }
         function closeAchievements() { uiAchievements.classList.add('hidden'); }
-        function backToHome() { 
-            if (state.gameMode === 'sandbox') saveSandboxSpeed();
-            state.status='HOME'; 
-            uiGameOver.classList.add('hidden'); uiHUD.classList.add('hidden'); uiHome.classList.remove('hidden'); 
-            refreshUI(); 
-        }
-        function exitGameMode() { 
-            if (state.gameMode === 'sandbox') saveSandboxSpeed(); 
-            state.gameMode = 'regular';
-            backToHome(); 
-        }
+        function backToHome() { if (state.gameMode === 'sandbox') saveSandboxSpeed(); state.status='HOME'; uiGameOver.classList.add('hidden'); uiHUD.classList.add('hidden'); uiHome.classList.remove('hidden'); refreshUI(); }
+        function exitGameMode() { if (state.gameMode === 'sandbox') saveSandboxSpeed(); state.gameMode = 'regular'; backToHome(); }
         function retryGame() { startGame(state.gameMode); }
 
         function createClock(id, y, index, forcedX = null) {
-            let radius = 35 + Math.random() * 50; 
-            if (state.selectedSkinId === 'devil') radius *= 0.65;
+            let radius = 35 + Math.random() * 50; if (state.selectedSkinId === 'devil') radius *= 0.65;
             let speed = (0.04 + (index * 0.0015)) * (60 / radius) * (index % 2 === 0 ? 1 : -1);
-            if (state.selectedSkinId === 'matcha') speed *= 0.75; 
-            if (state.selectedSkinId === 'lava' || state.selectedSkinId === 'steampunk' || state.gameMode === 'hard') speed *= 1.8;
-            if (state.gameMode === 'superhard') speed *= 2.5;
-
-            let hasSpikes = false;
-            let spikeTimer = 120;
-            if (state.gameMode === 'superhard' && id > 0 && Math.random() > 0.4) {
-                hasSpikes = true;
-                spikeTimer = Math.random() * 120; 
-            }
-
+            if (state.selectedSkinId === 'matcha') speed *= 0.75; if (state.selectedSkinId === 'lava' || state.selectedSkinId === 'steampunk' || state.gameMode === 'hard') speed *= 1.8; if (state.gameMode === 'superhard') speed *= 2.5;
+            let hasSpikes = false; let spikeTimer = 120; if (state.gameMode === 'superhard' && id > 0 && Math.random() > 0.4) { hasSpikes = true; spikeTimer = Math.random() * 120; }
             const posX = forcedX !== null ? forcedX : radius + 20 + Math.random() * (WIDTH - (radius * 2 + 40));
             return { id, x: posX, y, radius, angle: Math.random() * Math.PI * 2, speed, color: CLOCK_COLORS[index % CLOCK_COLORS.length], isFrozen: false, features: [], hasSpikes, spikeActive: false, spikeTimer };
         }
@@ -1300,394 +1025,164 @@
         function jump() {
             if (state.status !== 'PLAYING') return;
             const skin = SKINS.find(s => s.id === state.selectedSkinId) || SKINS[0];
-            
-            if (skin.id === 'family') {
-                state.pig.familyMember = Math.floor(Math.random() * FAMILY_MEMBERS.length);
-            }
-
-            let force = JUMP_SPEED; 
-            if (skin.id === 'void') force *= 1.25; 
-            if (skin.id === 'ninja') force *= 1.4; 
-            if (skin.id === 'angel') force *= 0.6;
-            if (skin.id === 'neon') force *= 1.25;
-            
+            if (skin.id === 'family') state.pig.familyMember = Math.floor(Math.random() * FAMILY_MEMBERS.length);
+            let force = JUMP_SPEED; if (skin.id === 'void') force *= 1.25; if (skin.id === 'ninja') force *= 1.4; if (skin.id === 'angel') force *= 0.6; if (skin.id === 'neon') force *= 1.25;
             if (state.gameMode === 'sandbox') {
                 const dx = (state.mouse.x + state.cameraX) - state.pig.x; const dy = (state.mouse.y + state.cameraY) - state.pig.y; const angle = Math.atan2(dy, dx);
-                if (state.pig.attachedTo !== null) {
-                    const clock = state.clocks.find(c => c.id === state.pig.attachedTo);
-                    const tx = -Math.sin(clock.angle) * (clock.speed * clock.radius); 
-                    const ty = Math.cos(clock.angle) * (clock.speed * clock.radius);
-                    state.pig.vx = Math.cos(angle) * force + tx; state.pig.vy = Math.sin(angle) * force + ty;
-                } else {
-                    let additive = (skin.id === 'frog' || skin.id === 'ghost') ? 0.9 : 0.7;
-                    state.pig.vx += Math.cos(angle) * force * additive; state.pig.vy += Math.sin(angle) * force * additive;
-                }
-                state.pig.x += state.pig.vx * 1.2; state.pig.y += state.pig.vy * 1.2; 
-                state.pig.attachedTo = null; state.pig.jumpCooldown = 15; playSound('jump'); return;
+                if (state.pig.attachedTo !== null) { const clock = state.clocks.find(c => c.id === state.pig.attachedTo); const tx = -Math.sin(clock.angle) * (clock.speed * clock.radius); const ty = Math.cos(clock.angle) * (clock.speed * clock.radius); state.pig.vx = Math.cos(angle) * force + tx; state.pig.vy = Math.sin(angle) * force + ty; }
+                else { let additive = (skin.id === 'frog' || skin.id === 'ghost') ? 0.9 : 0.7; state.pig.vx += Math.cos(angle) * force * additive; state.pig.vy += Math.sin(angle) * force * additive; }
+                state.pig.x += state.pig.vx * 1.2; state.pig.y += state.pig.vy * 1.2; state.pig.attachedTo = null; state.pig.jumpCooldown = 15; playSound('jump'); return;
             }
             if (state.pig.attachedTo === null) return;
-            const clock = state.clocks.find(c => c.id === state.pig.attachedTo);
-            state.pig.vx = Math.cos(clock.angle) * force; state.pig.vy = Math.sin(clock.angle) * force;
-            state.pig.x += state.pig.vx * 1.2; state.pig.y += state.pig.vy * 1.2; 
-            state.pig.attachedTo = null; state.pig.jumpCooldown = 15; playSound('jump');
+            const clock = state.clocks.find(c => c.id === state.pig.attachedTo); state.pig.vx = Math.cos(clock.angle) * force; state.pig.vy = Math.sin(clock.angle) * force;
+            state.pig.x += state.pig.vx * 1.2; state.pig.y += state.pig.vy * 1.2; state.pig.attachedTo = null; state.pig.jumpCooldown = 15; playSound('jump');
         }
 
         function update(timeScale) {
             if (state.status !== 'PLAYING') return;
             state.rainbowHue = (state.rainbowHue + 2 * timeScale) % 360;
-            const skinId = state.selectedSkinId;
-            const isWealthPig = ['golden', 'bank', 'king', 'omega'].includes(skinId);
-            const isBezos = isBezosMode();
-            
-            state.clocks.forEach(c => { 
-                let s = c.speed; 
-                if (skinId === 'lava' || skinId === 'steampunk' || state.gameMode === 'hard') s *= 1.8; 
-                if (state.gameMode === 'superhard') s *= 2.5;
-                if (!c.isFrozen) c.angle += s * timeScale; 
-
-                if (c.hasSpikes) {
-                    c.spikeTimer -= timeScale;
-                    if (c.spikeTimer <= 0) {
-                        c.spikeActive = !c.spikeActive;
-                        c.spikeTimer = 120; // 2 seconds at 60fps
-                        if (c.spikeActive && state.pig.attachedTo === c.id) {
-                            const mercyLvl = state.upgrades.mercy || 0;
-                            if (Math.random() > mercyLvl * 0.1) gameOver();
-                            else showToast("Mercy!", "sandbox");
-                        }
-                    }
-                }
-            });
-
+            const skinId = state.selectedSkinId; const isWealthPig = ['golden', 'bank', 'king', 'omega'].includes(skinId); const isBezos = isBezosMode();
+            state.clocks.forEach(c => { let s = c.speed; if (skinId === 'lava' || skinId === 'steampunk' || state.gameMode === 'hard') s *= 1.8; if (state.gameMode === 'superhard') s *= 2.5; if (!c.isFrozen) c.angle += s * timeScale; if (c.hasSpikes) { c.spikeTimer -= timeScale; if (c.spikeTimer <= 0) { c.spikeActive = !c.spikeActive; c.spikeTimer = 120; if (c.spikeActive && state.pig.attachedTo === c.id) { const mercyLvl = state.upgrades.mercy || 0; if (Math.random() > mercyLvl * 0.1) gameOver(); else showToast("Mercy!", "sandbox"); } } } });
             if (state.pig.jumpCooldown > 0) state.pig.jumpCooldown -= timeScale;
-
-            if (state.selectedThemeId === 'planets' && state.stars) {
-                state.stars.forEach(s => { s.y += s.speed * timeScale; if (s.y > HEIGHT) s.y = 0; });
-            }
-            if (state.selectedThemeId === 'ocean' && state.bubbles) {
-                state.bubbles.forEach(b => { b.y -= b.speed * timeScale; b.x += Math.sin(Date.now()*0.001) * 0.5; if (b.y < 0) b.y = HEIGHT; });
-            }
-
+            if (state.selectedThemeId === 'planets' && state.stars) state.stars.forEach(s => { s.y += s.speed * timeScale; if (s.y > HEIGHT) s.y = 0; });
+            if (state.selectedThemeId === 'ocean' && state.bubbles) state.bubbles.forEach(b => { b.y -= b.speed * timeScale; b.x += Math.sin(Date.now()*0.001) * 0.5; if (b.y < 0) b.y = HEIGHT; });
             if (state.pig.attachedTo !== null) {
-                const clock = state.clocks.find(c => c.id === state.pig.attachedTo); 
+                const clock = state.clocks.find(c => c.id === state.pig.attachedTo);
                 if (skinId === 'ice') clock.isFrozen = true;
-                state.pig.x = clock.x + Math.cos(clock.angle) * clock.radius; 
-                state.pig.y = clock.y + Math.sin(clock.angle) * clock.radius;
+                let bodyOffset = 0;
+                if (skinId === 'spider') bodyOffset = 85; // Offset spider body from the clock surface for leg visibility
+                state.pig.x = clock.x + Math.cos(clock.angle) * (clock.radius + bodyOffset);
+                state.pig.y = clock.y + Math.sin(clock.angle) * (clock.radius + bodyOffset);
                 state.pig.trail = []; state.pig.vx = 0; state.pig.vy = 0;
-            } else {
+            }
+            else {
                 if (state.gameMode === 'hard' || state.gameMode === 'superhard') state.pig.vy += 0.5 * timeScale;
-
-                if (skinId === 'rocket') {
-                    const targetX = state.mouse.x + state.cameraX;
-                    const rocketStrength = isBezos ? 0.4 : 0.07; 
-                    if (targetX < state.pig.x - 5) state.pig.vx -= rocketStrength * timeScale;
-                    else if (targetX > state.pig.x + 5) state.pig.vx += rocketStrength * timeScale;
-                }
-
+                if (skinId === 'rocket') { const targetX = state.mouse.x + state.cameraX; const rocketStrength = isBezos ? 0.45 : 0.07; if (targetX < state.pig.x - 5) state.pig.vx -= rocketStrength * timeScale; else if (targetX > state.pig.x + 5) state.pig.vx += rocketStrength * timeScale; }
                 state.pig.x += state.pig.vx * timeScale; state.pig.y += state.pig.vy * timeScale;
-                
-                if (state.gameMode === 'sandbox') {
-                    const speed = Math.sqrt(state.pig.vx**2 + state.pig.vy**2);
-                    if (speed > state.currentMaxSpeed) { state.currentMaxSpeed = speed; scoreVal.innerText = state.currentMaxSpeed.toFixed(1); }
-                }
-
-                if (skinId === 'neon' || skinId === 'omega' || skinId === 'smoking') {
-                    state.pig.trail.unshift({ x: state.pig.x, y: state.pig.y, life: 1 });
-                    if (state.pig.trail.length > (skinId === 'smoking' ? 20 : 10)) state.pig.trail.pop();
-                    state.pig.trail.forEach(t => t.life -= (skinId === 'smoking' ? 0.04 : 0.1) * timeScale);
-                }
-
-                if (isWealthPig) {
-                    if (Math.random() < 0.4) {
-                        state.pig.coinParticles.push({
-                            x: state.pig.x,
-                            y: state.pig.y,
-                            vx: (Math.random() - 0.5) * 5,
-                            vy: (Math.random() - 0.5) * 5,
-                            rot: Math.random() * Math.PI * 2,
-                            rotV: (Math.random() - 0.5) * 0.4,
-                            life: 1.0
-                        });
-                    }
-                }
-
+                if (state.gameMode === 'sandbox') { const speed = Math.sqrt(state.pig.vx**2 + state.pig.vy**2); if (speed > state.currentMaxSpeed) { state.currentMaxSpeed = speed; scoreVal.innerText = state.currentMaxSpeed.toFixed(1); } }
+                if (skinId === 'neon' || skinId === 'omega' || skinId === 'smoking') { state.pig.trail.unshift({ x: state.pig.x, y: state.pig.y, life: 1 }); if (state.pig.trail.length > (skinId === 'smoking' ? 20 : 10)) state.pig.trail.pop(); state.pig.trail.forEach(t => t.life -= (skinId === 'smoking' ? 0.04 : 0.1) * timeScale); }
+                if (isWealthPig && Math.random() < 0.4) state.pig.coinParticles.push({ x: state.pig.x, y: state.pig.y, vx: (Math.random() - 0.5) * 5, vy: (Math.random() - 0.5) * 5, rot: Math.random() * Math.PI * 2, rotV: (Math.random() - 0.5) * 0.4, life: 1.0 });
                 if (state.gameMode === 'sandbox') { state.pig.vx *= Math.pow(0.99, timeScale); state.pig.vy *= Math.pow(0.99, timeScale); }
-                
-                let grabRange = 5; 
-                if (skinId === 'blueberry') grabRange = 12; 
-                if (skinId === 'ninja') grabRange = 15; 
-                if (skinId === 'space' || skinId === 'ghost' || skinId === 'omega') grabRange = 25;
-                if (skinId === 'family') grabRange = FAMILY_MEMBERS[state.pig.familyMember].grab;
-                grabRange += (state.upgrades.magnet || 0) * 8; 
-
+                let grabRange = 5; if (skinId === 'blueberry') grabRange = 12; if (skinId === 'ninja') grabRange = 15; if (skinId === 'space' || skinId === 'ghost' || skinId === 'omega' || skinId === 'spider') grabRange = 25; if (skinId === 'family') grabRange = FAMILY_MEMBERS[state.pig.familyMember].grab; grabRange += (state.upgrades.magnet || 0) * 8;
                 if (state.pig.jumpCooldown <= 0) {
                     for (const clock of state.clocks) {
                         const d = Math.sqrt((state.pig.x-clock.x)**2 + (state.pig.y-clock.y)**2);
                         if (d < clock.radius + grabRange) {
-                            if (clock.hasSpikes && clock.spikeActive) {
-                                const mercyLvl = state.upgrades.mercy || 0;
-                                if (Math.random() > mercyLvl * 0.1) { gameOver(); return; }
-                                else showToast("Mercy!", "sandbox");
-                            }
+                            if (clock.hasSpikes && clock.spikeActive) { const mercyLvl = state.upgrades.mercy || 0; if (Math.random() > mercyLvl * 0.1) { gameOver(); return; } else showToast("Mercy!", "sandbox"); }
                             state.pig.attachedTo = clock.id; state.pig.vx = 0; state.pig.vy = 0;
                             if (clock.id > state.lastClockId && state.gameMode !== 'sandbox') {
-                                let scoreMultiplier = (skinId === 'golden' || skinId === 'king') ? 2 : (skinId === 'devil' || skinId === 'steampunk' ? 3 : 1);
-                                if (skinId === 'omega') scoreMultiplier = 4;
-                                if (state.gameMode === 'hard') scoreMultiplier *= 2;
-                                if (state.gameMode === 'superhard') scoreMultiplier *= 5;
-                                scoreMultiplier *= (1 + (state.upgrades.score_bonus || 0) * 0.05);
-
-                                let baseReward = (state.gameMode === 'hard') ? 5 : (state.gameMode === 'superhard' ? 12 : 2);
-                                baseReward += (state.upgrades.coin_boost || 0);
-
-                                let bonus = 0;
-                                if (skinId === 'rainbow') bonus += 1;
-                                if (skinId === 'golden') bonus += 2;
-                                if (skinId === 'bank') bonus += 3;
-                                if (skinId === 'king') bonus += 5;
-                                if (skinId === 'omega') bonus += 10;
-                                let reward = (baseReward + bonus);
-                                if (skinId === 'lava') reward *= 2;
-                                state.coins += Math.floor(reward); 
-                                state.totalCoinsEarned += Math.floor(reward);
-                                state.score += Math.round((clock.id - state.lastClockId) * scoreMultiplier); 
-                                state.lastClockId = clock.id; 
-                                state.consecutiveJumps++;
-                                state.bestStreak = Math.max(state.bestStreak, state.consecutiveJumps);
-                                state.totalJumps++;
-                                scoreVal.innerText = state.score;
-                                playSound('coin'); 
-                                if (isWealthPig) { setTimeout(()=>playSound('coin'), 100); setTimeout(()=>playSound('coin'), 200); }
-                                
-                                updateDailyProgress('jumps', 1);
-                                if (state.gameMode === 'hard') updateDailyProgress('hard_jumps', 1);
-                                updateDailyProgress('earn_coins', Math.floor(reward));
-                                
-                                refreshUI(); checkAchievements();
-                                if (state.isTutorial && state.tutorialStep === 2) advanceTutorial();
-                            } else if (state.gameMode === 'sandbox') { state.lastClockId = Math.max(state.lastClockId, clock.id); }
+                                let scoreMultiplier = (skinId === 'golden' || skinId === 'king') ? 2 : (skinId === 'devil' || skinId === 'steampunk' ? 3 : 1); if (skinId === 'omega') scoreMultiplier = 4; if (state.gameMode === 'hard') scoreMultiplier *= 2; if (state.gameMode === 'superhard') scoreMultiplier *= 5; scoreMultiplier *= (1 + (state.upgrades.score_bonus || 0) * 0.05);
+                                let baseReward = (state.gameMode === 'hard') ? 5 : (state.gameMode === 'superhard' ? 12 : 2); baseReward += (state.upgrades.coin_boost || 0);
+                                let bonus = 0; if (skinId === 'rainbow') bonus += 1; if (skinId === 'golden') bonus += 2; if (skinId === 'bank') bonus += 3; if (skinId === 'king') bonus += 5; if (skinId === 'omega') bonus += 10;
+                                let reward = (baseReward + bonus); if (skinId === 'lava') reward *= 2; state.coins += Math.floor(reward); state.totalCoinsEarned += Math.floor(reward); state.score += Math.round((clock.id - state.lastClockId) * scoreMultiplier); state.lastClockId = clock.id; state.consecutiveJumps++; state.bestStreak = Math.max(state.bestStreak, state.consecutiveJumps); state.totalJumps++; scoreVal.innerText = state.score; playSound('coin'); if (isWealthPig) { setTimeout(()=>playSound('coin'), 100); setTimeout(()=>playSound('coin'), 200); }
+                                updateDailyProgress('jumps', 1); if (state.gameMode === 'hard') updateDailyProgress('hard_jumps', 1); updateDailyProgress('earn_coins', Math.floor(reward)); refreshUI(); checkAchievements(); if (state.isTutorial && state.tutorialStep === 2) advanceTutorial();
+                            } else if (state.gameMode === 'sandbox') state.lastClockId = Math.max(state.lastClockId, clock.id);
                             playSound('land'); break;
                         }
                     }
                 }
-                
-                if (state.gameMode !== 'sandbox') {
-                    if (state.pig.y > state.cameraY + HEIGHT + 120 || state.pig.x < -150 || state.pig.x > WIDTH + 150) {
-                        state.consecutiveJumps = 0; 
-                        if (state.isTutorial) { state.pig.x = WIDTH/2; state.pig.y = state.cameraY + HEIGHT - 200; state.pig.vy = -10; state.pig.vx = 0; return; }
-                        if (skinId === 'slime' && !state.pig.slimeUsed) {
-                            state.pig.slimeUsed = true; state.pig.y = state.cameraY + HEIGHT - 10; state.pig.vy = -22; state.pig.vx = (WIDTH/2 - state.pig.x) * 0.05; 
-                            gameContainer.classList.add('slime-flash'); playSound('unlock'); setTimeout(() => gameContainer.classList.remove('slime-flash'), 500);
-                        } else if (skinId === 'zombie' && !state.pig.zombieUsed) {
-                            state.pig.zombieUsed = true; state.pig.y = state.cameraY + HEIGHT/2; state.pig.vy = -12; state.pig.vx = 0; state.pig.x = WIDTH/2; 
-                            gameContainer.classList.add('slime-flash'); playSound('unlock'); setTimeout(() => gameContainer.classList.remove('slime-flash'), 500);
-                        } else gameOver();
-                    }
-                }
+                if (state.gameMode !== 'sandbox') { if (state.pig.y > state.cameraY + HEIGHT + 120 || state.pig.x < -150 || state.pig.x > WIDTH + 150) { state.consecutiveJumps = 0; if (state.isTutorial) { state.pig.x = WIDTH/2; state.pig.y = state.cameraY + HEIGHT - 200; state.pig.vy = -10; state.pig.vx = 0; return; } if (skinId === 'slime' && !state.pig.slimeUsed) { state.pig.slimeUsed = true; state.pig.y = state.cameraY + HEIGHT - 10; state.pig.vy = -22; state.pig.vx = (WIDTH/2 - state.pig.x) * 0.05; gameContainer.classList.add('slime-flash'); playSound('unlock'); setTimeout(() => gameContainer.classList.remove('slime-flash'), 500); } else if (skinId === 'zombie' && !state.pig.zombieUsed) { state.pig.zombieUsed = true; state.pig.y = state.cameraY + HEIGHT/2; state.pig.vy = -12; state.pig.vx = 0; state.pig.x = WIDTH/2; gameContainer.classList.add('slime-flash'); playSound('unlock'); setTimeout(() => gameContainer.classList.remove('slime-flash'), 500); } else gameOver(); } }
             }
-
-            state.pig.coinParticles.forEach((cp, idx) => {
-                cp.x += cp.vx * timeScale;
-                cp.y += cp.vy * timeScale;
-                cp.vy += 0.2 * timeScale;
-                cp.rot += cp.rotV * timeScale;
-                cp.life -= 0.02 * timeScale;
-                if (cp.life <= 0) state.pig.coinParticles.splice(idx, 1);
-            });
-
-            state.cameraY += (state.pig.y - HEIGHT/2 - state.cameraY) * 0.1 * timeScale;
-            if (state.gameMode === 'sandbox') state.cameraX += (state.pig.x - WIDTH/2 - state.cameraX) * 0.1 * timeScale;
-            if (state.gameMode === 'sandbox') {
-                if (state.clocks.length < 50) {
-                    const angle = Math.random() * Math.PI * 2; const dist = 300 + Math.random() * 300; const nx = state.pig.x + Math.cos(angle) * dist; const ny = state.pig.y + Math.sin(angle) * dist;
-                    let tooClose = false; for(const c of state.clocks) { if (Math.sqrt((nx-c.x)**2 + (ny-c.y)**2) < 180) { tooClose = true; break; } }
-                    if (!tooClose) { state.lastClockId++; state.clocks.push(createClock(state.lastClockId, ny, state.lastClockId, nx)); }
-                }
-                state.clocks = state.clocks.filter(c => Math.sqrt((c.x-state.pig.x)**2 + (c.y-state.pig.y)**2) < 1200);
-            } else {
-                const last = state.clocks[state.clocks.length-1];
-                if (last && last.y > state.cameraY - 400) { const nextId = last.id + 1; state.clocks.push(createClock(nextId, last.y - CLOCK_SPACING, nextId)); }
-                if (state.clocks.length > 20) state.clocks.shift();
-            }
+            state.pig.coinParticles.forEach((cp, idx) => { cp.x += cp.vx * timeScale; cp.y += cp.vy * timeScale; cp.vy += 0.2 * timeScale; cp.rot += cp.rotV * timeScale; cp.life -= 0.02 * timeScale; if (cp.life <= 0) state.pig.coinParticles.splice(idx, 1); });
+            state.cameraY += (state.pig.y - HEIGHT/2 - state.cameraY) * 0.1 * timeScale; if (state.gameMode === 'sandbox') state.cameraX += (state.pig.x - WIDTH/2 - state.cameraX) * 0.1 * timeScale;
+            if (state.gameMode === 'sandbox') { if (state.clocks.length < 50) { const angle = Math.random() * Math.PI * 2; const dist = 300 + Math.random() * 300; const nx = state.pig.x + Math.cos(angle) * dist; const ny = state.pig.y + Math.sin(angle) * dist; let tooClose = false; for(const c of state.clocks) { if (Math.sqrt((nx-c.x)**2 + (ny-c.y)**2) < 180) { tooClose = true; break; } } if (!tooClose) { state.lastClockId++; state.clocks.push(createClock(state.lastClockId, ny, state.lastClockId, nx)); } } state.clocks = state.clocks.filter(c => Math.sqrt((c.x-state.pig.x)**2 + (c.y-state.pig.y)**2) < 1200); }
+            else { const last = state.clocks[state.clocks.length-1]; if (last && last.y > state.cameraY - 400) { const nextId = last.id + 1; state.clocks.push(createClock(nextId, last.y - CLOCK_SPACING, nextId)); } if (state.clocks.length > 20) state.clocks.shift(); }
         }
 
         function gameOver() {
-            state.status = 'GAMEOVER'; playSound('gameover');
-            state.totalScore += state.score;
-            localStorage.setItem('oinkCoins', state.coins); localStorage.setItem('oinkTotalCoins', state.totalCoinsEarned);
-            localStorage.setItem('oinkTotalScore', state.totalScore); localStorage.setItem('oinkTotalJumps', state.totalJumps);
-
-            const isToughMode = (state.gameMode === 'hard' || state.gameMode === 'superhard');
-            document.getElementById('btn-retry').classList.toggle('hidden', isToughMode);
-
-            if (state.username && !isBezosMode()) {
-                db.ref('leaderboard/wealth/'+state.username.toLowerCase()).set({ name: state.username, score: state.totalCoinsEarned }).catch(()=>{});
-            }
-
-            updateDailyProgress('score', state.score);
-
-            let isNewBest = false;
-            if (state.gameMode === 'regular') { if (state.score > state.best) { state.best = state.score; isNewBest = true; localStorage.setItem('oinkBest', state.best); } }
-            else if (state.gameMode === 'hard') { if (state.score > state.bestHard) { state.bestHard = state.score; isNewBest = true; localStorage.setItem('oinkBestHard', state.bestHard); } }
-            else if (state.gameMode === 'superhard') { if (state.score > state.bestSuperHard) { state.bestSuperHard = state.score; isNewBest = true; localStorage.setItem('oinkBestSuperHard', state.bestSuperHard); } }
-
-            if (isNewBest && state.username && !isBezosMode()) {
-                db.ref(`leaderboard/${state.gameMode}/${state.username.toLowerCase()}`).set({ name: state.username, score: state.score }).catch(()=>{});
-            }
-            document.getElementById('new-best-tag').classList.toggle('hidden', !isNewBest);
-
-            earnedCoinsText.innerText = `+${state.score}`; finalScoreLabel.innerText = state.score; 
-            gameoverTotalCoins.innerText = isBezosMode() ? "∞" : state.coins; uiGameOver.classList.remove('hidden'); 
-            refreshUI(); checkAchievements();
+            state.status = 'GAMEOVER'; playSound('gameover'); state.totalScore += state.score; localStorage.setItem('oinkCoins', state.coins); localStorage.setItem('oinkTotalCoins', state.totalCoinsEarned); localStorage.setItem('oinkTotalScore', state.totalScore); localStorage.setItem('oinkTotalJumps', state.totalJumps);
+            const isToughMode = (state.gameMode === 'hard' || state.gameMode === 'superhard'); document.getElementById('btn-retry').classList.toggle('hidden', isToughMode);
+            if (state.username && !isBezosMode()) db.ref('leaderboard/wealth/'+state.username.toLowerCase()).set({ name: state.username, score: state.totalCoinsEarned }).catch(()=>{});
+            updateDailyProgress('score', state.score); let isNewBest = false;
+            if (state.gameMode === 'regular') { if (state.score > state.best) { state.best = state.score; isNewBest = true; localStorage.setItem('oinkBest', state.best); } } else if (state.gameMode === 'hard') { if (state.score > state.bestHard) { state.bestHard = state.score; isNewBest = true; localStorage.setItem('oinkBestHard', state.bestHard); } } else if (state.gameMode === 'superhard') { if (state.score > state.bestSuperHard) { state.bestSuperHard = state.score; isNewBest = true; localStorage.setItem('oinkBestSuperHard', state.bestSuperHard); } }
+            if (isNewBest && state.username && !isBezosMode()) db.ref(`leaderboard/${state.gameMode}/${state.username.toLowerCase()}`).set({ name: state.username, score: state.score }).catch(()=>{});
+            document.getElementById('new-best-tag').classList.toggle('hidden', !isNewBest); earnedCoinsText.innerText = `+${state.score}`; finalScoreLabel.innerText = state.score; gameoverTotalCoins.innerText = isBezosMode() ? "∞" : state.coins; uiGameOver.classList.remove('hidden'); refreshUI(); checkAchievements();
         }
 
-        function saveSandboxSpeed() {
-            if (state.currentMaxSpeed > state.bestSpeed) {
-                state.bestSpeed = state.currentMaxSpeed; localStorage.setItem('oinkBestSpeed', state.bestSpeed);
-                if (state.username && !isBezosMode()) {
-                    db.ref('leaderboard/speed/'+state.username.toLowerCase()).set({ name: state.username, score: state.bestSpeed }).catch(()=>{});
-                }
-            }
-        }
+        function saveSandboxSpeed() { if (state.currentMaxSpeed > state.bestSpeed) { state.bestSpeed = state.currentMaxSpeed; localStorage.setItem('oinkBestSpeed', state.bestSpeed); if (state.username && !isBezosMode()) db.ref('leaderboard/speed/'+state.username.toLowerCase()).set({ name: state.username, score: state.bestSpeed }).catch(()=>{}); } }
 
-        function checkAchievements() { 
-            if (state.gameMode === 'sandbox') return; 
+        function checkAchievements() {
+            if (state.gameMode === 'sandbox') return;
             ACHIEVEMENTS.forEach(ach => {
-                let currentVal = 0;
-                switch(ach.type) {
-                    case 'score': currentVal = state.best; break;
-                    case 'total_coins': currentVal = state.totalCoinsEarned; break;
-                    case 'cumulative_score': currentVal = state.totalScore; break;
-                    case 'total_jumps': currentVal = state.totalJumps; break;
-                    case 'perfect_streak': currentVal = state.bestStreak; break;
-                    case 'themes': currentVal = state.unlockedThemes.length; break;
-                    case 'skins_normal': currentVal = state.unlockedSkins.filter(id => !SKINS.find(s => s.id === id)?.isAchievement).length; break;
-                    case 'all_achievements': currentVal = state.unlockedAchievements.length; break;
-                    case 'hard_jumps': currentVal = state.hardJumps; break;
-                }
-                if (currentVal >= ach.goal) {
-                    unlockAchievement(ach.id);
-                }
+                let currentVal = 0; switch(ach.type) { case 'score': currentVal = state.best; break; case 'total_coins': currentVal = state.totalCoinsEarned; break; case 'cumulative_score': currentVal = state.totalScore; break; case 'total_jumps': currentVal = state.totalJumps; break; case 'perfect_streak': currentVal = state.bestStreak; break; case 'themes': currentVal = state.unlockedThemes.length; break; case 'skins_normal': currentVal = state.unlockedSkins.filter(id => !SKINS.find(s => s.id === id)?.isAchievement).length; break; case 'all_achievements': currentVal = state.unlockedAchievements.length; break; case 'hard_jumps': currentVal = state.hardJumps; break; }
+                if (currentVal >= ach.goal) unlockAchievement(ach.id);
             });
         }
 
         function unlockAchievement(id) {
             if (state.unlockedAchievements.includes(id)) return; const ach = ACHIEVEMENTS.find(a => a.id === id); if (!ach) return;
             state.unlockedAchievements.push(id); localStorage.setItem('oinkAchieved', JSON.stringify(state.unlockedAchievements));
-            const rewardSkin = SKINS.find(s => s.id === ach.rewardSkin); 
-            if (rewardSkin && !state.unlockedSkins.includes(rewardSkin.id)) { state.unlockedSkins.push(rewardSkin.id); localStorage.setItem('oinkUnlocked', JSON.stringify(state.unlockedSkins)); }
+            const rewardSkin = SKINS.find(s => s.id === ach.rewardSkin); if (rewardSkin && !state.unlockedSkins.includes(rewardSkin.id)) { state.unlockedSkins.push(rewardSkin.id); localStorage.setItem('oinkUnlocked', JSON.stringify(state.unlockedSkins)); }
             const container = document.getElementById('achievement-popup-container'); const popup = document.createElement('div');
             popup.className = 'achievement-unlock bg-gradient-to-r from-yellow-500 to-amber-600 p-4 rounded-2xl border-2 border-yellow-300 shadow-2xl flex items-center gap-4 text-white pointer-events-auto cursor-pointer';
-            popup.onclick = () => popup.remove();
-            popup.innerHTML = `<div class="text-3xl">🏆</div><div><div class="text-[10px] font-black uppercase tracking-widest opacity-70">Achievement Unlocked!</div><div class="font-black text-sm">${ach.name}</div><div class="text-[9px] opacity-80">Reward: ${rewardSkin.name} Skin!</div></div>`;
+            popup.onclick = () => popup.remove(); popup.innerHTML = `<div class="text-3xl">🏆</div><div><div class="text-[10px] font-black uppercase tracking-widest opacity-70">Achievement Unlocked!</div><div class="font-black text-sm">${ach.name}</div><div class="text-[9px] opacity-80">Reward: ${rewardSkin.name} Skin!</div></div>`;
             container.appendChild(popup); setTimeout(() => popup.remove(), 4000); refreshUI(); playSound('unlock');
         }
 
         function drawPigAvatar(pctx, skin, x, y, scale = 1, rotation = 0, hatId = null) {
-            if (!skin) return; pctx.save(); pctx.translate(x, y); 
-            
-            let scaleMultiplier = 1;
-            let customBodyColor = null;
-            if (skin.id === 'family') {
-                const member = FAMILY_MEMBERS[state.pig.familyMember];
-                scaleMultiplier = member.scale;
-                customBodyColor = member.body;
-            }
-
+            if (!skin) return; pctx.save(); pctx.translate(x, y);
+            let scaleMultiplier = 1; let customBodyColor = null;
+            if (skin.id === 'family') { const member = FAMILY_MEMBERS[state.pig.familyMember]; scaleMultiplier = member.scale; customBodyColor = member.body; } else if (skin.id === 'spider') scaleMultiplier = 0.8;
             pctx.scale(scale * scaleMultiplier, scale * scaleMultiplier); pctx.rotate(rotation);
             let bodyColor = customBodyColor || skin.body; let earColor = skin.ears; let snoutColor = skin.snout;
             if (skin.id === 'rainbow' || skin.id === 'omega') { bodyColor = `hsl(${state.rainbowHue}, 80%, 70%)`; earColor = `hsl(${state.rainbowHue + 30}, 80%, 40%)`; snoutColor = `hsl(${state.rainbowHue + 60}, 80%, 80%)`; }
             
-            pctx.strokeStyle = earColor; pctx.lineWidth = 2; pctx.beginPath(); pctx.moveTo(-18, 0); pctx.bezierCurveTo(-25, -10, -25, 10, -20, 5); pctx.stroke();
-            
-            const currentHatId = hatId || state.selectedHatId;
-            if (currentHatId === 'suit') {
-                pctx.fillStyle = '#000000';
-                pctx.beginPath();
-                pctx.ellipse(0, 0, 18, 16, 0, 0, Math.PI * 2);
-                pctx.fill();
-                pctx.fillStyle = '#ffffff';
-                pctx.beginPath();
-                pctx.moveTo(0, -16);
-                pctx.lineTo(-8, 5);
-                pctx.lineTo(8, 5);
-                pctx.closePath();
-                pctx.fill();
-                pctx.fillStyle = '#ff0000';
-                pctx.beginPath();
-                pctx.moveTo(-4, -10); pctx.lineTo(4, -6); pctx.lineTo(4, -14); pctx.closePath();
-                pctx.moveTo(4, -10); pctx.lineTo(-4, -6); pctx.lineTo(-4, -14); pctx.closePath();
-                pctx.fill();
-            } else {
-                pctx.fillStyle = bodyColor;
-                pctx.beginPath();
-                pctx.ellipse(0, 0, 18, 16, 0, 0, Math.PI * 2);
-                pctx.fill();
-            }
-            
-            const isWealthPig = ['golden', 'bank', 'king', 'omega'].includes(skin.id);
-            if (isWealthPig) {
-                const shineGrad = pctx.createLinearGradient(-20, -20, 20, 20);
-                const shift = (Date.now() % 2000) / 2000;
-                shineGrad.addColorStop(Math.max(0, shift - 0.2), 'rgba(255,255,255,0)');
-                shineGrad.addColorStop(shift, 'rgba(255,255,255,0.4)');
-                shineGrad.addColorStop(Math.min(1, shift + 0.2), 'rgba(255,255,255,0)');
-                pctx.fillStyle = shineGrad;
-                pctx.beginPath(); pctx.ellipse(0, 0, 18, 16, 0, 0, Math.PI * 2); pctx.fill();
+            if (skin.id === 'spider') {
+                const p = state.pig; const time = Date.now() * 0.01; const isAttached = p.attachedTo !== null; const clock = isAttached ? state.clocks.find(c => c.id === p.attachedTo) : null;
+                const legCount = 8;
+                for (let i = 0; i < legCount; i++) {
+                    const side = i < 4 ? -1 : 1; const legIndex = i % 4; const phase = time + i * 0.7; const bx = side * 12; const by = (legIndex - 1.5) * 10;
+                    let fx, fy, jx, jy;
+                    if (isAttached && clock) {
+                        const stepSpeed = Math.abs(clock.speed) * 15; const stepPhase = Math.sin(time * stepSpeed + i * Math.PI / 2);
+                        const relAngleToClock = Math.atan2(p.y - clock.y, p.x - clock.x);
+                        const footRelAngle = (legIndex - 1.5) * 0.5 + (stepPhase * 0.2);
+                        const cr = clock.radius;
+                        const footClockAngle = relAngleToClock + footRelAngle;
+                        // Transform global clock surface to local pig space
+                        const footGlobalX = clock.x + Math.cos(footClockAngle) * cr;
+                        const footGlobalY = clock.y + Math.sin(footClockAngle) * cr;
+                        fx = footGlobalX - p.x; fy = footGlobalY - p.y;
+                        // Manual knee logic (simplified joint)
+                        jx = (bx + fx) / 2 + side * 15; jy = (by + fy) / 2 - 15;
+                    } else {
+                        const spread = 25 + Math.sin(phase) * 12; fx = bx + side * spread; fy = by + Math.cos(phase) * 15; jx = bx + side * (spread * 0.6); jy = by - 12;
+                    }
+                    pctx.strokeStyle = skin.body; pctx.lineWidth = 4; pctx.lineCap = 'round'; pctx.lineJoin = 'round'; pctx.beginPath(); pctx.moveTo(bx, by); pctx.lineTo(jx, jy); pctx.lineTo(fx, fy); pctx.stroke();
+                }
             }
 
-            pctx.fillStyle = earColor; pctx.beginPath(); pctx.moveTo(-14, -10); pctx.lineTo(-18, -20); pctx.lineTo(-6, -14); pctx.fill();
-            pctx.beginPath(); pctx.moveTo(14, -10); pctx.lineTo(18, -20); pctx.lineTo(6, -14); pctx.fill();
-            pctx.fillStyle = snoutColor; pctx.beginPath(); pctx.ellipse(0, 4, 8, 6, 0, 0, Math.PI * 2); pctx.fill();
-            pctx.fillStyle = skin.snoutDots || 'rgba(0,0,0,0.3)'; pctx.beginPath(); pctx.arc(-3, 4, 1.5, 0, Math.PI * 2); pctx.fill(); pctx.beginPath(); pctx.arc(3, 4, 1.5, 0, Math.PI * 2); pctx.fill();
-            const eyeColor = (skin.id === 'void' || skin.id === 'neon' || skin.id === 'omega' || skin.id === 'rocket') ? 'white' : 'black'; pctx.fillStyle = eyeColor; pctx.beginPath(); pctx.arc(-7, -4, 2.5, 0, Math.PI * 2); pctx.fill(); pctx.beginPath(); pctx.arc(7, -4, 2.5, 0, Math.PI * 2); pctx.fill();
+            pctx.strokeStyle = earColor; pctx.lineWidth = 2; pctx.beginPath(); pctx.moveTo(-18, 0); pctx.bezierCurveTo(-25, -10, -25, 10, -20, 5); pctx.stroke();
+            const currentHatId = hatId || state.selectedHatId;
+            if (currentHatId === 'suit') { pctx.fillStyle = '#000000'; pctx.beginPath(); pctx.ellipse(0, 0, 18, 16, 0, 0, Math.PI * 2); pctx.fill(); pctx.fillStyle = '#ffffff'; pctx.beginPath(); pctx.moveTo(0, -16); pctx.lineTo(-8, 5); pctx.lineTo(8, 5); pctx.closePath(); pctx.fill(); pctx.fillStyle = '#ff0000'; pctx.beginPath(); pctx.moveTo(-4, -10); pctx.lineTo(4, -6); pctx.lineTo(4, -14); pctx.closePath(); pctx.moveTo(4, -10); pctx.lineTo(-4, -6); pctx.lineTo(-4, -14); pctx.closePath(); pctx.fill(); }
+            else { pctx.fillStyle = bodyColor; pctx.beginPath(); pctx.ellipse(0, 0, 18, 16, 0, 0, Math.PI * 2); pctx.fill(); }
             
+            if (['golden', 'bank', 'king', 'omega'].includes(skin.id)) {
+                const shineGrad = pctx.createLinearGradient(-20, -20, 20, 20); const shift = (Date.now() % 2000) / 2000; shineGrad.addColorStop(Math.max(0, shift - 0.2), 'rgba(255,255,255,0)'); shineGrad.addColorStop(shift, 'rgba(255,255,255,0.4)'); shineGrad.addColorStop(Math.min(1, shift + 0.2), 'rgba(255,255,255,0)');
+                pctx.fillStyle = shineGrad; pctx.beginPath(); pctx.ellipse(0, 0, 18, 16, 0, 0, Math.PI * 2); pctx.fill();
+            }
+            pctx.fillStyle = earColor; pctx.beginPath(); pctx.moveTo(-14, -10); pctx.lineTo(-18, -20); pctx.lineTo(-6, -14); pctx.fill(); pctx.beginPath(); pctx.moveTo(14, -10); pctx.lineTo(18, -20); pctx.lineTo(6, -14); pctx.fill(); pctx.fillStyle = snoutColor; pctx.beginPath(); pctx.ellipse(0, 4, 8, 6, 0, 0, Math.PI * 2); pctx.fill(); pctx.fillStyle = skin.snoutDots || 'rgba(0,0,0,0.3)'; pctx.beginPath(); pctx.arc(-3, 4, 1.5, 0, Math.PI * 2); pctx.fill(); pctx.beginPath(); pctx.arc(3, 4, 1.5, 0, Math.PI * 2); pctx.fill();
+            const eyeColor = (skin.id === 'void' || skin.id === 'neon' || skin.id === 'omega' || skin.id === 'rocket' || skin.id === 'spider') ? 'white' : 'black'; pctx.fillStyle = eyeColor; pctx.beginPath(); pctx.arc(-7, -4, 2.5, 0, Math.PI * 2); pctx.fill(); pctx.beginPath(); pctx.arc(7, -4, 2.5, 0, Math.PI * 2); pctx.fill();
+            if (skin.id === 'spider') { pctx.beginPath(); pctx.arc(-11, -8, 1.5, 0, Math.PI * 2); pctx.fill(); pctx.beginPath(); pctx.arc(11, -8, 1.5, 0, Math.PI * 2); pctx.fill(); }
             if (currentHatId && currentHatId !== 'none' && currentHatId !== 'suit') {
-                pctx.save();
-                pctx.translate(0, -14);
+                pctx.save(); pctx.translate(0, -14);
                 switch(currentHatId) {
-                    case 'tophat':
-                        pctx.fillStyle = '#000000'; pctx.fillRect(-10, -15, 20, 15); pctx.fillRect(-15, -2, 30, 4); break;
-                    case 'hathat':
-                        pctx.fillStyle = '#000000'; 
-                        pctx.fillRect(-10, -15, 20, 15); pctx.fillRect(-15, -2, 30, 4);
-                        pctx.fillRect(-8, -28, 16, 12); pctx.fillRect(-12, -17, 24, 3); break;
-                    case 'propeller':
-                        pctx.fillStyle = '#ef4444'; pctx.beginPath(); pctx.arc(0, 0, 10, Math.PI, 0); pctx.fill();
-                        pctx.strokeStyle = '#ffffff'; pctx.lineWidth = 2; pctx.beginPath(); pctx.moveTo(0, 0); pctx.lineTo(0, -6); pctx.stroke();
-                        pctx.save(); pctx.rotate(Date.now() * 0.02); pctx.fillStyle = '#fbbf24'; pctx.fillRect(-8, -7, 16, 2); pctx.restore(); break;
-                    case 'crown':
-                        pctx.fillStyle = '#fbbf24'; pctx.beginPath(); pctx.moveTo(-12, 0); pctx.lineTo(-12, -10); pctx.lineTo(-6, -5); pctx.lineTo(0, -15); pctx.lineTo(6, -5); pctx.lineTo(12, -10); pctx.lineTo(12, 0); pctx.closePath(); pctx.fill(); break;
-                    case 'chef':
-                        pctx.fillStyle = '#ffffff'; pctx.beginPath(); pctx.moveTo(-8, 0); pctx.lineTo(-8, -10); pctx.bezierCurveTo(-15, -25, 15, -25, 8, -10); pctx.lineTo(8, 0); pctx.fill(); break;
-                    case 'viking':
-                        pctx.fillStyle = '#64748b'; pctx.beginPath(); pctx.arc(0, 0, 10, Math.PI, 0); pctx.fill();
-                        pctx.fillStyle = '#ffffff'; pctx.beginPath(); pctx.moveTo(-8, -4); pctx.lineTo(-15, -15); pctx.lineTo(-5, -8); pctx.fill();
-                        pctx.beginPath(); pctx.moveTo(8, -4); pctx.lineTo(15, -15); pctx.lineTo(5, -8); pctx.fill(); break;
-                    case 'detective':
-                        pctx.fillStyle = '#451a03'; pctx.beginPath(); pctx.ellipse(0, 0, 12, 6, 0, Math.PI, 0); pctx.fill(); pctx.fillRect(-12, -4, 24, 4); pctx.fillRect(8, -2, 8, 3); break;
-                    case 'cowboy':
-                        pctx.fillStyle = '#78350f'; pctx.beginPath(); pctx.ellipse(0, 0, 15, 4, 0, 0, Math.PI*2); pctx.fill();
-                        pctx.fillRect(-10, -10, 20, 10); break;
-                    case 'wizard':
-                        pctx.fillStyle = '#312e81'; pctx.beginPath(); pctx.moveTo(-12, 0); pctx.lineTo(0, -22); pctx.lineTo(12, 0); pctx.fill();
-                        pctx.fillStyle = '#fef08a'; pctx.beginPath(); pctx.arc(-2, -8, 2, 0, Math.PI*2); pctx.fill(); pctx.beginPath(); pctx.arc(3, -14, 1.5, 0, Math.PI*2); pctx.fill(); break;
-                    case 'straw':
-                        pctx.fillStyle = '#fde68a'; pctx.beginPath(); pctx.ellipse(0, 0, 16, 5, 0, 0, Math.PI*2); pctx.fill();
-                        pctx.fillStyle = '#ef4444'; pctx.fillRect(-9, -4, 18, 2);
-                        pctx.fillStyle = '#fde68a'; pctx.beginPath(); pctx.arc(0, -3, 9, Math.PI, 0); pctx.fill(); break;
-                    case 'catears':
-                        pctx.fillStyle = '#000000';
-                        pctx.beginPath(); pctx.moveTo(-12, 0); pctx.lineTo(-15, -10); pctx.lineTo(-6, -2); pctx.fill();
-                        pctx.beginPath(); pctx.moveTo(12, 0); pctx.lineTo(15, -10); pctx.lineTo(6, -2); pctx.fill(); break;
-                    case 'party':
-                        pctx.fillStyle = `hsl(${state.rainbowHue}, 80%, 60%)`; pctx.beginPath(); pctx.moveTo(-8, 0); pctx.lineTo(0, -18); pctx.lineTo(8, 0); pctx.fill(); break;
-                    case 'halo':
-                        pctx.strokeStyle = '#fde68a'; pctx.lineWidth = 3; pctx.shadowBlur = 10; pctx.shadowColor = '#fbbf24'; pctx.beginPath(); pctx.ellipse(0, -8, 12, 4, 0, 0, Math.PI*2); pctx.stroke(); break;
+                    case 'tophat': pctx.fillStyle = '#000000'; pctx.fillRect(-10, -15, 20, 15); pctx.fillRect(-15, -2, 30, 4); break;
+                    case 'hathat': pctx.fillStyle = '#000000'; pctx.fillRect(-10, -15, 20, 15); pctx.fillRect(-15, -2, 30, 4); pctx.fillRect(-8, -28, 16, 12); pctx.fillRect(-12, -17, 24, 3); break;
+                    case 'propeller': pctx.fillStyle = '#ef4444'; pctx.beginPath(); pctx.arc(0, 0, 10, Math.PI, 0); pctx.fill(); pctx.strokeStyle = '#ffffff'; pctx.lineWidth = 2; pctx.beginPath(); pctx.moveTo(0, 0); pctx.lineTo(0, -6); pctx.stroke(); pctx.save(); pctx.rotate(Date.now() * 0.02); pctx.fillStyle = '#fbbf24'; pctx.fillRect(-8, -7, 16, 2); pctx.restore(); break;
+                    case 'crown': pctx.fillStyle = '#fbbf24'; pctx.beginPath(); pctx.moveTo(-12, 0); pctx.lineTo(-12, -10); pctx.lineTo(-6, -5); pctx.lineTo(0, -15); pctx.lineTo(6, -5); pctx.lineTo(12, -10); pctx.lineTo(12, 0); pctx.closePath(); pctx.fill(); break;
+                    case 'chef': pctx.fillStyle = '#ffffff'; pctx.beginPath(); pctx.moveTo(-8, 0); pctx.lineTo(-8, -10); pctx.bezierCurveTo(-15, -25, 15, -25, 8, -10); pctx.lineTo(8, 0); pctx.fill(); break;
+                    case 'viking': pctx.fillStyle = '#64748b'; pctx.beginPath(); pctx.arc(0, 0, 10, Math.PI, 0); pctx.fill(); pctx.fillStyle = '#ffffff'; pctx.beginPath(); pctx.moveTo(-8, -4); pctx.lineTo(-15, -15); pctx.lineTo(-5, -8); pctx.fill(); pctx.beginPath(); pctx.moveTo(8, -4); pctx.lineTo(15, -15); pctx.lineTo(5, -8); pctx.fill(); break;
+                    case 'detective': pctx.fillStyle = '#451a03'; pctx.beginPath(); pctx.ellipse(0, 0, 12, 6, 0, Math.PI, 0); pctx.fill(); pctx.fillRect(-12, -4, 24, 4); pctx.fillRect(8, -2, 8, 3); break;
+                    case 'cowboy': pctx.fillStyle = '#78350f'; pctx.beginPath(); pctx.ellipse(0, 0, 15, 4, 0, 0, Math.PI*2); pctx.fill(); pctx.fillRect(-10, -10, 20, 10); break;
+                    case 'wizard': pctx.fillStyle = '#312e81'; pctx.beginPath(); pctx.moveTo(-12, 0); pctx.lineTo(0, -22); pctx.lineTo(12, 0); pctx.fill(); pctx.fillStyle = '#fef08a'; pctx.beginPath(); pctx.arc(-2, -8, 2, 0, Math.PI*2); pctx.fill(); pctx.beginPath(); pctx.arc(3, -14, 1.5, 0, Math.PI*2); pctx.fill(); break;
+                    case 'straw': pctx.fillStyle = '#fde68a'; pctx.beginPath(); pctx.ellipse(0, 0, 16, 5, 0, 0, Math.PI*2); pctx.fill(); pctx.fillStyle = '#ef4444'; pctx.fillRect(-9, -4, 18, 2); pctx.fillStyle = '#fde68a'; pctx.beginPath(); pctx.arc(0, -3, 9, Math.PI, 0); pctx.fill(); break;
+                    case 'catears': pctx.fillStyle = '#000000'; pctx.beginPath(); pctx.moveTo(-12, 0); pctx.lineTo(-15, -10); pctx.lineTo(-6, -2); pctx.fill(); pctx.beginPath(); pctx.moveTo(12, 0); pctx.lineTo(15, -10); pctx.lineTo(6, -2); pctx.fill(); break;
+                    case 'party': pctx.fillStyle = `hsl(${state.rainbowHue}, 80%, 60%)`; pctx.beginPath(); pctx.moveTo(-8, 0); pctx.lineTo(0, -18); pctx.lineTo(8, 0); pctx.fill(); break;
+                    case 'halo': pctx.strokeStyle = '#fde68a'; pctx.lineWidth = 3; pctx.shadowBlur = 10; pctx.shadowColor = '#fbbf24'; pctx.beginPath(); pctx.ellipse(0, -8, 12, 4, 0, 0, Math.PI*2); pctx.stroke(); break;
                 }
                 pctx.restore();
             }
-
             if (skin.id === 'rocket') { pctx.fillStyle = '#EF4444'; pctx.beginPath(); pctx.moveTo(-5, 16); pctx.lineTo(0, 25); pctx.lineTo(5, 16); pctx.fill(); }
             if (skin.id === 'smoking') { pctx.fillStyle = 'black'; pctx.fillRect(-10, -6, 20, 2); }
             if (skin.id === 'lava') { pctx.shadowBlur = 10; pctx.shadowColor = '#F97316'; pctx.fillStyle = '#FB923C'; pctx.beginPath(); pctx.arc(0, 0, 12, 0, Math.PI*2); pctx.fill(); pctx.shadowBlur = 0; }
@@ -1701,118 +1196,36 @@
         }
 
         function draw() {
-            const theme = THEMES.find(t => t.id === state.selectedThemeId) || THEMES[0];
-            ctx.fillStyle = theme.bg; ctx.fillRect(0,0,WIDTH,HEIGHT);
-            
-            if (theme.type === 'PLANET') {
-                ctx.fillStyle = 'white';
-                state.stars.forEach(s => { ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI*2); ctx.fill(); });
-            } else if (theme.type === 'CORAL') {
-                ctx.strokeStyle = 'rgba(255,255,255,0.1)';
-                state.bubbles.forEach(b => { ctx.beginPath(); ctx.arc(b.x, b.y, b.size, 0, Math.PI*2); ctx.stroke(); });
-            } else if (theme.type === 'GRID') {
-                ctx.strokeStyle = 'rgba(167, 139, 250, 0.2)';
-                ctx.lineWidth = 1;
-                const gridSpacing = 40;
-                const scrollOffset = (Date.now() * 0.05) % gridSpacing;
-                for(let x=0; x<WIDTH; x+=gridSpacing) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, HEIGHT); ctx.stroke(); }
-                for(let y=0; y<HEIGHT; y+=gridSpacing) { ctx.beginPath(); ctx.moveTo(0, y+scrollOffset); ctx.lineTo(WIDTH, y+scrollOffset); ctx.stroke(); }
-            }
-
+            const theme = THEMES.find(t => t.id === state.selectedThemeId) || THEMES[0]; ctx.fillStyle = theme.bg; ctx.fillRect(0,0,WIDTH,HEIGHT);
+            if (theme.type === 'PLANET') { ctx.fillStyle = 'white'; state.stars.forEach(s => { ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2); ctx.fill(); }); }
+            else if (theme.type === 'CORAL') { ctx.strokeStyle = 'rgba(255,255,255,0.1)'; state.bubbles.forEach(b => { ctx.beginPath(); ctx.arc(b.x, b.y, b.size, 0, Math.PI * 2); ctx.stroke(); }); }
+            else if (theme.type === 'GRID') { ctx.strokeStyle = 'rgba(167, 139, 250, 0.2)'; ctx.lineWidth = 1; const gridSpacing = 40; const scrollOffset = (Date.now() * 0.05) % gridSpacing; for(let x=0; x<WIDTH; x+=gridSpacing) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, HEIGHT); ctx.stroke(); } for(let y=0; y<HEIGHT; y+=gridSpacing) { ctx.beginPath(); ctx.moveTo(0, y+scrollOffset); ctx.lineTo(WIDTH, y+scrollOffset); ctx.stroke(); } }
             ctx.save(); ctx.translate(-state.cameraX, -state.cameraY);
             state.clocks.forEach(c => {
-                if (c.hasSpikes) {
-                    ctx.save();
-                    if (c.spikeActive) {
-                        ctx.fillStyle = '#ef4444'; ctx.shadowBlur = 10; ctx.shadowColor = '#ef4444';
-                    } else if (c.spikeTimer < 40) {
-                        ctx.fillStyle = 'rgba(239, 68, 68, 0.4)';
-                    } else {
-                        ctx.fillStyle = 'rgba(239, 68, 68, 0.1)';
-                    }
-                    const spikeCount = 12;
-                    for (let i = 0; i < spikeCount; i++) {
-                        let a = i * (Math.PI * 2 / spikeCount);
-                        let tipDist = c.radius + (c.spikeActive ? 15 : 5);
-                        ctx.beginPath();
-                        ctx.moveTo(c.x + Math.cos(a - 0.1) * c.radius, c.y + Math.sin(a - 0.1) * c.radius);
-                        ctx.lineTo(c.x + Math.cos(a) * tipDist, c.y + Math.sin(a) * tipDist);
-                        ctx.lineTo(c.x + Math.cos(a + 0.1) * c.radius, c.y + Math.sin(a + 0.1) * c.radius);
-                        ctx.fill();
-                    }
-                    ctx.restore();
-                }
-
-                if (theme.type === 'PLANET') {
-                    const gradGlow = ctx.createRadialGradient(c.x, c.y, c.radius, c.x, c.y, c.radius * 1.6); gradGlow.addColorStop(0, c.color + '44'); gradGlow.addColorStop(1, 'transparent'); ctx.fillStyle = gradGlow; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius * 1.6, 0, Math.PI*2); ctx.fill(); ctx.fillStyle = c.color; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2); ctx.fill();
-                    ctx.strokeStyle = 'white'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius*1.1, c.y + Math.sin(c.angle)*c.radius*1.1); ctx.stroke();
-                } else if (theme.type === 'LILYPAD') {
-                    ctx.fillStyle = '#166534'; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2); ctx.fill(); ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2); ctx.stroke(); ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.strokeStyle = 'white'; ctx.lineWidth = 3; ctx.stroke();
-                } else if (theme.type === 'COIN') {
-                    const g = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.radius); g.addColorStop(0, '#fef08a'); g.addColorStop(0.7, '#fbbf24'); g.addColorStop(1, '#92400e'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.strokeStyle = '#78350f'; ctx.lineWidth = 4; ctx.stroke();
-                } else if (theme.type === 'NOIR') {
-                    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2); ctx.stroke();
-                    ctx.fillStyle = 'rgba(30,30,30,0.8)'; ctx.fill();
-                    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke();
-                    ctx.font = '10px Courier New'; ctx.fillStyle = 'white'; ctx.textAlign = 'center'; ctx.fillText('XII', c.x, c.y - c.radius + 15);
-                } else if (theme.type === 'GRID') {
-                    ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2); ctx.stroke();
-                    ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke();
-                    ctx.setLineDash([2, 4]); ctx.beginPath(); ctx.arc(c.x, c.y, c.radius - 5, 0, Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
-                } else if (theme.type === 'CANDY') {
-                    const grad = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.radius); grad.addColorStop(0, '#fff'); grad.addColorStop(0.5, '#fb7185'); grad.addColorStop(1, '#e11d48'); ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2); ctx.fill();
-                    ctx.strokeStyle = 'white'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke();
-                } else if (theme.type === 'CORAL') {
-                    ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 5; ctx.beginPath();
-                    for(let i=0; i<8; i++) {
-                        const a = i * Math.PI / 4; const r = c.radius + Math.sin(Date.now()*0.005 + i)*5;
-                        ctx.lineTo(c.x + Math.cos(a)*r, c.y + Math.sin(a)*r);
-                    }
-                    ctx.closePath(); ctx.stroke(); ctx.fillStyle = 'rgba(12, 74, 110, 0.6)'; ctx.fill();
-                    ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke();
-                } else {
-                    ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2); ctx.strokeStyle = c.color; ctx.lineWidth = 6; ctx.stroke(); ctx.fillStyle = 'rgba(15,23,42,0.9)'; ctx.fill(); ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.strokeStyle = c.color; ctx.lineWidth = 8; ctx.lineCap='round'; ctx.stroke();
-                }
+                if (c.hasSpikes) { ctx.save(); if (c.spikeActive) { ctx.fillStyle = '#ef4444'; ctx.shadowBlur = 10; ctx.shadowColor = '#ef4444'; } else if (c.spikeTimer < 40) ctx.fillStyle = 'rgba(239, 68, 68, 0.4)'; else ctx.fillStyle = 'rgba(239, 68, 68, 0.1)'; const spikeCount = 12; for (let i = 0; i < spikeCount; i++) { let a = i * (Math.PI * 2 / spikeCount); let tipDist = c.radius + (c.spikeActive ? 15 : 5); ctx.beginPath(); ctx.moveTo(c.x + Math.cos(a - 0.1) * c.radius, c.y + Math.sin(a - 0.1) * c.radius); ctx.lineTo(c.x + Math.cos(a) * tipDist, c.y + Math.sin(a) * tipDist); ctx.lineTo(c.x + Math.cos(a + 0.1) * c.radius, c.y + Math.sin(a + 0.1) * c.radius); ctx.fill(); } ctx.restore(); }
+                if (theme.type === 'PLANET') { const gradGlow = ctx.createRadialGradient(c.x, c.y, c.radius, c.x, c.y, c.radius * 1.6); gradGlow.addColorStop(0, c.color + '44'); gradGlow.addColorStop(1, 'transparent'); ctx.fillStyle = gradGlow; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius * 1.6, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = c.color; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = 'white'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius*1.1, c.y + Math.sin(c.angle)*c.radius*1.1); ctx.stroke(); }
+                else if (theme.type === 'LILYPAD') { ctx.fillStyle = '#166534'; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.stroke(); ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.strokeStyle = 'white'; ctx.lineWidth = 3; ctx.stroke(); }
+                else if (theme.type === 'COIN') { const g = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.radius); g.addColorStop(0, '#fef08a'); g.addColorStop(0.7, '#fbbf24'); g.addColorStop(1, '#92400e'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.strokeStyle = '#78350f'; ctx.lineWidth = 4; ctx.stroke(); }
+                else if (theme.type === 'NOIR') { ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.stroke(); ctx.fillStyle = 'rgba(30,30,30,0.8)'; ctx.fill(); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke(); ctx.font = '10px Courier New'; ctx.fillStyle = 'white'; ctx.textAlign = 'center'; ctx.fillText('XII', c.x, c.y - c.radius + 15); }
+                else if (theme.type === 'GRID') { ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(c.y, c.y, c.radius, 0, Math.PI * 2); ctx.stroke(); ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke(); ctx.setLineDash([2, 4]); ctx.beginPath(); ctx.arc(c.x, c.y, c.radius - 5, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]); }
+                else if (theme.type === 'CANDY') { const grad = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.radius); grad.addColorStop(0, '#fff'); grad.addColorStop(0.5, '#fb7185'); grad.addColorStop(1, '#e11d48'); ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = 'white'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke(); }
+                else if (theme.type === 'CORAL') { ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 5; ctx.beginPath(); for(let i=0; i<8; i++) { const a = i * Math.PI / 4; const r = c.radius + Math.sin(Date.now()*0.005 + i)*5; ctx.lineTo(c.x + Math.cos(a)*r, c.y + Math.sin(a)*r); } ctx.closePath(); ctx.stroke(); ctx.fillStyle = 'rgba(12, 74, 110, 0.6)'; ctx.fill(); ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke(); }
+                else { ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.strokeStyle = c.color; ctx.lineWidth = 6; ctx.stroke(); ctx.fillStyle = 'rgba(15,23,42,0.9)'; ctx.fill(); ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.strokeStyle = c.color; ctx.lineWidth = 8; ctx.lineCap='round'; ctx.stroke(); }
             });
-
             if (state.status === 'PLAYING') {
                 const skin = SKINS.find(s => s.id === state.selectedSkinId) || SKINS[0]; const p = state.pig; const rot = p.attachedTo !== null ? 0 : Math.atan2(p.vy, p.vx) + Math.PI/2;
-                
-                p.coinParticles.forEach(cp => {
-                    ctx.save(); ctx.translate(cp.x, cp.y); ctx.rotate(cp.rot); ctx.scale(cp.life, cp.life); ctx.fillStyle = '#fbbf24'; ctx.beginPath(); ctx.ellipse(0, 0, 5, 2, 0, 0, Math.PI*2); ctx.fill(); ctx.strokeStyle = '#b45309'; ctx.lineWidth = 1; ctx.stroke(); ctx.restore();
-                });
-
-                if ((skin.id === 'neon' || skin.id === 'omega' || skin.id === 'smoking') && p.trail.length > 0) {
-                    p.trail.forEach(t => { ctx.fillStyle = skin.id === 'smoking' ? `rgba(200, 200, 200, ${t.life * 0.4})` : `rgba(59, 130, 246, ${t.life * 0.5})`; ctx.beginPath(); ctx.arc(t.x, t.y, (skin.id === 'smoking' ? 12 : 8) * t.life, 0, Math.PI * 2); ctx.fill(); });
-                }
+                p.coinParticles.forEach(cp => { ctx.save(); ctx.translate(cp.x, cp.y); ctx.rotate(cp.rot); ctx.scale(cp.life, cp.life); ctx.fillStyle = '#fbbf24'; ctx.beginPath(); ctx.ellipse(0, 0, 5, 2, 0, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = '#b45309'; ctx.lineWidth = 1; ctx.stroke(); ctx.restore(); });
+                if ((skin.id === 'neon' || skin.id === 'omega' || skin.id === 'smoking') && p.trail.length > 0) p.trail.forEach(t => { ctx.fillStyle = skin.id === 'smoking' ? `rgba(200, 200, 200, ${t.life * 0.4})` : `rgba(59, 130, 246, ${t.life * 0.5})`; ctx.beginPath(); ctx.arc(t.x, t.y, (skin.id === 'smoking' ? 12 : 8) * t.life, 0, Math.PI * 2); ctx.fill(); });
                 const showTrajectory = state.gameMode === 'sandbox' || skin.id === 'cyber' || skin.id === 'king' || skin.id === 'omega';
-                if (showTrajectory) {
-                    let trajAngle = null;
-                    if (state.gameMode === 'sandbox') { const dx = (state.mouse.x + state.cameraX) - p.x; const dy = (state.mouse.y + state.cameraY) - p.y; trajAngle = Math.atan2(dy, dx); }
-                    else if (p.attachedTo !== null) { const clock = state.clocks.find(c => c.id === p.attachedTo); trajAngle = clock.angle; }
-                    if (trajAngle !== null) {
-                        ctx.save(); ctx.setLineDash([5, 5]); ctx.strokeStyle = (skin.id === 'king' || skin.id === 'omega') ? '#fbbf24' : 'rgba(6, 182, 212, 0.6)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x + Math.cos(trajAngle)*200, p.y + Math.sin(trajAngle)*200); ctx.stroke(); ctx.restore();
-                    }
-                }
+                if (showTrajectory) { let trajAngle = null; if (state.gameMode === 'sandbox') { const dx = (state.mouse.x + state.cameraX) - p.x; const dy = (state.mouse.y + state.cameraY) - p.y; trajAngle = Math.atan2(dy, dx); } else if (p.attachedTo !== null) { const clock = state.clocks.find(c => c.id === p.attachedTo); trajAngle = clock.angle; } if (trajAngle !== null) { ctx.save(); ctx.setLineDash([5, 5]); ctx.strokeStyle = (skin.id === 'king' || skin.id === 'omega') ? '#fbbf24' : 'rgba(6, 182, 212, 0.6)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x + Math.cos(trajAngle)*200, p.y + Math.sin(trajAngle)*200); ctx.stroke(); ctx.restore(); } }
                 drawPigAvatar(ctx, skin, p.x, p.y, 1, rot);
             }
             ctx.restore();
         }
 
-        function loop(timestamp) { 
-            if (!state.lastTime) state.lastTime = timestamp; const deltaTime = timestamp - state.lastTime; state.lastTime = timestamp; const cappedDt = Math.min(deltaTime, 100); const timeScale = cappedDt / (1000 / 60); update(timeScale); draw(); requestAnimationFrame(loop); 
-        }
-
+        function loop(timestamp) { if (!state.lastTime) state.lastTime = timestamp; const deltaTime = timestamp - state.lastTime; state.lastTime = timestamp; const cappedDt = Math.min(deltaTime, 100); const timeScale = cappedDt / (1000 / 60); update(timeScale); draw(); requestAnimationFrame(loop); }
         window.addEventListener('mousemove', (e) => { const rect = canvas.getBoundingClientRect(); state.mouse.x = (e.clientX - rect.left) * (WIDTH / rect.width); state.mouse.y = (e.clientY - rect.top) * (HEIGHT / rect.height); });
-        window.addEventListener('keydown', (e) => { 
-            if (document.activeElement.tagName === 'INPUT') return; 
-            if (e.code === 'Space') { 
-                e.preventDefault(); 
-                if (state.status === 'PLAYING') jump(); 
-                else if (state.status === 'HOME') handleMainPlay(); 
-                else if (state.status === 'GAMEOVER') retryGame();
-            } 
-        });
+        window.addEventListener('keydown', (e) => { if (document.activeElement.tagName === 'INPUT') return; if (e.code === 'Space') { e.preventDefault(); if (state.status === 'PLAYING') jump(); else if (state.status === 'HOME') handleMainPlay(); else if (state.status === 'GAMEOVER') retryGame(); } });
         canvas.addEventListener('mousedown', () => { initAudio(); jump(); });
         canvas.addEventListener('touchstart', (e) => { e.preventDefault(); initAudio(); const rect = canvas.getBoundingClientRect(); state.mouse.x = (e.touches[0].clientX - rect.left) * (WIDTH / rect.width); state.mouse.y = (e.touches[0].clientY - rect.top) * (HEIGHT / rect.height); jump(); });
 
