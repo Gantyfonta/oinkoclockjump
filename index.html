@@ -148,19 +148,13 @@
 
         <!-- Home Screen -->
         <div id="ui-home" class="absolute inset-0 flex flex-col items-center justify-center bg-indigo-950/80 backdrop-blur-sm z-40 text-white p-6 text-center">
-            <!-- Daily Challenge Ticket -->
-            <div id="daily-challenge-card" onclick="openDaily()" class="absolute top-16 left-0 right-0 px-8 pointer-events-auto">
-                <div class="bg-gradient-to-r from-pink-600 to-indigo-700 p-2.5 rounded-2xl border border-white/20 shadow-lg cursor-pointer hover:scale-[1.02] transition-transform active:scale-95 group">
-                    <div class="flex items-center justify-between gap-4">
-                        <div class="text-left">
-                            <div class="text-[8px] font-black uppercase tracking-widest opacity-60 group-hover:opacity-100 transition-opacity">Daily Objective</div>
-                            <div id="daily-text" class="text-[10px] font-bold leading-tight">Land 100 jumps today.</div>
-                        </div>
-                        <div class="text-right shrink-0">
-                            <div id="daily-progress" class="text-lg font-black italic">0/100</div>
-                            <div id="daily-reward-icon" class="text-[8px] bg-yellow-400 text-black px-1 rounded font-black uppercase">REWARD</div>
-                        </div>
-                    </div>
+            
+            <!-- Daily Challenges Container -->
+            <div id="daily-challenges-container" class="absolute top-16 left-0 right-0 px-6 flex flex-col gap-2 pointer-events-auto">
+                <!-- Template for a daily challenge row -->
+                <div class="text-[8px] font-black uppercase tracking-widest opacity-40 text-left px-2">Daily Objectives</div>
+                <div id="daily-list" class="flex flex-col gap-1.5">
+                    <!-- Challenges will be injected here -->
                 </div>
             </div>
 
@@ -169,7 +163,7 @@
                 <div id="home-coins" class="text-sm font-black">0</div>
             </div>
 
-            <div class="mb-6 mt-12">
+            <div class="mb-6 mt-32">
                 <h1 id="title-main" class="text-5xl font-black mb-1 tracking-tighter text-pink-400 drop-shadow-lg text-center leading-none">OINK-O-CLOCK</h1>
                 <p id="title-sub" class="text-pink-300/60 font-bold tracking-widest text-[10px] uppercase">Precision Time Leaper</p>
             </div>
@@ -523,8 +517,10 @@
         const DAILY_CHALLENGE_TEMPLATES = [
             { id: 'jumps', text: "Land [GOAL] jumps today.", goal: 100, rewardCoins: 300 },
             { id: 'score', text: "Reach a score of [GOAL] today.", goal: 75, rewardCoins: 400 },
-            { id: 'hard_jumps', text: "Land [GOAL] hard mode jumps today.", goal: 25, rewardCoins: 600 },
-            { id: 'earn_coins', text: "Earn [GOAL] coins today.", goal: 250, rewardCoins: 500 }
+            { id: 'hard_jumps', text: "Land [GOAL] hard jumps today.", goal: 25, rewardCoins: 600 },
+            { id: 'earn_coins', text: "Earn [GOAL] coins today.", goal: 250, rewardCoins: 500 },
+            { id: 'superhard_jumps', text: "Super Hard: Land [GOAL] jumps.", goal: 10, rewardCoins: 800 },
+            { id: 'perfect_streaks', text: "Get a [GOAL] jump streak.", goal: 15, rewardCoins: 500 }
         ];
 
         let state = {
@@ -555,7 +551,7 @@
             username: localStorage.getItem('oinkUser') || '',
             hasSeenTutorial: localStorage.getItem('oinkTutorialSeen') === 'true',
             
-            dailyChallenge: JSON.parse(localStorage.getItem('oinkDaily') || '{}'),
+            dailyChallenges: JSON.parse(localStorage.getItem('oinkDailies') || '[]'),
             
             cameraY: 0,
             cameraX: 0,
@@ -703,35 +699,51 @@
 
         function generateDailyChallenge() {
             const today = new Date().toDateString();
-            if (state.dailyChallenge.date === today) return;
+            if (state.dailyChallenges.length === 3 && state.dailyChallenges[0].date === today) return;
             
             const seed = today.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-            const template = DAILY_CHALLENGE_TEMPLATES[seed % DAILY_CHALLENGE_TEMPLATES.length];
+            const numTemplates = DAILY_CHALLENGE_TEMPLATES.length;
             
-            state.dailyChallenge = {
-                id: template.id,
-                date: today,
-                goal: template.goal,
-                current: 0,
-                completed: false,
-                text: template.text.replace('[GOAL]', template.goal),
-                rewardCoins: template.rewardCoins
-            };
-            localStorage.setItem('oinkDaily', JSON.stringify(state.dailyChallenge));
+            // Generate 3 unique tasks
+            const tasks = [];
+            for (let i = 0; i < 3; i++) {
+                const templateIdx = (seed + i * 7) % numTemplates;
+                const template = DAILY_CHALLENGE_TEMPLATES[templateIdx];
+                tasks.push({
+                    uid: `daily-${i}-${today}`,
+                    id: template.id,
+                    date: today,
+                    goal: template.goal,
+                    current: 0,
+                    completed: false,
+                    text: template.text.replace('[GOAL]', template.goal),
+                    rewardCoins: template.rewardCoins
+                });
+            }
+            
+            state.dailyChallenges = tasks;
+            localStorage.setItem('oinkDailies', JSON.stringify(state.dailyChallenges));
         }
 
         function updateDailyProgress(type, amount = 1) {
-            if (state.dailyChallenge.completed) return;
-            if (state.dailyChallenge.id === type) {
-                state.dailyChallenge.current += amount;
-                if (state.dailyChallenge.current >= state.dailyChallenge.goal) {
-                    state.dailyChallenge.completed = true;
-                    state.coins += state.dailyChallenge.rewardCoins;
-                    state.totalCoinsEarned += state.dailyChallenge.rewardCoins;
-                    showToast(`Daily Challenge Complete! +${state.dailyChallenge.rewardCoins}₵`);
-                    playSound('unlock');
+            let changed = false;
+            state.dailyChallenges.forEach(challenge => {
+                if (challenge.completed) return;
+                if (challenge.id === type) {
+                    challenge.current += amount;
+                    if (challenge.current >= challenge.goal) {
+                        challenge.completed = true;
+                        state.coins += challenge.rewardCoins;
+                        state.totalCoinsEarned += challenge.rewardCoins;
+                        showToast(`Daily Complete! +${challenge.rewardCoins}₵`);
+                        playSound('unlock');
+                    }
+                    changed = true;
                 }
-                localStorage.setItem('oinkDaily', JSON.stringify(state.dailyChallenge));
+            });
+            
+            if (changed) {
+                localStorage.setItem('oinkDailies', JSON.stringify(state.dailyChallenges));
                 refreshUI();
             }
         }
@@ -772,10 +784,18 @@
             const displayUser = document.getElementById('display-username');
             displayUser.innerText = state.username || 'Identify Yourself';
             
-            const daily = state.dailyChallenge;
-            document.getElementById('daily-text').innerText = daily.completed ? "Mission Accomplished!" : daily.text;
-            document.getElementById('daily-progress').innerText = daily.completed ? "DONE" : `${daily.current}/${daily.goal}`;
-            document.getElementById('daily-challenge-card').classList.toggle('opacity-40', daily.completed);
+            // Render 3 Daily Challenges
+            const dailyList = document.getElementById('daily-list');
+            dailyList.innerHTML = state.dailyChallenges.map(daily => `
+                <div class="bg-indigo-900/60 p-2 rounded-xl border border-white/5 flex items-center justify-between gap-3 ${daily.completed ? 'opacity-40' : ''}">
+                    <div class="text-left flex-1 min-w-0">
+                        <div class="text-[9px] font-bold leading-tight truncate text-indigo-200">${daily.completed ? 'Goal Met!' : daily.text}</div>
+                    </div>
+                    <div class="text-right shrink-0">
+                        <div class="text-xs font-black ${daily.completed ? 'text-green-400' : 'text-white'}">${daily.completed ? 'DONE' : `${daily.current}/${daily.goal}`}</div>
+                    </div>
+                </div>
+            `).join('');
 
             if (isBezos) {
                 displayUser.classList.add('bezos-rainbow');
@@ -882,8 +902,9 @@
         }
 
         function openDaily() {
-            if (state.dailyChallenge.completed) showToast("Already finished today. Come back tomorrow!", "info");
-            else showToast(`Current Objective: ${state.dailyChallenge.text}`, "info");
+            const pending = state.dailyChallenges.filter(d => !d.completed).length;
+            if (pending === 0) showToast("All missions finished today. Come back tomorrow!", "info");
+            else showToast(`You have ${pending} objective(s) left today.`, "info");
         }
         function openModeSelect() { if (!state.username) return showUsernameEntry(); uiModeSelect.classList.remove('hidden'); }
         function closeModeSelect() { uiModeSelect.classList.add('hidden'); }
@@ -1050,7 +1071,7 @@
                 const clock = state.clocks.find(c => c.id === state.pig.attachedTo);
                 if (skinId === 'ice') clock.isFrozen = true;
                 let bodyOffset = 0;
-                if (skinId === 'spider') bodyOffset = 85; // Offset spider body from the clock surface for leg visibility
+                if (skinId === 'spider') bodyOffset = 15;
                 state.pig.x = clock.x + Math.cos(clock.angle) * (clock.radius + bodyOffset);
                 state.pig.y = clock.y + Math.sin(clock.angle) * (clock.radius + bodyOffset);
                 state.pig.trail = []; state.pig.vx = 0; state.pig.vy = 0;
@@ -1075,7 +1096,7 @@
                                 let baseReward = (state.gameMode === 'hard') ? 5 : (state.gameMode === 'superhard' ? 12 : 2); baseReward += (state.upgrades.coin_boost || 0);
                                 let bonus = 0; if (skinId === 'rainbow') bonus += 1; if (skinId === 'golden') bonus += 2; if (skinId === 'bank') bonus += 3; if (skinId === 'king') bonus += 5; if (skinId === 'omega') bonus += 10;
                                 let reward = (baseReward + bonus); if (skinId === 'lava') reward *= 2; state.coins += Math.floor(reward); state.totalCoinsEarned += Math.floor(reward); state.score += Math.round((clock.id - state.lastClockId) * scoreMultiplier); state.lastClockId = clock.id; state.consecutiveJumps++; state.bestStreak = Math.max(state.bestStreak, state.consecutiveJumps); state.totalJumps++; scoreVal.innerText = state.score; playSound('coin'); if (isWealthPig) { setTimeout(()=>playSound('coin'), 100); setTimeout(()=>playSound('coin'), 200); }
-                                updateDailyProgress('jumps', 1); if (state.gameMode === 'hard') updateDailyProgress('hard_jumps', 1); updateDailyProgress('earn_coins', Math.floor(reward)); refreshUI(); checkAchievements(); if (state.isTutorial && state.tutorialStep === 2) advanceTutorial();
+                                updateDailyProgress('jumps', 1); if (state.gameMode === 'hard') updateDailyProgress('hard_jumps', 1); if (state.gameMode === 'superhard') updateDailyProgress('superhard_jumps', 1); updateDailyProgress('earn_coins', Math.floor(reward)); updateDailyProgress('perfect_streaks', state.consecutiveJumps >= 15 ? 1 : 0); refreshUI(); checkAchievements(); if (state.isTutorial && state.tutorialStep === 2) advanceTutorial();
                             } else if (state.gameMode === 'sandbox') state.lastClockId = Math.max(state.lastClockId, clock.id);
                             playSound('land'); break;
                         }
@@ -1139,11 +1160,9 @@
                         const footRelAngle = (legIndex - 1.5) * 0.5 + (stepPhase * 0.2);
                         const cr = clock.radius;
                         const footClockAngle = relAngleToClock + footRelAngle;
-                        // Transform global clock surface to local pig space
                         const footGlobalX = clock.x + Math.cos(footClockAngle) * cr;
                         const footGlobalY = clock.y + Math.sin(footClockAngle) * cr;
                         fx = footGlobalX - p.x; fy = footGlobalY - p.y;
-                        // Manual knee logic (simplified joint)
                         jx = (bx + fx) / 2 + side * 15; jy = (by + fy) / 2 - 15;
                     } else {
                         const spread = 25 + Math.sin(phase) * 12; fx = bx + side * spread; fy = by + Math.cos(phase) * 15; jx = bx + side * (spread * 0.6); jy = by - 12;
