@@ -243,7 +243,15 @@
                         <input type="number" id="bezos-offset-input" placeholder="Y Pos..." class="flex-1 bg-white/10 border border-white/20 rounded-lg px-2 py-1 text-[10px] focus:outline-none focus:border-yellow-500">
                         <button onclick="applyBezosOffset()" class="bg-yellow-700 hover:bg-yellow-600 text-[8px] font-black px-2 py-1 rounded uppercase">Warp</button>
                     </div>
-                    <p class="text-[6px] text-white/40 mt-2 italic leading-none">Negative Y is UP (e.g. -5000)</p>
+                </div>
+
+                <div class="mt-3 pt-2 border-t border-yellow-500/20">
+                    <div class="text-[7px] font-black uppercase text-yellow-500/60 mb-1">Clock Offset</div>
+                    <div class="flex gap-1">
+                        <input type="number" id="bezos-player-offset-input" placeholder="Dist..." class="flex-1 bg-white/10 border border-white/20 rounded-lg px-2 py-1 text-[10px] focus:outline-none focus:border-yellow-500">
+                        <button onclick="applyBezosPlayerOffset()" class="bg-yellow-700 hover:bg-yellow-600 text-[8px] font-black px-2 py-1 rounded uppercase">Set</button>
+                    </div>
+                    <p class="text-[6px] text-white/40 mt-2 italic leading-none">Distance from clock edge</p>
                 </div>
             </div>
         </div>
@@ -573,7 +581,8 @@
             tutorialStep: 0,
             mouse: { x: 0, y: 0 },
             lastTime: 0,
-            bezosConsoleCollapsed: false
+            bezosConsoleCollapsed: false,
+            bezosPlayerOffset: 0
         };
 
         const canvas = document.getElementById('gameCanvas');
@@ -691,9 +700,17 @@
                 state.cameraY = val - HEIGHT/2;
                 state.pig.vx = 0;
                 state.pig.vy = 0;
-                state.pig.attachedTo = null; // Detach to prevent weird snapping issues
+                state.pig.attachedTo = null; 
                 showToast(`Warped to Height ${val}!`, "sandbox");
                 playSound('jump');
+            }
+        }
+
+        function applyBezosPlayerOffset() {
+            const val = parseInt(document.getElementById('bezos-player-offset-input').value);
+            if (!isNaN(val)) {
+                state.bezosPlayerOffset = val;
+                showToast(`Offset set to ${val}!`, "sandbox");
             }
         }
 
@@ -701,7 +718,7 @@
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             const bg = type === 'error' ? 'bg-red-500' : (type === 'sandbox' ? 'bg-cyan-600' : 'bg-pink-500');
-            toast.className = `toast ${bg} text-white px-6 py-2 rounded-full font-black text-xs shadow-xl flex items-center gap-2 pointer-events-auto`;
+            toast.className = `toast ${bg} text-white px-6 py-2 rounded-full font-black text-xs shadow-xl flex items-center gap-2 pointer-events-none`;
             toast.innerHTML = `<span>${msg}</span>`;
             container.appendChild(toast);
             setTimeout(() => {
@@ -1091,8 +1108,8 @@
             if (state.pig.attachedTo !== null) {
                 const clock = state.clocks.find(c => c.id === state.pig.attachedTo);
                 if (skinId === 'ice') clock.isFrozen = true;
-                let bodyOffset = 0;
-                if (skinId === 'spider') bodyOffset = 15; // Shorter legs: pig is closer to the clock surface
+                let bodyOffset = state.bezosPlayerOffset || 0;
+                if (skinId === 'spider' && !state.bezosPlayerOffset) bodyOffset = 15; 
                 state.pig.x = clock.x + Math.cos(clock.angle) * (clock.radius + bodyOffset);
                 state.pig.y = clock.y + Math.sin(clock.angle) * (clock.radius + bodyOffset);
                 state.pig.trail = []; state.pig.vx = 0; state.pig.vy = 0;
