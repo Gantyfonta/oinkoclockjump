@@ -473,20 +473,20 @@
 
         const HATS = [
             { id: 'none', name: 'No Hat', type: 'NONE', price: 0 },
-            { id: 'party', name: 'Party Time', type: 'DRAW', price: 1000 },
-            { id: 'tophat', name: 'Classy Top Hat', type: 'DRAW', price: 1000 },
-            { id: 'hathat', name: 'Hat Hat', type: 'DRAW', price: 1000 },
-            { id: 'suit', name: 'Tuxedo', type: 'DRAW', price: 1000 },
-            { id: 'chef', name: 'Chef de Oink', type: 'DRAW', price: 1000 },
-            { id: 'detective', name: 'Sleuth Cap', type: 'DRAW', price: 1000 },
-            { id: 'propeller', name: 'Flying Prop', type: 'DRAW', price: 1000 },
-            { id: 'viking', name: 'Boar Warrior', type: 'DRAW', price: 1000 },
-            { id: 'cowboy', name: 'Yeehaw Hat', type: 'DRAW', price: 1000 },
-            { id: 'wizard', name: 'Magic Cone', type: 'DRAW', price: 1000 },
-            { id: 'straw', name: 'Straw Hat', type: 'DRAW', price: 1000 },
-            { id: 'catears', name: 'Cat Ears', type: 'DRAW', price: 1000 },
-            { id: 'crown', name: 'Golden Crown', type: 'DRAW', price: 1000 },
-            { id: 'halo', name: 'Divine Halo', type: 'DRAW', price: 1000 }
+            { id: 'party', name: 'Party Time', type: 'DRAW', price: 300 },
+            { id: 'tophat', name: 'Classy Top Hat', type: 'DRAW', price: 300 },
+            { id: 'hathat', name: 'Hat Hat', type: 'DRAW', price: 300 },
+            { id: 'suit', name: 'Tuxedo', type: 'DRAW', price: 300 },
+            { id: 'chef', name: 'Chef de Oink', type: 'DRAW', price: 300 },
+            { id: 'detective', name: 'Sleuth Cap', type: 'DRAW', price: 300 },
+            { id: 'propeller', name: 'Flying Prop', type: 'DRAW', price: 300 },
+            { id: 'viking', name: 'Boar Warrior', type: 'DRAW', price: 300 },
+            { id: 'cowboy', name: 'Yeehaw Hat', type: 'DRAW', price: 300 },
+            { id: 'wizard', name: 'Magic Cone', type: 'DRAW', price: 300 },
+            { id: 'straw', name: 'Straw Hat', type: 'DRAW', price: 300 },
+            { id: 'catears', name: 'Cat Ears', type: 'DRAW', price: 300 },
+            { id: 'crown', name: 'Golden Crown', type: 'DRAW', price: 300 },
+            { id: 'halo', name: 'Divine Halo', type: 'DRAW', price: 300 }
         ];
 
         const THEMES = [
@@ -497,7 +497,11 @@
             { id: 'noir', name: 'Old Cinema', bg: '#000000', type: 'NOIR' },
             { id: 'synthwave', name: 'Retro Grid', bg: '#1a0b2e', type: 'GRID' },
             { id: 'candy', name: 'Sugar Rush', bg: '#fff1f2', type: 'CANDY' },
-            { id: 'ocean', name: 'Abyss', bg: '#0c4a6e', type: 'CORAL' }
+            { id: 'ocean', name: 'Abyss', bg: '#0c4a6e', type: 'CORAL' },
+            { id: 'forest', name: 'Emerald Woods', bg: '#064e3b', type: 'FOREST' },
+            { id: 'lava', name: 'Magma Core', bg: '#450a0a', type: 'LAVA' },
+            { id: 'sky', name: 'Sky Kingdom', bg: '#0ea5e9', type: 'SKY' },
+            { id: 'matrix', name: 'Virtual Reality', bg: '#020617', type: 'MATRIX' }
         ];
 
         const ACHIEVEMENTS = [
@@ -1224,11 +1228,15 @@
                 if (c.hasSpikes) { ctx.save(); if (c.spikeActive) { ctx.fillStyle = '#ef4444'; ctx.shadowBlur = 10; ctx.shadowColor = '#ef4444'; } else if (c.spikeTimer < 40) ctx.fillStyle = 'rgba(239, 68, 68, 0.4)'; else ctx.fillStyle = 'rgba(239, 68, 68, 0.1)'; const spikeCount = 12; for (let i = 0; i < spikeCount; i++) { let a = i * (Math.PI * 2 / spikeCount); let tipDist = c.radius + (c.spikeActive ? 15 : 5); ctx.beginPath(); ctx.moveTo(c.x + Math.cos(a - 0.1) * c.radius, c.y + Math.sin(a - 0.1) * c.radius); ctx.lineTo(c.x + Math.cos(a) * tipDist, c.y + Math.sin(a) * tipDist); ctx.lineTo(c.x + Math.cos(a + 0.1) * c.radius, c.y + Math.sin(a + 0.1) * c.radius); ctx.fill(); } ctx.restore(); }
                 if (theme.type === 'PLANET') { const gradGlow = ctx.createRadialGradient(c.x, c.y, c.radius, c.x, c.y, c.radius * 1.6); gradGlow.addColorStop(0, c.color + '44'); gradGlow.addColorStop(1, 'transparent'); ctx.fillStyle = gradGlow; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius * 1.6, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = c.color; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = 'white'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius*1.1, c.y + Math.sin(c.angle)*c.radius*1.1); ctx.stroke(); }
                 else if (theme.type === 'LILYPAD') { ctx.fillStyle = '#166534'; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.stroke(); ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.strokeStyle = 'white'; ctx.lineWidth = 3; ctx.stroke(); }
-                else if (theme.type === 'COIN') { const g = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.radius); g.addColorStop(0, '#fef08a'); g.addColorStop(0.7, '#fbbf24'); g.addColorStop(1, '#92400e'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.strokeStyle = '#78350f'; ctx.lineWidth = 4; ctx.stroke(); }
+                else if (theme.type === 'COIN') { const g = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.radius); g.addColorStop(0, '#fef08a'); g.addColorStop(0.7, '#fbbf24'); g.addColorStop(1, '#92400e'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.strokeStyle = '#78350f'; ctx.lineWidth = 4; ctx.stroke(); }
                 else if (theme.type === 'NOIR') { ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.stroke(); ctx.fillStyle = 'rgba(30,30,30,0.8)'; ctx.fill(); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke(); ctx.font = '10px Courier New'; ctx.fillStyle = 'white'; ctx.textAlign = 'center'; ctx.fillText('XII', c.x, c.y - c.radius + 15); }
-                else if (theme.type === 'GRID') { ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(c.y, c.y, c.radius, 0, Math.PI * 2); ctx.stroke(); ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke(); ctx.setLineDash([2, 4]); ctx.beginPath(); ctx.arc(c.x, c.y, c.radius - 5, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]); }
+                else if (theme.type === 'GRID') { ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.stroke(); ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke(); ctx.setLineDash([2, 4]); ctx.beginPath(); ctx.arc(c.x, c.y, c.radius - 5, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]); }
                 else if (theme.type === 'CANDY') { const grad = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.radius); grad.addColorStop(0, '#fff'); grad.addColorStop(0.5, '#fb7185'); grad.addColorStop(1, '#e11d48'); ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = 'white'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke(); }
                 else if (theme.type === 'CORAL') { ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 5; ctx.beginPath(); for(let i=0; i<8; i++) { const a = i * Math.PI / 4; const r = c.radius + Math.sin(Date.now()*0.005 + i)*5; ctx.lineTo(c.x + Math.cos(a)*r, c.y + Math.sin(a)*r); } ctx.closePath(); ctx.stroke(); ctx.fillStyle = 'rgba(12, 74, 110, 0.6)'; ctx.fill(); ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke(); }
+                else if (theme.type === 'FOREST') { ctx.fillStyle = '#064e3b'; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = '#10b981'; ctx.lineWidth = 6; ctx.stroke(); ctx.strokeStyle = '#dcfce7'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke(); ctx.fillStyle = 'rgba(16, 185, 129, 0.2)'; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius - 8, 0, Math.PI * 2); ctx.fill(); }
+                else if (theme.type === 'LAVA') { const grad = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.radius); grad.addColorStop(0, '#7f1d1d'); grad.addColorStop(0.8, '#450a0a'); grad.addColorStop(1, '#ef4444'); ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = '#f87171'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke(); }
+                else if (theme.type === 'SKY') { ctx.fillStyle = 'white'; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.stroke(); ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke(); }
+                else if (theme.type === 'MATRIX') { ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.stroke(); ctx.fillStyle = 'rgba(0, 0, 0, 0.9)'; ctx.fill(); ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke(); ctx.font = '8px monospace'; ctx.fillStyle = '#22c55e'; ctx.textAlign = 'center'; ctx.fillText((Math.random() > 0.5 ? "1" : "0"), c.x, c.y + 3); }
                 else { ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.strokeStyle = c.color; ctx.lineWidth = 6; ctx.stroke(); ctx.fillStyle = 'rgba(15,23,42,0.9)'; ctx.fill(); ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.strokeStyle = c.color; ctx.lineWidth = 8; ctx.lineCap='round'; ctx.stroke(); }
             });
             if (state.status === 'PLAYING') {
