@@ -151,11 +151,8 @@
             
             <!-- Daily Challenges Container -->
             <div id="daily-challenges-container" class="absolute top-16 left-0 right-0 px-6 flex flex-col gap-2 pointer-events-auto">
-                <!-- Template for a daily challenge row -->
                 <div class="text-[8px] font-black uppercase tracking-widest opacity-40 text-left px-2">Daily Objectives</div>
-                <div id="daily-list" class="flex flex-col gap-1.5">
-                    <!-- Challenges will be injected here -->
-                </div>
+                <div id="daily-list" class="flex flex-col gap-1.5"></div>
             </div>
 
             <div id="home-coin-pill" class="absolute top-6 right-6 flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-full border border-white/5">
@@ -195,7 +192,6 @@
                 Best: <span id="home-best-val" class="text-white">0</span>
             </div>
 
-            <!-- Reset Button -->
             <button onclick="resetAllData()" class="absolute bottom-6 left-6 text-[8px] font-black uppercase tracking-tighter text-white/20 hover:text-red-500 transition-colors pointer-events-auto">Reset Data</button>
         </div>
 
@@ -236,11 +232,19 @@
             </div>
             <div id="bezos-body" class="p-3">
                 <input type="text" id="bezos-input" placeholder="Skin/Hat/Level..." class="w-full bg-white/10 border border-white/20 rounded-lg px-2 py-1.5 text-[10px] focus:outline-none focus:border-yellow-500 mb-2">
-                <div class="flex gap-1">
+                <div class="flex gap-1 mb-3">
                     <button onclick="applyBezosCommand(true)" class="flex-1 bg-yellow-600 hover:bg-yellow-500 text-[8px] font-black py-1.5 rounded uppercase">Grant</button>
                     <button onclick="applyBezosCommand(false)" class="flex-1 bg-red-900 hover:bg-red-800 text-[8px] font-black py-1.5 rounded uppercase">Revoke</button>
                 </div>
-                <p class="text-[6px] text-white/40 mt-2 italic leading-none">Type full name (e.g. "Cat Ears", "Cosmic Magnet 5")</p>
+                
+                <div class="mt-3 pt-2 border-t border-yellow-500/20">
+                    <div class="text-[7px] font-black uppercase text-yellow-500/60 mb-1">Height Warp</div>
+                    <div class="flex gap-1">
+                        <input type="number" id="bezos-offset-input" placeholder="Y Pos..." class="flex-1 bg-white/10 border border-white/20 rounded-lg px-2 py-1 text-[10px] focus:outline-none focus:border-yellow-500">
+                        <button onclick="applyBezosOffset()" class="bg-yellow-700 hover:bg-yellow-600 text-[8px] font-black px-2 py-1 rounded uppercase">Warp</button>
+                    </div>
+                    <p class="text-[6px] text-white/40 mt-2 italic leading-none">Negative Y is UP (e.g. -5000)</p>
+                </div>
             </div>
         </div>
 
@@ -680,6 +684,19 @@
             icon.innerText = state.bezosConsoleCollapsed ? '▲' : '▼';
         }
 
+        function applyBezosOffset() {
+            const val = parseInt(document.getElementById('bezos-offset-input').value);
+            if (!isNaN(val)) {
+                state.pig.y = val;
+                state.cameraY = val - HEIGHT/2;
+                state.pig.vx = 0;
+                state.pig.vy = 0;
+                state.pig.attachedTo = null; // Detach to prevent weird snapping issues
+                showToast(`Warped to Height ${val}!`, "sandbox");
+                playSound('jump');
+            }
+        }
+
         function showToast(msg, type = 'info') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -1075,7 +1092,7 @@
                 const clock = state.clocks.find(c => c.id === state.pig.attachedTo);
                 if (skinId === 'ice') clock.isFrozen = true;
                 let bodyOffset = 0;
-                if (skinId === 'spider') bodyOffset = 15;
+                if (skinId === 'spider') bodyOffset = 15; // Shorter legs: pig is closer to the clock surface
                 state.pig.x = clock.x + Math.cos(clock.angle) * (clock.radius + bodyOffset);
                 state.pig.y = clock.y + Math.sin(clock.angle) * (clock.radius + bodyOffset);
                 state.pig.trail = []; state.pig.vx = 0; state.pig.vy = 0;
@@ -1167,9 +1184,11 @@
                         const footGlobalX = clock.x + Math.cos(footClockAngle) * cr;
                         const footGlobalY = clock.y + Math.sin(footClockAngle) * cr;
                         fx = footGlobalX - p.x; fy = footGlobalY - p.y;
-                        jx = (bx + fx) / 2 + side * 15; jy = (by + fy) / 2 - 15;
+                        // Joint follows midpoint with a small jitter
+                        jx = (bx + fx) / 2 + side * 5; jy = (by + fy) / 2 - 5;
                     } else {
-                        const spread = 25 + Math.sin(phase) * 12; fx = bx + side * spread; fy = by + Math.cos(phase) * 15; jx = bx + side * (spread * 0.6); jy = by - 12;
+                        // Shorter legs in air
+                        const spread = 16 + Math.sin(phase) * 8; fx = bx + side * spread; fy = by + Math.cos(phase) * 8; jx = bx + side * (spread * 0.6); jy = by - 8;
                     }
                     pctx.strokeStyle = skin.body; pctx.lineWidth = 4; pctx.lineCap = 'round'; pctx.lineJoin = 'round'; pctx.beginPath(); pctx.moveTo(bx, by); pctx.lineTo(jx, jy); pctx.lineTo(fx, fy); pctx.stroke();
                 }
@@ -1231,7 +1250,7 @@
                 else if (theme.type === 'COIN') { const g = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.radius); g.addColorStop(0, '#fef08a'); g.addColorStop(0.7, '#fbbf24'); g.addColorStop(1, '#92400e'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.strokeStyle = '#78350f'; ctx.lineWidth = 4; ctx.stroke(); }
                 else if (theme.type === 'NOIR') { ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.stroke(); ctx.fillStyle = 'rgba(30,30,30,0.8)'; ctx.fill(); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke(); ctx.font = '10px Courier New'; ctx.fillStyle = 'white'; ctx.textAlign = 'center'; ctx.fillText('XII', c.x, c.y - c.radius + 15); }
                 else if (theme.type === 'GRID') { ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.stroke(); ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke(); ctx.setLineDash([2, 4]); ctx.beginPath(); ctx.arc(c.x, c.y, c.radius - 5, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]); }
-                else if (theme.type === 'CANDY') { const grad = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.radius); grad.addColorStop(0, '#fff'); grad.addColorStop(0.5, '#fb7185'); grad.addColorStop(1, '#e11d48'); ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = 'white'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke(); }
+                else if (theme.type === 'CANDY') { const grad = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.radius); grad.addColorStop(0, '#fff'); grad.addColorStop(0.5, '#fb7185'); grad.addColorStop(1, '#e11d48'); ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(c.y, c.y, c.radius, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = 'white'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke(); }
                 else if (theme.type === 'CORAL') { ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 5; ctx.beginPath(); for(let i=0; i<8; i++) { const a = i * Math.PI / 4; const r = c.radius + Math.sin(Date.now()*0.005 + i)*5; ctx.lineTo(c.x + Math.cos(a)*r, c.y + Math.sin(a)*r); } ctx.closePath(); ctx.stroke(); ctx.fillStyle = 'rgba(12, 74, 110, 0.6)'; ctx.fill(); ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke(); }
                 else if (theme.type === 'FOREST') { ctx.fillStyle = '#064e3b'; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = '#10b981'; ctx.lineWidth = 6; ctx.stroke(); ctx.strokeStyle = '#dcfce7'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke(); ctx.fillStyle = 'rgba(16, 185, 129, 0.2)'; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius - 8, 0, Math.PI * 2); ctx.fill(); }
                 else if (theme.type === 'LAVA') { const grad = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.radius); grad.addColorStop(0, '#7f1d1d'); grad.addColorStop(0.8, '#450a0a'); grad.addColorStop(1, '#ef4444'); ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = '#f87171'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke(); }
