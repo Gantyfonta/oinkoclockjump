@@ -1109,7 +1109,7 @@
                 const clock = state.clocks.find(c => c.id === state.pig.attachedTo);
                 if (skinId === 'ice') clock.isFrozen = true;
                 let bodyOffset = state.bezosPlayerOffset || 0;
-                if (skinId === 'spider' && !state.bezosPlayerOffset) bodyOffset = 7; 
+                if (skinId === 'spider' && !state.bezosPlayerOffset) bodyOffset = 50; 
                 state.pig.x = clock.x + Math.cos(clock.angle) * (clock.radius + bodyOffset);
                 state.pig.y = clock.y + Math.sin(clock.angle) * (clock.radius + bodyOffset);
                 state.pig.trail = []; state.pig.vx = 0; state.pig.vy = 0;
