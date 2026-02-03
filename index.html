@@ -1109,7 +1109,7 @@
                 const clock = state.clocks.find(c => c.id === state.pig.attachedTo);
                 if (skinId === 'ice') clock.isFrozen = true;
                 let bodyOffset = state.bezosPlayerOffset || 0;
-                if (skinId === 'spider' && !state.bezosPlayerOffset) bodyOffset = 15; 
+                if (skinId === 'spider' && !state.bezosPlayerOffset) bodyOffset = 7; 
                 state.pig.x = clock.x + Math.cos(clock.angle) * (clock.radius + bodyOffset);
                 state.pig.y = clock.y + Math.sin(clock.angle) * (clock.radius + bodyOffset);
                 state.pig.trail = []; state.pig.vx = 0; state.pig.vy = 0;
@@ -1201,11 +1201,11 @@
                         const footGlobalX = clock.x + Math.cos(footClockAngle) * cr;
                         const footGlobalY = clock.y + Math.sin(footClockAngle) * cr;
                         fx = footGlobalX - p.x; fy = footGlobalY - p.y;
-                        // Joint follows midpoint with a small jitter
-                        jx = (bx + fx) / 2 + side * 5; jy = (by + fy) / 2 - 5;
+                        // Smaller legs joint jitter
+                        jx = (bx + fx) / 2 + side * 2.5; jy = (by + fy) / 2 - 2.5;
                     } else {
-                        // Shorter legs in air
-                        const spread = 16 + Math.sin(phase) * 8; fx = bx + side * spread; fy = by + Math.cos(phase) * 8; jx = bx + side * (spread * 0.6); jy = by - 8;
+                        // Halved segment legs in air
+                        const spread = 8 + Math.sin(phase) * 4; fx = bx + side * spread; fy = by + Math.cos(phase) * 4; jx = bx + side * (spread * 0.6); jy = by - 4;
                     }
                     pctx.strokeStyle = skin.body; pctx.lineWidth = 4; pctx.lineCap = 'round'; pctx.lineJoin = 'round'; pctx.beginPath(); pctx.moveTo(bx, by); pctx.lineTo(jx, jy); pctx.lineTo(fx, fy); pctx.stroke();
                 }
