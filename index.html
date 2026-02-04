@@ -1130,6 +1130,7 @@
 
             if (state.selectedThemeId === 'planets' && state.stars) state.stars.forEach(s => { s.y += s.speed * timeScale; if (s.y > HEIGHT) s.y = 0; });
             if (state.selectedThemeId === 'ocean' && state.bubbles) state.bubbles.forEach(b => { b.y -= b.speed * timeScale; b.x += Math.sin(Date.now()*0.001) * 0.5; if (b.y < 0) b.y = HEIGHT; });
+            
             if (state.pig.attachedTo !== null) {
                 const clock = state.clocks.find(c => c.id === state.pig.attachedTo);
                 if (skinId === 'ice') clock.isFrozen = true;
@@ -1140,32 +1141,72 @@
                 state.pig.trail = []; state.pig.vx = 0; state.pig.vy = 0;
             }
             else {
+                // Continuous Collision Detection: Store previous position
+                const prevX = state.pig.x;
+                const prevY = state.pig.y;
+
                 if (state.gameMode === 'hard' || state.gameMode === 'superhard') state.pig.vy += 0.5 * timeScale;
                 if (skinId === 'rocket') { const targetX = state.mouse.x + state.cameraX; const rocketStrength = isBezos ? 0.45 : 0.07; if (targetX < state.pig.x - 5) state.pig.vx -= rocketStrength * timeScale; else if (targetX > state.pig.x + 5) state.pig.vx += rocketStrength * timeScale; }
+                
                 state.pig.x += state.pig.vx * timeScale; state.pig.y += state.pig.vy * timeScale;
+                
                 if (state.gameMode === 'sandbox') { const speed = Math.sqrt(state.pig.vx**2 + state.pig.vy**2); if (speed > state.currentMaxSpeed) { state.currentMaxSpeed = speed; scoreVal.innerText = state.currentMaxSpeed.toFixed(1); } }
                 if (skinId === 'neon' || skinId === 'omega' || skinId === 'smoking') { state.pig.trail.unshift({ x: state.pig.x, y: state.pig.y, life: 1 }); if (state.pig.trail.length > (skinId === 'smoking' ? 20 : 10)) state.pig.trail.pop(); state.pig.trail.forEach(t => t.life -= (skinId === 'smoking' ? 0.04 : 0.1) * timeScale); }
                 if (isWealthPig && Math.random() < 0.4) state.pig.coinParticles.push({ x: state.pig.x, y: state.pig.y, vx: (Math.random() - 0.5) * 5, vy: (Math.random() - 0.5) * 5, rot: Math.random() * Math.PI * 2, rotV: (Math.random() - 0.5) * 0.4, life: 1.0 });
                 if (state.gameMode === 'sandbox') { state.pig.vx *= Math.pow(0.99, timeScale); state.pig.vy *= Math.pow(0.99, timeScale); }
+                
                 let grabRange = 5; if (skinId === 'blueberry') grabRange = 12; if (skinId === 'ninja') grabRange = 15; if (skinId === 'space' || skinId === 'ghost' || skinId === 'omega' || skinId === 'spider') grabRange = 25; if (skinId === 'family') grabRange = FAMILY_MEMBERS[state.pig.familyMember].grab; grabRange += (state.upgrades.magnet || 0) * 8;
+                
                 if (state.pig.jumpCooldown <= 0) {
-                    for (const clock of state.clocks) {
-                        const d = Math.sqrt((state.pig.x-clock.x)**2 + (state.pig.y-clock.y)**2);
-                        if (d < clock.radius + grabRange) {
-                            if (clock.hasSpikes && clock.spikeActive) { const mercyLvl = state.upgrades.mercy || 0; if (Math.random() > mercyLvl * 0.1) { gameOver(); return; } else showToast("Mercy!", "sandbox"); }
-                            state.pig.attachedTo = clock.id; state.pig.vx = 0; state.pig.vy = 0;
-                            if (clock.id > state.lastClockId && state.gameMode !== 'sandbox') {
-                                let scoreMultiplier = (skinId === 'golden' || skinId === 'king') ? 2 : (skinId === 'devil' || skinId === 'steampunk' ? 3 : 1); if (skinId === 'omega') scoreMultiplier = 4; if (state.gameMode === 'hard') scoreMultiplier *= 2; if (state.gameMode === 'superhard') scoreMultiplier *= 5; scoreMultiplier *= (1 + (state.upgrades.score_bonus || 0) * 0.05);
-                                let baseReward = (state.gameMode === 'hard') ? 5 : (state.gameMode === 'superhard' ? 12 : 2); baseReward += (state.upgrades.coin_boost || 0);
-                                let bonus = 0; if (skinId === 'rainbow') bonus += 1; if (skinId === 'golden') bonus += 2; if (skinId === 'bank') bonus += 3; if (skinId === 'king') bonus += 5; if (skinId === 'omega') bonus += 10;
-                                let reward = (baseReward + bonus); if (skinId === 'lava') reward *= 2; state.coins += Math.floor(reward); state.totalCoinsEarned += Math.floor(reward); state.score += Math.round((clock.id - state.lastClockId) * scoreMultiplier); state.lastClockId = clock.id; state.consecutiveJumps++; state.bestStreak = Math.max(state.bestStreak, state.consecutiveJumps); state.totalJumps++; scoreVal.innerText = state.score; playSound('coin'); if (isWealthPig) { setTimeout(()=>playSound('coin'), 100); setTimeout(()=>playSound('coin'), 200); }
-                                updateDailyProgress('jumps', 1); if (state.gameMode === 'hard') updateDailyProgress('hard_jumps', 1); if (state.gameMode === 'superhard') updateDailyProgress('superhard_jumps', 1); updateDailyProgress('earn_coins', Math.floor(reward)); updateDailyProgress('perfect_streaks', state.consecutiveJumps >= 15 ? 1 : 0); refreshUI(); checkAchievements(); if (state.isTutorial && state.tutorialStep === 2) advanceTutorial();
-                            } else if (state.gameMode === 'sandbox') state.lastClockId = Math.max(state.lastClockId, clock.id);
-                            playSound('land'); break;
+                    // Check multiple points along the path (CCD) to prevent phasing
+                    const samples = 3;
+                    let foundCollision = false;
+                    for (let s = 1; s <= samples; s++) {
+                        const t = s / samples;
+                        const checkX = prevX + (state.pig.x - prevX) * t;
+                        const checkY = prevY + (state.pig.y - prevY) * t;
+
+                        for (const clock of state.clocks) {
+                            const d = Math.sqrt((checkX - clock.x)**2 + (checkY - clock.y)**2);
+                            if (d < clock.radius + grabRange) {
+                                if (clock.hasSpikes && clock.spikeActive) { 
+                                    const mercyLvl = state.upgrades.mercy || 0; 
+                                    if (Math.random() > mercyLvl * 0.1) { gameOver(); return; } 
+                                    else { showToast("Mercy!", "sandbox"); continue; }
+                                }
+                                
+                                state.pig.attachedTo = clock.id; 
+                                state.pig.vx = 0; 
+                                state.pig.vy = 0;
+                                // Snap pig to this collision point for accurate attachment
+                                state.pig.x = checkX;
+                                state.pig.y = checkY;
+
+                                if (clock.id > state.lastClockId && state.gameMode !== 'sandbox') {
+                                    let scoreMultiplier = (skinId === 'golden' || skinId === 'king') ? 2 : (skinId === 'devil' || skinId === 'steampunk' ? 3 : 1); if (skinId === 'omega') scoreMultiplier = 4; if (state.gameMode === 'hard') scoreMultiplier *= 2; if (state.gameMode === 'superhard') scoreMultiplier *= 5; scoreMultiplier *= (1 + (state.upgrades.score_bonus || 0) * 0.05);
+                                    let baseReward = (state.gameMode === 'hard') ? 5 : (state.gameMode === 'superhard' ? 12 : 2); baseReward += (state.upgrades.coin_boost || 0);
+                                    let bonus = 0; if (skinId === 'rainbow') bonus += 1; if (skinId === 'golden') bonus += 2; if (skinId === 'bank') bonus += 3; if (skinId === 'king') bonus += 5; if (skinId === 'omega') bonus += 10;
+                                    let reward = (baseReward + bonus); if (skinId === 'lava') reward *= 2; state.coins += Math.floor(reward); state.totalCoinsEarned += Math.floor(reward); state.score += Math.round((clock.id - state.lastClockId) * scoreMultiplier); state.lastClockId = clock.id; state.consecutiveJumps++; state.bestStreak = Math.max(state.bestStreak, state.consecutiveJumps); state.totalJumps++; scoreVal.innerText = state.score; playSound('coin'); if (isWealthPig) { setTimeout(()=>playSound('coin'), 100); setTimeout(()=>playSound('coin'), 200); }
+                                    updateDailyProgress('jumps', 1); if (state.gameMode === 'hard') updateDailyProgress('hard_jumps', 1); if (state.gameMode === 'superhard') updateDailyProgress('superhard_jumps', 1); updateDailyProgress('earn_coins', Math.floor(reward)); updateDailyProgress('perfect_streaks', state.consecutiveJumps >= 15 ? 1 : 0); refreshUI(); checkAchievements(); if (state.isTutorial && state.tutorialStep === 2) advanceTutorial();
+                                } else if (state.gameMode === 'sandbox') state.lastClockId = Math.max(state.lastClockId, clock.id);
+                                playSound('land');
+                                foundCollision = true;
+                                break;
+                            }
                         }
+                        if (foundCollision) break;
                     }
                 }
-                if (state.gameMode !== 'sandbox') { if (state.pig.y > state.cameraY + HEIGHT + 120 || state.pig.x < -150 || state.pig.x > WIDTH + 150) { state.consecutiveJumps = 0; if (state.isTutorial) { state.pig.x = WIDTH/2; state.pig.y = state.cameraY + HEIGHT - 200; state.pig.vy = -10; state.pig.vx = 0; return; } if (skinId === 'slime' && !state.pig.slimeUsed) { state.pig.slimeUsed = true; state.pig.y = state.cameraY + HEIGHT - 10; state.pig.vy = -22; state.pig.vx = (WIDTH/2 - state.pig.x) * 0.05; gameContainer.classList.add('slime-flash'); playSound('unlock'); setTimeout(() => gameContainer.classList.remove('slime-flash'), 500); } else if (skinId === 'zombie' && !state.pig.zombieUsed) { state.pig.zombieUsed = true; state.pig.y = state.cameraY + HEIGHT/2; state.pig.vy = -12; state.pig.vx = 0; state.pig.x = WIDTH/2; gameContainer.classList.add('slime-flash'); playSound('unlock'); setTimeout(() => gameContainer.classList.remove('slime-flash'), 500); } else gameOver(); } }
+
+                if (state.pig.attachedTo === null && state.gameMode !== 'sandbox') { 
+                    if (state.pig.y > state.cameraY + HEIGHT + 120 || state.pig.x < -150 || state.pig.x > WIDTH + 150) { 
+                        state.consecutiveJumps = 0; 
+                        if (state.isTutorial) { state.pig.x = WIDTH/2; state.pig.y = state.cameraY + HEIGHT - 200; state.pig.vy = -10; state.pig.vx = 0; return; } 
+                        if (skinId === 'slime' && !state.pig.slimeUsed) { state.pig.slimeUsed = true; state.pig.y = state.cameraY + HEIGHT - 10; state.pig.vy = -22; state.pig.vx = (WIDTH/2 - state.pig.x) * 0.05; gameContainer.classList.add('slime-flash'); playSound('unlock'); setTimeout(() => gameContainer.classList.remove('slime-flash'), 500); } 
+                        else if (skinId === 'zombie' && !state.pig.zombieUsed) { state.pig.zombieUsed = true; state.pig.y = state.cameraY + HEIGHT/2; state.pig.vy = -12; state.pig.vx = 0; state.pig.x = WIDTH/2; gameContainer.classList.add('slime-flash'); playSound('unlock'); setTimeout(() => gameContainer.classList.remove('slime-flash'), 500); } 
+                        else gameOver(); 
+                    } 
+                }
             }
             state.pig.coinParticles.forEach((cp, idx) => { cp.x += cp.vx * timeScale; cp.y += cp.vy * timeScale; cp.vy += 0.2 * timeScale; cp.rot += cp.rotV * timeScale; cp.life -= 0.02 * timeScale; if (cp.life <= 0) state.pig.coinParticles.splice(idx, 1); });
             state.cameraY += (state.pig.y - HEIGHT/2 - state.cameraY) * 0.1 * timeScale; if (state.gameMode === 'sandbox') state.cameraX += (state.pig.x - WIDTH/2 - state.cameraX) * 0.1 * timeScale;
