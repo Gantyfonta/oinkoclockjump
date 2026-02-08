@@ -159,10 +159,7 @@
             
             <!-- Daily Challenges Container -->
             <div id="daily-challenges-container" class="absolute top-16 left-0 right-0 px-6 flex flex-col gap-2 pointer-events-auto">
-                <div class="flex justify-between items-center px-2">
-                    <div class="text-[8px] font-black uppercase tracking-widest opacity-40">Daily Objectives</div>
-                    <button onclick="rerollDailies()" class="text-[8px] font-black uppercase tracking-tighter bg-white/5 hover:bg-white/10 px-2 py-0.5 rounded transition-colors text-indigo-300">Reroll (50₵)</button>
-                </div>
+                <div class="text-[8px] font-black uppercase tracking-widest opacity-40 text-left px-2">Daily Objectives</div>
                 <div id="daily-list" class="flex flex-col gap-1.5"></div>
             </div>
 
@@ -189,14 +186,14 @@
                 <button id="btn-switch-mode" onclick="openModeSelect()" class="text-[10px] font-black uppercase text-pink-300/60 hover:text-white hidden tracking-widest">Switch Mode</button>
                 
                 <div class="grid grid-cols-3 gap-2 w-full mt-2">
-                    <button onclick="openSkins()" class="bg-indigo-800 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-[10px] transition-transform active:scale-95 uppercase">SKINS</button>
-                    <button onclick="openHats()" class="bg-indigo-800 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-[10px] transition-transform active:scale-95 uppercase">HATS</button>
-                    <button onclick="openThemes()" class="bg-indigo-800 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-[10px] transition-transform active:scale-95 uppercase">THEMES</button>
-                    <button onclick="openAchievements()" class="bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-3 rounded-xl text-[10px] transition-transform active:scale-95 uppercase">GOALS</button>
-                    <button onclick="openUpgrades()" class="bg-cyan-700 hover:bg-cyan-600 text-white font-bold py-3 rounded-xl text-[10px] transition-transform active:scale-95 uppercase">UPGRADES</button>
-                    <button onclick="openLore()" class="bg-purple-800 hover:bg-purple-700 text-white font-bold py-3 rounded-xl text-[10px] transition-transform active:scale-95 uppercase">LORE</button>
+                    <button id="btn-skins" onclick="openSkins()" class="bg-indigo-800 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-[10px] transition-transform active:scale-95 uppercase">SKINS</button>
+                    <button id="btn-hats" onclick="openHats()" class="bg-indigo-800 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-[10px] transition-transform active:scale-95 uppercase">HATS</button>
+                    <button id="btn-themes" onclick="openThemes()" class="bg-indigo-800 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-[10px] transition-transform active:scale-95 uppercase">THEMES</button>
+                    <button id="btn-goals" onclick="openAchievements()" class="bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-3 rounded-xl text-[10px] transition-transform active:scale-95 uppercase">GOALS</button>
+                    <button id="btn-upgrades" onclick="openUpgrades()" class="bg-cyan-700 hover:bg-cyan-600 text-white font-bold py-3 rounded-xl text-[10px] transition-transform active:scale-95 uppercase">UPGRADES</button>
+                    <button id="btn-lore" onclick="openLore()" class="bg-purple-800 hover:bg-purple-700 text-white font-bold py-3 rounded-xl text-[10px] transition-transform active:scale-95 uppercase">LORE</button>
+                    <button id="btn-rankings" onclick="openLeaderboardUI()" class="bg-indigo-800 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-[10px] transition-transform active:scale-95 uppercase">LIST</button>
                 </div>
-                <button onclick="openLeaderboardUI()" class="w-full bg-indigo-900/40 hover:bg-indigo-800 text-white/40 font-black py-2 rounded-xl text-[10px] transition-transform active:scale-95 uppercase tracking-widest mt-1">Global Rankings</button>
                 <button id="btn-how" onclick="startTutorial()" class="mt-1 text-[10px] font-black uppercase text-white/30 hover:text-white transition-colors tracking-widest">How to Play?</button>
             </div>
 
@@ -217,7 +214,7 @@
             <div class="flex justify-between items-center mb-6">
                 <div>
                     <h2 class="text-3xl font-black italic uppercase tracking-tighter text-amber-500 leading-none">Season Pass</h2>
-                    <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest">Exclusive rewards for daily questers</p>
+                    <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest">Complete Dailies to level up</p>
                 </div>
                 <button onclick="closeBattlePass()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" x2="6" y1="18" x2="6"></line><line x1="6" x2="18" y1="6" x2="18"></line></svg></button>
             </div>
@@ -236,7 +233,7 @@
                 <div class="h-4 bg-black/40 rounded-full overflow-hidden border border-white/5 p-0.5">
                     <div id="bp-xp-bar" class="h-full bg-gradient-to-r from-pink-500 via-amber-500 to-yellow-400 rounded-full transition-all duration-500" style="width: 0%"></div>
                 </div>
-                <p class="mt-4 text-[9px] font-bold text-white/30 uppercase tracking-widest text-center italic">XP gained only from daily tasks!</p>
+                <p class="mt-4 text-[9px] font-bold text-white/30 uppercase tracking-widest text-center italic">Only daily objectives grant XP!</p>
             </div>
 
             <!-- Tiers List -->
@@ -249,7 +246,7 @@
         <div id="ui-lore" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-3xl font-black italic uppercase tracking-tighter text-purple-400">Chronicles</h2>
-                <button onclick="closeLore()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" x2="6" y1="18" x2="18"></line><line x1="6" x2="18" y1="6" x2="18"></line></svg></button>
+                <button onclick="closeLore()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" x2="6" y1="6" x2="18" y2="18"></line><line x1="6" x2="18" y1="6" x2="18" y2="18"></line></svg></button>
             </div>
             <div class="flex-1 overflow-y-auto space-y-6 pr-1 text-left leading-relaxed">
                 <div>
@@ -260,9 +257,49 @@
                     <h3 class="text-cyan-400 font-black uppercase text-xs tracking-widest mb-2">The Leap of Faith</h3>
                     <p class="text-[11px] text-white/70">The Great Pig was the first to realize that by jumping on the turning gears of the universe, one could ascend to higher dimensions. Each clock is a localized pocket of existence. To miss a leap is to be forgotten by history, falling back into the formless depths.</p>
                 </div>
+                <div>
+                    <h3 class="text-yellow-400 font-black uppercase text-xs tracking-widest mb-2">The Omega Pig</h3>
+                    <p class="text-[11px] text-white/70">Legend speaks of a pig who ascended so high that they became one with the rainbow. This "Omega Hog" no longer sees time as linear, but as a spectrum. They move with the grace of 4.0x multiplier efficiency, harvesting the very energy of the cosmos with every successful leap.</p>
+                </div>
+                <div>
+                    <h3 class="text-orange-400 font-black uppercase text-xs tracking-widest mb-2">The Hard Truth</h3>
+                    <p class="text-[11px] text-white/70">Those who seek greater rewards must brave the "Hard Realities." Here, gravity pulls with the weight of regrets, and the clocks spin with the frantic speed of a closing deadline. Only the most precise leapers survive the spike-laden paths of the Super Hard realm.</p>
+                </div>
             </div>
             <div class="mt-6 p-4 bg-purple-900/30 rounded-2xl border border-white/5 text-center">
                 <p class="text-[9px] font-black uppercase text-purple-300/50 italic tracking-widest">Keep Leaping, Chronos-Swine.</p>
+            </div>
+        </div>
+
+        <!-- Bezos Mode Console -->
+        <div id="bezos-console" class="absolute bottom-4 right-4 bg-black/80 backdrop-blur-md border border-yellow-500/50 rounded-2xl z-[100] text-white w-48 hidden pointer-events-auto shadow-2xl bezos-transition overflow-hidden">
+            <div id="bezos-header" onclick="toggleBezosConsole()" class="flex items-center justify-between p-3 bg-yellow-500/10 cursor-pointer border-b border-yellow-500/20">
+                <div class="text-[8px] font-black uppercase tracking-widest text-yellow-500">Bezos Admin Tool</div>
+                <div id="bezos-toggle-icon" class="text-yellow-500 text-[10px]">▼</div>
+            </div>
+            <div id="bezos-body" class="p-3">
+                <input type="text" id="bezos-input" placeholder="Skin/Hat/Level..." class="w-full bg-white/10 border border-white/20 rounded-lg px-2 py-1.5 text-[10px] focus:outline-none focus:border-yellow-500 mb-2">
+                <div class="flex gap-1 mb-3">
+                    <button onclick="applyBezosCommand(true)" class="flex-1 bg-yellow-600 hover:bg-yellow-500 text-[8px] font-black py-1.5 rounded uppercase">Grant</button>
+                    <button onclick="applyBezosCommand(false)" class="flex-1 bg-red-900 hover:bg-red-800 text-[8px] font-black py-1.5 rounded uppercase">Revoke</button>
+                </div>
+                
+                <div class="mt-3 pt-2 border-t border-yellow-500/20">
+                    <div class="text-[7px] font-black uppercase text-yellow-500/60 mb-1">Height Warp</div>
+                    <div class="flex gap-1">
+                        <input type="number" id="bezos-offset-input" placeholder="Y Pos..." class="flex-1 bg-white/10 border border-white/20 rounded-lg px-2 py-1 text-[10px] focus:outline-none focus:border-yellow-500">
+                        <button onclick="applyBezosOffset()" class="bg-yellow-700 hover:bg-yellow-600 text-[8px] font-black px-2 py-1 rounded uppercase">Warp</button>
+                    </div>
+                </div>
+
+                <div class="mt-3 pt-2 border-t border-yellow-500/20">
+                    <div class="text-[7px] font-black uppercase text-yellow-500/60 mb-1">Clock Offset</div>
+                    <div class="flex gap-1">
+                        <input type="number" id="bezos-player-offset-input" placeholder="Dist..." class="flex-1 bg-white/10 border border-white/20 rounded-lg px-2 py-1 text-[10px] focus:outline-none focus:border-yellow-500">
+                        <button onclick="applyBezosPlayerOffset()" class="bg-yellow-700 hover:bg-yellow-600 text-[8px] font-black px-2 py-1 rounded uppercase">Set</button>
+                    </div>
+                    <p class="text-[6px] text-white/40 mt-2 italic leading-none">Distance from clock edge</p>
+                </div>
             </div>
         </div>
 
@@ -290,76 +327,113 @@
             </div>
         </div>
 
-        <!-- Menus with Shared Grid Style -->
-        <div id="ui-skins" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-3xl font-black italic uppercase tracking-tighter text-pink-400">Wardrobe</h2>
-                <button onclick="closeSkins()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" x2="6" y1="18" x2="6"></line><line x1="6" x2="18" y1="6" x2="18"></line></svg></button>
-            </div>
-            <div id="skins-grid" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
-            <button id="buy-skin-btn" onclick="buyRandomSkin()" class="mt-4 w-full bg-pink-500 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 active:scale-95 transition-transform disabled:opacity-50 uppercase text-xs">Unlock Random Skin (100₵)</button>
-        </div>
-
-        <div id="ui-hats" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-3xl font-black italic uppercase tracking-tighter text-blue-400">Hats</h2>
-                <button onclick="closeHats()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" x2="6" y1="18" x2="6"></line><line x1="6" x2="18" y1="6" x2="18"></line></svg></button>
-            </div>
-            <div id="hats-grid" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
-        </div>
-
-        <div id="ui-themes" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-3xl font-black italic uppercase tracking-tighter text-cyan-400">Atmospheres</h2>
-                <button onclick="closeThemes()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" x2="6" y1="18" x2="6"></line><line x1="6" x2="18" y1="6" x2="18"></line></svg></button>
-            </div>
-            <div id="themes-grid" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
-        </div>
-
+        <!-- Upgrades Menu -->
         <div id="ui-upgrades" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-3xl font-black italic uppercase tracking-tighter text-cyan-400">Upgrades</h2>
-                <button onclick="closeUpgrades()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" x2="6" y1="18" x2="6"></line><line x1="6" x2="18" y1="6" x2="18"></line></svg></button>
+                <h2 class="text-3xl font-black italic uppercase tracking-tighter text-cyan-400">Global Upgrades</h2>
+                <button onclick="closeUpgrades()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" x2="6" y1="6" x2="18" y2="18"></line><line x1="6" x2="18" y1="6" x2="18" y2="18"></line></svg></button>
             </div>
             <div id="upgrades-list" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
+            <div class="mt-4 p-4 bg-indigo-900/50 rounded-2xl flex justify-between items-center border border-white/5">
+                <span class="text-[10px] font-black uppercase opacity-60">Your Piggy Bank</span>
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 bg-yellow-400 rounded-full flex items-center justify-center text-[10px] text-black font-black coin-spin">₵</div>
+                    <span id="upgrade-wallet" class="font-black text-xl">0</span>
+                </div>
+            </div>
         </div>
 
+        <!-- Leaderboard Menu -->
         <div id="ui-leaderboard" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-3xl font-black italic uppercase tracking-tighter text-white">Legends</h2>
-                <button onclick="closeLeaderboard()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" x2="6" y1="18" x2="6"></line><line x1="6" x2="18" y1="6" x2="18"></line></svg></button>
+                <h2 id="title-rankings" class="text-3xl font-black italic uppercase tracking-tighter">Legends</h2>
+                <button onclick="closeLeaderboard()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" x2="6" y1="6" x2="18" y2="18"></line><line x1="6" x2="18" y1="6" x2="18" y2="18"></line></svg></button>
             </div>
             <div class="flex gap-1 mb-4">
                 <button onclick="setLeaderboardTab('regular')" id="tab-regular" class="flex-1 py-2 text-[7px] font-black uppercase border-b-2 border-white/5 opacity-50">Score</button>
                 <button onclick="setLeaderboardTab('hard')" id="tab-hard" class="flex-1 py-2 text-[7px] font-black uppercase border-b-2 border-white/5 opacity-50">Hard</button>
                 <button onclick="setLeaderboardTab('superhard')" id="tab-superhard" class="flex-1 py-2 text-[7px] font-black uppercase border-b-2 border-white/5 opacity-50">Super</button>
-                <button onclick="setLeaderboardTab('sandbox')" id="tab-sandbox" class="flex-1 py-2 text-[7px] font-black uppercase border-b-2 border-white/5 opacity-50 text-cyan-400">Speed</button>
+                <button onclick="setLeaderboardTab('sandbox')" id="tab-sandbox" class="flex-1 py-2 text-[7px] font-black uppercase border-b-2 border-white/5 opacity-50">Speed</button>
                 <button onclick="setLeaderboardTab('wealth')" id="tab-wealth" class="flex-1 py-2 text-[7px] font-black uppercase border-b-2 border-white/5 opacity-50 text-yellow-500">Wealth</button>
             </div>
             <div id="leaderboard-list" class="flex-1 overflow-y-auto space-y-1 pr-1"></div>
         </div>
 
+        <!-- Hats Menu -->
+        <div id="ui-hats" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-3xl font-black italic uppercase tracking-tighter text-pink-400">Headwear Shop</h2>
+                <button onclick="closeHats()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" x2="6" y1="6" x2="18" y2="18"></line><line x1="6" x2="18" y1="6" x2="18" y2="18"></line></svg></button>
+            </div>
+            <div id="hats-grid" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
+            <div class="mt-4 p-4 bg-indigo-900/50 rounded-2xl flex justify-between items-center border border-white/5">
+                <span class="text-[10px] font-black uppercase opacity-60">Piggy Bank</span>
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 bg-yellow-400 rounded-full flex items-center justify-center text-[10px] text-black font-black coin-spin">₵</div>
+                    <span id="hats-wallet" class="font-black text-xl">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Achievements Menu -->
         <div id="ui-achievements" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-3xl font-black italic uppercase tracking-tighter text-yellow-500">Milestones</h2>
-                <button onclick="closeAchievements()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" x2="6" y1="18" x2="6"></line><line x1="6" x2="18" y1="6" x2="18"></line></svg></button>
+                <h2 id="title-milestones" class="text-3xl font-black italic uppercase tracking-tighter text-yellow-500">Milestones</h2>
+                <button onclick="closeAchievements()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" x2="6" y1="6" x2="18" y2="18"></line><line x1="6" x2="18" y1="6" x2="18" y2="18"></line></svg></button>
             </div>
             <div id="achievements-list" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
         </div>
 
+        <!-- Skins Menu -->
+        <div id="ui-skins" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="title-skins" class="text-3xl font-black italic uppercase tracking-tighter">Skins</h2>
+                <button onclick="closeSkins()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" x2="6" y1="6" x2="18" y2="18"></line><line x1="6" x2="18" y1="6" x2="18" y2="18"></line></svg></button>
+            </div>
+            <div id="skins-grid" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
+            <button id="buy-skin-btn" onclick="buyRandomSkin()" class="mt-4 w-full bg-pink-500 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 active:scale-95 transition-transform disabled:opacity-50">
+                <div class="w-6 h-6 bg-yellow-400 rounded-full text-black font-black flex items-center justify-center text-xs">₵</div>
+                <span id="buy-skin-label">BUY RANDOM SKIN (100)</span>
+            </button>
+        </div>
+
+        <!-- Theme Shop Menu -->
+        <div id="ui-themes" class="absolute inset-0 flex flex-col bg-indigo-950 z-50 text-white p-6 hidden">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="title-themes" class="text-3xl font-black italic uppercase tracking-tighter">Themes</h2>
+                <button onclick="closeThemes()" class="bg-white/10 p-2 rounded-full"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" x2="6" y1="6" x2="18" y2="18"></line><line x1="6" x2="18" y1="6" x2="18" y2="18"></line></svg></button>
+            </div>
+            <div id="themes-grid" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
+            <button id="buy-theme-btn" onclick="buyRandomTheme()" class="mt-4 w-full bg-indigo-500 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 active:scale-95 transition-transform disabled:opacity-50">
+                <div class="w-6 h-6 bg-yellow-400 rounded-full text-black font-black flex items-center justify-center text-xs">₵</div>
+                <span id="buy-theme-label">UNLOCK THEME (250)</span>
+            </button>
+        </div>
+
+        <!-- Tutorial UI -->
+        <div id="ui-tutorial" class="absolute inset-0 flex flex-col items-center justify-end p-12 bg-black/40 backdrop-blur-[2px] z-[70] hidden pointer-events-none">
+            <div class="bg-indigo-900/90 border-2 border-pink-500 p-6 rounded-3xl shadow-2xl text-white text-center w-full tutorial-pulse pointer-events-auto">
+                <h3 id="tut-title" class="text-xl font-black italic uppercase mb-2">Tutorial</h3>
+                <p id="tut-desc" class="text-sm font-bold text-pink-200 mb-6">Instructions go here.</p>
+                <button id="tut-btn" onclick="advanceTutorial()" class="bg-pink-500 text-white font-black py-2 px-8 rounded-xl active:scale-95 transition-transform uppercase text-sm">Got it!</button>
+            </div>
+            <button id="btn-skip-tut" onclick="skipTutorial()" class="mt-4 pointer-events-auto text-[10px] font-bold text-white/40 uppercase tracking-widest hover:text-white transition-colors">Skip Tutorial</button>
+        </div>
+
         <!-- Username Entry -->
         <div id="ui-username" class="absolute inset-0 flex flex-col items-center justify-center bg-indigo-950/95 backdrop-blur-md z-[60] text-white p-6 text-center hidden">
-            <h2 class="text-2xl font-black mb-2 uppercase italic">Identify Yourself</h2>
+            <h2 id="ident-prompt" class="text-2xl font-black mb-2 uppercase italic">Identify Yourself</h2>
             <input type="text" id="username-input" maxlength="15" placeholder="OinkMaster" class="w-64 bg-indigo-900 border-2 border-pink-500/30 text-white text-center py-3 rounded-xl font-bold focus:border-pink-500 focus:outline-none mb-4 transition-all">
-            <button onclick="saveUsername()" class="bg-pink-500 text-white font-black py-3 px-12 rounded-xl text-lg transition-transform active:scale-95 w-64 uppercase">CONFIRM</button>
-            <p class="text-[8px] opacity-30 mt-4 uppercase tracking-tighter italic">Enter '/clearboard' to reset global ranks</p>
+            <button id="btn-confirm-user" onclick="saveUsername()" class="bg-pink-500 text-white font-black py-3 px-12 rounded-xl text-lg transition-transform active:scale-95 w-64 uppercase">CONFIRM</button>
         </div>
 
         <!-- HUD -->
         <div id="ui-hud" class="absolute top-0 left-0 right-0 p-4 flex justify-between ui-layer text-white hidden">
             <div class="bg-black/20 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/5">
-                <div id="score-label" class="text-[8px] font-bold uppercase opacity-60 tracking-widest mb-0.5">SCORE</div>
-                <div id="score-val" class="text-3xl font-black text-pink-400 leading-none">0</div>
+                <div id="score-container">
+                    <div id="score-label" class="text-[8px] font-bold uppercase opacity-60 tracking-widest mb-0.5">SCORE</div>
+                    <div id="score-val" class="text-3xl font-black text-pink-400 leading-none">0</div>
+                </div>
                 <div id="sandbox-badge" class="sandbox-badge px-2 py-0.5 rounded text-[8px] font-black mt-1 hidden uppercase tracking-widest text-center bg-cyan-600">Sandbox Mode</div>
             </div>
             <div class="text-right flex flex-col items-end gap-2">
@@ -375,25 +449,25 @@
         </div>
 
         <div id="ui-gameover" class="absolute inset-0 flex flex-col items-center justify-center bg-red-950/90 backdrop-blur-md z-[55] text-white p-6 text-center hidden">
-            <h2 class="text-4xl font-black mb-1 uppercase tracking-tighter text-white">TIME FRACTURED!</h2>
+            <h2 id="go-title" class="text-4xl font-black mb-1 uppercase tracking-tighter text-white">TIME FRACTURED!</h2>
             <div class="relative mb-8">
                 <div id="new-best-tag" class="absolute -top-6 -right-10 bg-yellow-400 text-black text-[10px] font-black px-2 py-1 rounded rotate-12 hidden">NEW BEST!</div>
                 <div class="text-7xl font-black text-pink-400" id="final-score">0</div>
             </div>
             <div class="bg-indigo-900/40 border border-white/10 px-6 py-3 rounded-2xl mb-8 flex items-center gap-4">
-                <div><div class="text-[10px] uppercase font-bold opacity-40">Earned</div><div id="earned-coins" class="text-2xl font-black text-yellow-400">+0</div></div>
+                <div><div id="earned-label" class="text-[10px] uppercase font-bold opacity-40">Earned</div><div id="earned-coins" class="text-2xl font-black text-yellow-400">+0</div></div>
                 <div class="h-8 w-px bg-white/10"></div>
-                <div><div class="text-[10px] uppercase font-bold opacity-40">Total</div><div id="gameover-total-coins" class="text-2xl font-black text-white">0</div></div>
+                <div><div id="total-label" class="text-[10px] uppercase font-bold opacity-40">Total</div><div id="gameover-total-coins" class="text-2xl font-black text-white">0</div></div>
             </div>
             <div class="flex flex-col gap-3 w-64 items-center">
-                <button onclick="retryGame()" class="bg-white text-indigo-900 font-black py-4 px-12 rounded-xl text-2xl w-full active:scale-95 transition-transform uppercase">RETRY</button>
-                <button onclick="backToHome()" class="text-white/60 font-bold text-sm uppercase">EXIT TO HOME</button>
+                <button id="btn-retry" onclick="retryGame()" class="bg-white text-indigo-900 font-black py-4 px-12 rounded-xl text-2xl w-full active:scale-95 transition-transform uppercase">RETRY</button>
+                <button id="btn-home" onclick="backToHome()" class="text-white/60 font-bold text-sm uppercase">EXIT TO HOME</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Constants & Config
+        // Firebase init
         const firebaseConfig = {
             apiKey: "AIzaSyCtj4LFJ7xSbRCGT4Ttc4GCEgQBYDJy4tY",
             authDomain: "gantymail-b5d24.firebaseapp.com",
@@ -406,105 +480,165 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        const WIDTH = 400, HEIGHT = 700;
-        const JUMP_SPEED = 14, CLOCK_SPACING = 260;
-        const XP_PER_TIER = 1000, XP_PER_DAILY = 500;
+        // Constants and State
+        const WIDTH = 400;
+        const HEIGHT = 700;
+        const JUMP_SPEED = 14;
+        const CLOCK_SPACING = 260;
         const CLOCK_COLORS = ['#F472B6', '#60A5FA', '#34D399', '#FBBF24', '#A78BFA', '#FB923C'];
+        const XP_PER_TIER = 1000;
+        const XP_PER_DAILY = 500;
 
-        // Core Data Lists
+        const FAMILY_MEMBERS = [
+            { name: 'George', scale: 0.6, grab: 0, body: '#F472B6' },
+            { name: 'Peppa', scale: 0.9, grab: 8, body: '#F472B6' },
+            { name: 'Mummy', scale: 1.2, grab: 20, body: '#EC4899' },
+            { name: 'Daddy', scale: 1.5, grab: 35, body: '#BE185D' }
+        ];
+
+        const GLOBAL_UPGRADES = [
+            { id: 'magnet', name: 'Cosmic Magnet', desc: 'Slightly increases grab range globally.', basePrice: 250, multiplier: 1.5 },
+            { id: 'coin_boost', name: 'Tax Fraud', desc: '+1 bonus coin per successful jump.', basePrice: 400, multiplier: 2.0 },
+            { id: 'score_bonus', name: 'Hype Man', desc: '+5% global score multiplier.', basePrice: 350, multiplier: 1.8 },
+            { id: 'mercy', name: 'Clock Shield', desc: '10% chance to survive clock spikes.', basePrice: 600, multiplier: 2.5 }
+        ];
+
         const SKINS = [
             { id: 'classic', name: 'Classic Oink', ability: 'Standard', desc: 'A well-rounded pig.', body: '#F472B6', ears: '#EC4899', snout: '#F9A8D4', snoutDots: '#BE185D' },
-            { id: 'spider', name: 'Spider Guy', ability: 'Crawl', desc: 'Procedural legs. High grab range.', body: '#0f172a', ears: '#1e293b', snout: '#ef4444', snoutDots: '#000000' },
-            { id: 'glock', name: 'Oink-Glock', ability: 'Ballistic', desc: 'Recoil jumping. Shoots backwards.', body: '#334155', ears: '#1e293b', snout: '#F9A8D4', snoutDots: '#BE185D' },
-            { id: 'family', name: 'The Family', ability: 'Ancestry', desc: 'Random family member every jump.', body: '#F472B6', ears: '#EC4899', snout: '#F9A8D4', snoutDots: '#BE185D' },
-            { id: 'matcha', name: 'Matcha Zen', ability: 'Focus', desc: '25% Slower clock rotation.', body: '#34D399', ears: '#059669', snout: '#6EE7B7', snoutDots: '#064E3B' },
-            { id: 'golden', name: 'Wealthy Swine', ability: 'Greed', desc: '+2 Coins per successful jump.', body: '#FBBF24', ears: '#D97706', snout: '#FDE68A', snoutDots: '#78350F' },
+            { id: 'spider', name: 'Spider Guy', ability: 'Crawl', desc: 'Procedural legs that grip clocks! High grab range.', body: '#0f172a', ears: '#1e293b', snout: '#ef4444', snoutDots: '#000000' },
+            { id: 'glock', name: 'Oink-O-Glock', ability: 'Ballistic', desc: 'Packs a punch! Shoots on every leap.', body: '#334155', ears: '#1e293b', snout: '#F9A8D4', snoutDots: '#BE185D' },
+            { id: 'family', name: 'The Family', ability: 'Ancestry', desc: 'Switches member every jump! Varies size and grab.', body: '#F472B6', ears: '#EC4899', snout: '#F9A8D4', snoutDots: '#BE185D' },
+            { id: 'frog', name: 'Leap Frog', ability: 'Aqua', desc: 'Slightly higher mid-air jumps.', body: '#22C55E', ears: '#166534', snout: '#86EFAC', snoutDots: '#064E3B' },
+            { id: 'ghost', name: 'Spectral Pig', ability: 'Phaze', desc: 'Cumulative Reward. Translucent.', body: 'rgba(255,255,255,0.35)', ears: 'rgba(200,200,255,0.3)', snout: 'rgba(255,255,255,0.5)', snoutDots: 'rgba(0,0,0,0.1)', isAchievement: true },
+            { id: 'lava', name: 'Magma Boar', ability: 'Burn', desc: 'Clocks 50% faster. 2x Total Coins!', body: '#991B1B', ears: '#7F1D1D', snout: '#F97316', snoutDots: '#78350F' },
+            { id: 'steampunk', name: 'Steampunk Pig', ability: 'Torque', desc: '2x Speed clocks. 3x Score!', body: '#A8A29E', ears: '#78350F', snout: '#D6D3D1', snoutDots: '#451A03' },
+            { id: 'neon', name: 'Neon Hog', ability: 'Pulse', desc: 'Score Reward (150). +20% Jump Speed.', body: '#000000', ears: '#3B82F6', snout: '#60A5FA', snoutDots: '#1E40AF', isAchievement: true },
+            { id: 'blueberry', name: 'Time Jam', ability: 'Sticky', desc: '+15% Grab range.', body: '#60A5FA', ears: '#2563EB', snout: '#93C5FD', snoutDots: '#1E40AF' },
+            { id: 'matcha', name: 'Matcha Zen', ability: 'Focus', desc: '25% Slower rotation.', body: '#34D399', ears: '#059669', snout: '#6EE7B7', snoutDots: '#064E3B' },
+            { id: 'golden', name: 'Wealthy Swine', ability: 'Greed', desc: 'Shiny +2 Coins/Jump!', body: '#FBBF24', ears: '#D97706', snout: '#FDE68A', snoutDots: '#78350F' },
             { id: 'void', name: 'Void Walker', ability: 'Warp', desc: '+25% Jump velocity.', body: '#4B5563', ears: '#1F2937', snout: '#9CA3AF', snoutDots: '#000000' },
-            { id: 'zombie', name: 'Undead Hog', ability: 'Unending', desc: 'Revives once per run.', body: '#4D7C0F', ears: '#365314', snout: '#84CC16', snoutDots: '#14532D' },
+            { id: 'cyber', name: 'Cyber Ham', ability: 'Laser', desc: 'Themes Reward. Shows trajectory.', body: '#A78BFA', ears: '#7C3AED', snout: '#C4B5FD', snoutDots: '#4C1D95', isAchievement: true },
+            { id: 'slime', name: 'Slime Pig', ability: 'Resilient', desc: 'Jumps Reward. Bounces from void.', body: '#10B981', ears: '#064E3B', snout: '#D1FAE5', snoutDots: '#059669', isAchievement: true },
+            { id: 'devil', name: 'Hell Hog', ability: 'Inferno', desc: 'Triple score, small clocks.', body: '#EF4444', ears: '#7F1D1D', snout: '#FCA5A5', snoutDots: '#991B1B' },
+            { id: 'ninja', name: 'Shadow Swine', ability: 'Ninja', desc: 'Streak Reward. High grab range.', body: '#1E293B', ears: '#0F172A', snout: '#334155', snoutDots: '#000000', isAchievement: true },
+            { id: 'zombie', name: 'Undead Hog', ability: 'Unending', desc: 'Revives once (Keep score).', body: '#4D7C0F', ears: '#365314', snout: '#84CC16', snoutDots: '#14532D' },
             { id: 'ice', name: 'Frost Piglet', ability: 'Freeze', desc: 'Stops clocks when touched.', body: '#BAE6FD', ears: '#0EA5E9', snout: '#E0F2FE', snoutDots: '#0369A1' },
             { id: 'rainbow', name: 'Prism Pig', ability: 'Fortune', desc: '+1 Coin every jump.', body: '#FFFFFF', ears: '#FF0000', snout: '#FF00FF', snoutDots: '#000000' },
-            { id: 'angel', name: 'Angel Pig', ability: 'Glory', desc: 'Unlock: Score 25. Floaty jump.', body: '#FFFBEB', ears: '#FEF3C7', snout: '#FDE68A', snoutDots: '#F59E0B', isAchievement: true },
-            { id: 'space', name: 'Space Cadet', ability: 'Helmet', desc: 'Unlock: Score 75. Huge magnet.', body: '#334155', ears: '#475569', snout: '#94A3B8', snoutDots: '#F1F5F9', isAchievement: true },
-            { id: 'neon', name: 'Neon Hog', ability: 'Pulse', desc: 'Unlock: Score 150. Speed boost.', body: '#000000', ears: '#3B82F6', snout: '#60A5FA', snoutDots: '#1E40AF', isAchievement: true },
-            { id: 'omega', name: 'Omega Hog', ability: 'Omni', desc: 'The Ultimate Reward. 4x Multiplier!', body: '#FFFFFF', ears: '#FBBF24', snout: '#FDE68A', snoutDots: '#000000', isAchievement: true },
-            { id: 'gladiator', name: 'Battle Boar', ability: 'Valiant', desc: 'Pass Tier 10. Powerful jump.', body: '#B91C1C', ears: '#7F1D1D', snout: '#FCA5A5', snoutDots: '#000000', isAchievement: true },
-            { id: 'stealth', name: 'Invisi-Pig', ability: 'Ghost', desc: 'Pass Tier 20. Fades in/out.', body: 'rgba(51,65,85,0.5)', ears: '#1E293B', snout: '#94A3B8', snoutDots: '#000000', isAchievement: true },
-            { id: 'diamond', name: 'Crystal Hog', ability: 'Prismatic', desc: 'Pass Tier 25. 5x Score!', body: '#E0F2FE', ears: '#7DD3FC', snout: '#BAE6FD', snoutDots: '#000000', isAchievement: true }
+            { id: 'angel', name: 'Angel Pig', ability: 'Glory', desc: 'Score 25 Reward. Floaty.', body: '#FFFBEB', ears: '#FEF3C7', snout: '#FDE68A', snoutDots: '#F59E0B', isAchievement: true },
+            { id: 'space', name: 'Space Cadet', ability: 'Helmet', desc: 'Score 75 Reward. Huge magnet.', body: '#334155', ears: '#475569', snout: '#94A3B8', snoutDots: '#F1F5F9', isAchievement: true },
+            { id: 'bank', name: 'Piggy Bank', ability: 'Wealth', desc: 'Total Coins Reward. +3 Coins/Jump.', body: '#FCD34D', ears: '#F59E0B', snout: '#FEF3C7', snoutDots: '#D97706', isAchievement: true },
+            { id: 'king', name: 'King Swine', ability: 'Royalty', desc: 'Collection Reward. +5 Coins/Jump.', body: '#7C3AED', ears: '#C084FC', snout: '#DDD6FE', snoutDots: '#4C1D95', isAchievement: true },
+            { id: 'rocket', name: 'Rocket Pig', ability: 'Thrust', desc: 'Hard Mode Reward. Air Control.', body: '#94A3B8', ears: '#EF4444', snout: '#F1F5F9', snoutDots: '#000000', isAchievement: true },
+            { id: 'smoking', name: 'Cool Swine', ability: 'Cloud', desc: 'Leaves a mysterious trail.', body: '#475569', ears: '#1E293B', snout: '#94A3B8', snoutDots: '#000000' },
+            { id: 'omega', name: 'Omega Hog', ability: 'Omni', desc: 'The Ultimate. +10 Coins/Jump & 4x Score!', body: '#FFFFFF', ears: '#FBBF24', snout: '#FDE68A', snoutDots: '#000000', isAchievement: true },
+            
+            // Exclusive Season Pass Skins
+            { id: 'gladiator', name: 'Battle Boar', ability: 'Valiant', desc: 'Season Pass exclusive. High jump force.', body: '#B91C1C', ears: '#7F1D1D', snout: '#FCA5A5', snoutDots: '#000000', isAchievement: true },
+            { id: 'stealth', name: 'Invisi-Pig', ability: 'Ghost', desc: 'Season Pass exclusive. Fades from view.', body: 'rgba(51,65,85,0.5)', ears: '#1E293B', snout: '#94A3B8', snoutDots: '#000000', isAchievement: true },
+            { id: 'diamond', name: 'Crystal Hog', ability: 'Prismatic', desc: 'Tier 25 Reward. 5.0x Multiplier!', body: '#E0F2FE', ears: '#7DD3FC', snout: '#BAE6FD', snoutDots: '#000000', isAchievement: true }
+        ];
+
+        const BP_REWARDS = [
+            { type: 'coins', amount: 200, label: '200 Coins' },
+            { type: 'hat', id: 'party', label: 'Party Hat' },
+            { type: 'coins', amount: 300, label: '300 Coins' },
+            { type: 'theme', id: 'sky', label: 'Sky Kingdom' },
+            { type: 'coins', amount: 500, label: '500 Coins' },
+            { type: 'hat', id: 'tophat', label: 'Top Hat' },
+            { type: 'coins', amount: 700, label: '700 Coins' },
+            { type: 'theme', id: 'matrix', label: 'Matrix Theme' },
+            { type: 'coins', amount: 1000, label: '1,000 Coins' },
+            { id: 'gladiator', type: 'skin', label: 'Battle Boar (SKIN)' }, // Tier 10
+            { type: 'coins', amount: 1200, label: '1,200 Coins' },
+            { type: 'hat', id: 'viking', label: 'Viking Helmet' },
+            { type: 'coins', amount: 1500, label: '1,500 Coins' },
+            { type: 'theme', id: 'lava', label: 'Magma Core' },
+            { type: 'coins', amount: 2000, label: '2,000 Coins' },
+            { type: 'hat', id: 'crown', label: 'Golden Crown' },
+            { type: 'coins', amount: 2500, label: '2,500 Coins' },
+            { type: 'theme', id: 'gold', label: 'Golden Vault' },
+            { type: 'coins', amount: 3000, label: '3,000 Coins' },
+            { id: 'stealth', type: 'skin', label: 'Invisi-Pig (SKIN)' }, // Tier 20
+            { type: 'coins', amount: 4000, label: '4,000 Coins' },
+            { type: 'hat', id: 'halo', label: 'Holy Halo' },
+            { type: 'theme', id: 'synthwave', label: 'Retro Grid' },
+            { type: 'coins', amount: 5000, label: '5,000 Coins' },
+            { id: 'diamond', type: 'skin', label: 'Crystal Hog (SKIN)' } // Tier 25
         ];
 
         const HATS = [
             { id: 'none', name: 'No Hat', type: 'NONE', price: 0 },
-            { id: 'party', name: 'Party Cone', type: 'COMMON', price: 200 },
-            { id: 'tophat', name: 'Top Hat', type: 'RARE', price: 500 },
-            { id: 'crown', name: 'Crown', type: 'EPIC', price: 1500 },
-            { id: 'wizard', name: 'Wizard', type: 'RARE', price: 750 },
-            { id: 'propeller', name: 'Propeller', type: 'COMMON', price: 300 },
-            { id: 'detective', name: 'Sleuth Cap', type: 'COMMON', price: 400 },
-            { id: 'viking', name: 'Viking', type: 'EPIC', price: 1000 },
-            { id: 'halo', name: 'Halo', type: 'LEGENDARY', price: 2500 }
+            { id: 'party', name: 'Party Time', type: 'DRAW', price: 300 },
+            { id: 'tophat', name: 'Classy Top Hat', type: 'DRAW', price: 300 },
+            { id: 'hathat', name: 'Hat Hat', type: 'DRAW', price: 300 },
+            { id: 'suit', name: 'Tuxedo', type: 'DRAW', price: 300 },
+            { id: 'chef', name: 'Chef de Oink', type: 'DRAW', price: 300 },
+            { id: 'detective', name: 'Sleuth Cap', type: 'DRAW', price: 300 },
+            { id: 'propeller', name: 'Flying Prop', type: 'DRAW', price: 300 },
+            { id: 'viking', name: 'Boar Warrior', type: 'DRAW', price: 300 },
+            { id: 'cowboy', name: 'Yeehaw Hat', type: 'DRAW', price: 300 },
+            { id: 'wizard', name: 'Magic Cone', type: 'DRAW', price: 300 },
+            { id: 'straw', name: 'Straw Hat', type: 'DRAW', price: 300 },
+            { id: 'catears', name: 'Cat Ears', type: 'DRAW', price: 300 },
+            { id: 'crown', name: 'Golden Crown', type: 'DRAW', price: 300 },
+            { id: 'halo', name: 'Divine Halo', type: 'DRAW', price: 300 }
         ];
 
         const THEMES = [
             { id: 'classic', name: 'Neon Night', bg: '#0f172a', type: 'CLOCK' },
-            { id: 'lake', name: 'Lily Lake', bg: '#064e3b', type: 'LILYPAD' },
+            { id: 'lake', name: 'Lilypad Lake', bg: '#064e3b', type: 'LILYPAD' },
             { id: 'planets', name: 'Deep Space', bg: '#020617', type: 'PLANET' },
-            { id: 'noir', name: 'Film Noir', bg: '#000000', type: 'NOIR' },
-            { id: 'matrix', name: 'The Grid', bg: '#010f01', type: 'MATRIX' },
-            { id: 'gold', name: 'Vault', bg: '#1c1917', type: 'COIN' }
-        ];
-
-        const BP_REWARDS = [
-            { type: 'coins', amount: 500, label: '500 Coins' },
-            { type: 'hat', id: 'party', label: 'Party Cone' },
-            { type: 'coins', amount: 1000, label: '1,000 Coins' },
-            { type: 'theme', id: 'lake', label: 'Lily Lake Theme' },
-            { type: 'coins', amount: 1500, label: '1,500 Coins' },
-            { type: 'hat', id: 'propeller', label: 'Propeller Hat' },
-            { type: 'coins', amount: 2000, label: '2,000 Coins' },
-            { type: 'theme', id: 'noir', label: 'Film Noir Theme' },
-            { type: 'coins', amount: 3000, label: '3,000 Coins' },
-            { type: 'skin', id: 'gladiator', label: 'Battle Boar Skin' },
-            { type: 'coins', amount: 3500, label: '3,500 Coins' },
-            { type: 'hat', id: 'detective', label: 'Detective Cap' },
-            { type: 'coins', amount: 4000, label: '4,000 Coins' },
-            { type: 'theme', id: 'planets', label: 'Deep Space Theme' },
-            { type: 'coins', amount: 5000, label: '5,000 Coins' },
-            { type: 'hat', id: 'tophat', label: 'Top Hat' },
-            { type: 'coins', amount: 6000, label: '6,000 Coins' },
-            { type: 'theme', id: 'matrix', label: 'Matrix Theme' },
-            { type: 'coins', amount: 8000, label: '8,000 Coins' },
-            { type: 'skin', id: 'stealth', label: 'Invisi-Pig Skin' },
-            { type: 'coins', amount: 10000, label: '10,000 Coins' },
-            { type: 'hat', id: 'halo', label: 'Halo' },
-            { type: 'theme', id: 'gold', label: 'Vault Theme' },
-            { type: 'coins', amount: 20000, label: '20,000 Coins' },
-            { type: 'skin', id: 'diamond', label: 'Crystal Hog Skin' }
-        ];
-
-        const GLOBAL_UPGRADES = [
-            { id: 'magnet', name: 'Magnet', desc: 'Increases grab range.', basePrice: 200, multiplier: 1.6 },
-            { id: 'coins', name: 'Fortune', desc: '+1 Coin per jump.', basePrice: 500, multiplier: 2.0 },
-            { id: 'mercy', name: 'Shield', desc: 'Survival chance on spikes.', basePrice: 800, multiplier: 2.5 }
+            { id: 'gold', name: 'Golden Vault', bg: '#1c1917', type: 'COIN' },
+            { id: 'noir', name: 'Old Cinema', bg: '#000000', type: 'NOIR' },
+            { id: 'synthwave', name: 'Retro Grid', bg: '#1a0b2e', type: 'GRID' },
+            { id: 'candy', name: 'Sugar Rush', bg: '#fff1f2', type: 'CANDY' },
+            { id: 'ocean', name: 'Abyss', bg: '#0c4a6e', type: 'CORAL' },
+            { id: 'forest', name: 'Emerald Woods', bg: '#064e3b', type: 'FOREST' },
+            { id: 'lava', name: 'Magma Core', bg: '#450a0a', type: 'LAVA' },
+            { id: 'sky', name: 'Sky Kingdom', bg: '#0ea5e9', type: 'SKY' },
+            { id: 'matrix', name: 'Virtual Reality', bg: '#020617', type: 'MATRIX' }
         ];
 
         const ACHIEVEMENTS = [
-            { id: 'a1', name: 'Novice', desc: 'Score 25.', goal: 25, type: 'score', rewardSkin: 'angel' },
-            { id: 'a2', name: 'Skilled', desc: 'Score 75.', goal: 75, type: 'score', rewardSkin: 'space' },
-            { id: 'a3', name: 'Master', desc: 'Score 150.', goal: 150, type: 'score', rewardSkin: 'neon' },
-            { id: 'a4', name: 'Hog King', desc: 'Finish 5 Achievements.', goal: 5, type: 'all_achievements', rewardSkin: 'omega' }
+            { id: 'height_10', name: 'Steady Leaper', desc: 'Reach a score of 25.', goal: 25, type: 'score', rewardSkin: 'angel' },
+            { id: 'height_25', name: 'Cloud Climber', desc: 'Reach a score of 75.', goal: 75, type: 'score', rewardSkin: 'space' },
+            { id: 'height_50', name: 'Time Master', desc: 'Reach a score of 150.', goal: 150, type: 'score', rewardSkin: 'neon' },
+            { id: 'total_score_200', name: 'Clock Enthusiast', desc: 'Total cumulative score of 1,500.', goal: 1500, type: 'cumulative_score', rewardSkin: 'ghost' },
+            { id: 'coins_150', name: 'Penny Pincher', desc: 'Earn 3,000 coins total.', goal: 3000, type: 'total_coins', rewardSkin: 'bank' },
+            { id: 'perfect_3', name: 'Rhythm Jumper', desc: 'Land 10 consecutive jumps.', goal: 10, type: 'perfect_streak', rewardSkin: 'ninja' },
+            { id: 'themes_2', name: 'Explorer', desc: 'Unlock 4 available themes.', goal: 4, type: 'themes', rewardSkin: 'cyber' },
+            { id: 'jumps_30', name: 'Active Leaper', desc: 'Land 300 total jumps.', goal: 300, type: 'total_jumps', rewardSkin: 'slime' },
+            { id: 'skins_2', name: 'Skin Collector', desc: 'Unlock 6 purchasable skins.', goal: 6, type: 'skins_normal', rewardSkin: 'king' },
+            { id: 'hard_2', name: 'Gravity Tamer', desc: 'Land 20 jumps in Hard Mode.', goal: 20, type: 'hard_jumps', rewardSkin: 'rocket' },
+            { id: 'mastery', name: 'The Completionist', desc: 'Complete 10 achievements.', goal: 10, type: 'all_achievements', rewardSkin: 'omega' }
         ];
 
         const DAILY_CHALLENGE_TEMPLATES = [
-            { id: 'jumps', text: "Land [GOAL] jumps.", goal: 50, rewardCoins: 200 },
-            { id: 'score', text: "Reach score [GOAL].", goal: 40, rewardCoins: 300 },
-            { id: 'coins', text: "Collect [GOAL] coins.", goal: 150, rewardCoins: 400 },
-            { id: 'streak', text: "Get [GOAL] jump streak.", goal: 10, rewardCoins: 500 }
+            { id: 'jumps', text: "Land [GOAL] jumps today.", goal: 100, rewardCoins: 300 },
+            { id: 'score', text: "Reach a score of [GOAL] today.", goal: 75, rewardCoins: 400 },
+            { id: 'hard_jumps', text: "Land [GOAL] hard jumps today.", goal: 25, rewardCoins: 600 },
+            { id: 'earn_coins', text: "Earn [GOAL] coins today.", goal: 250, rewardCoins: 500 },
+            { id: 'superhard_jumps', text: "Super Hard: Land [GOAL] jumps.", goal: 10, rewardCoins: 800 },
+            { id: 'perfect_streaks', text: "Get a [GOAL] jump streak.", goal: 15, rewardCoins: 500 }
         ];
 
         let state = {
-            status: 'HOME', gameMode: 'regular', score: 0,
+            status: 'HOME',
+            gameMode: 'regular', 
+            score: 0,
             best: parseInt(localStorage.getItem('oinkBest') || '0'),
+            bestHard: parseInt(localStorage.getItem('oinkBestHard') || '0'),
+            bestSuperHard: parseInt(localStorage.getItem('oinkBestSuperHard') || '0'),
+            bestSpeed: parseFloat(localStorage.getItem('oinkBestSpeed') || '0'),
             coins: parseInt(localStorage.getItem('oinkCoins') || '0'),
+            totalCoinsEarned: parseInt(localStorage.getItem('oinkTotalCoins') || '0'),
+            totalScore: parseInt(localStorage.getItem('oinkTotalScore') || '0'),
+            totalJumps: parseInt(localStorage.getItem('oinkTotalJumps') || '0'),
+            hardJumps: parseInt(localStorage.getItem('oinkHardJumps') || '0'),
+            consecutiveJumps: 0,
+            bestStreak: 0,
+            currentMaxSpeed: 0,
+            leaderboardTab: 'regular',
             unlockedSkins: JSON.parse(localStorage.getItem('oinkUnlocked') || '["classic"]'),
             selectedSkinId: localStorage.getItem('oinkSkin') || 'classic',
             unlockedHats: JSON.parse(localStorage.getItem('oinkHats') || '["none"]'),
@@ -512,372 +646,934 @@
             unlockedThemes: JSON.parse(localStorage.getItem('oinkThemesUnlocked') || '["classic"]'),
             selectedThemeId: localStorage.getItem('oinkTheme') || 'classic',
             unlockedAchievements: JSON.parse(localStorage.getItem('oinkAchieved') || '[]'),
-            upgrades: JSON.parse(localStorage.getItem('oinkUpgrades') || '{"magnet":0, "coins":0, "mercy":0}'),
+            upgrades: JSON.parse(localStorage.getItem('oinkUpgrades') || '{"magnet":0, "coin_boost":0, "score_bonus":0, "mercy":0}'),
             username: localStorage.getItem('oinkUser') || '',
             hasSeenTutorial: localStorage.getItem('oinkTutorialSeen') === 'true',
+            
+            // Battle Pass Stats
             bpXP: parseInt(localStorage.getItem('oinkBPXP') || '0'),
             bpClaimed: JSON.parse(localStorage.getItem('oinkBPClaimed') || '[]'),
+            
             dailyChallenges: JSON.parse(localStorage.getItem('oinkDailies') || '[]'),
-            cameraY: 0, pig: { x: 200, y: 550, vx: 0, vy: 0, attachedTo: null, jumpCooldown: 0 },
-            clocks: [], lastClockId: -1, rainbowHue: 0, lastTime: 0
+            
+            cameraY: 0,
+            cameraX: 0,
+            pig: { x: 200, y: 550, vx: 0, vy: 0, attachedTo: null, slimeUsed: false, zombieUsed: false, jumpCooldown: 0, trail: [], coinParticles: [], familyMember: 1, bullets: [] },
+            clocks: [],
+            stars: [],
+            bubbles: [],
+            lastClockId: -1,
+            rainbowHue: 0,
+            isTutorial: false,
+            tutorialStep: 0,
+            mouse: { x: 0, y: 0 },
+            lastTime: 0,
+            bezosConsoleCollapsed: false,
+            bezosPlayerOffset: 0
         };
 
-        const canvas = document.getElementById('gameCanvas'), ctx = canvas.getContext('2d');
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const uiHome = document.getElementById('ui-home');
+        const uiSkins = document.getElementById('ui-skins');
+        const uiHats = document.getElementById('ui-hats');
+        const uiHUD = document.getElementById('ui-hud');
+        const uiGameOver = document.getElementById('ui-gameover');
+        const uiLeaderboard = document.getElementById('ui-leaderboard');
+        const uiThemes = document.getElementById('ui-themes');
+        const uiLore = document.getElementById('ui-lore');
+        const uiUpgrades = document.getElementById('ui-upgrades');
+        const uiAchievements = document.getElementById('ui-achievements');
+        const uiTutorial = document.getElementById('ui-tutorial');
+        const uiModeSelect = document.getElementById('ui-modeselect');
+        const uiBattlePass = document.getElementById('ui-battlepass');
+        const achievementsList = document.getElementById('achievements-list');
+        const leaderboardList = document.getElementById('leaderboard-list');
+        const skinsGrid = document.getElementById('skins-grid');
+        const hatsGrid = document.getElementById('hats-grid');
+        const themesGrid = document.getElementById('themes-grid');
+        const upgradesList = document.getElementById('upgrades-list');
+        const bpTiersList = document.getElementById('bp-tiers-list');
+        const gameContainer = document.getElementById('game-container');
+        const scoreVal = document.getElementById('score-val');
+        const bestVal = document.getElementById('best-val');
+        const homeCoins = document.getElementById('home-coins');
+        const hudCoins = document.getElementById('hud-coins');
+        const earnedCoinsText = document.getElementById('earned-coins');
+        const gameoverTotalCoins = document.getElementById('gameover-total-coins');
+        const finalScoreLabel = document.getElementById('final-score');
+        const homeBestVal = document.getElementById('home-best-val');
+        const btnPlay = document.getElementById('btn-play');
+        const btnSwitchMode = document.getElementById('btn-switch-mode');
+
         const AudioContextClass = window.AudioContext || window.webkitAudioContext;
         let audioCtx;
+        
+        function initAudio() {
+            if (!audioCtx) audioCtx = new AudioContextClass();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
 
-        function showToast(msg, type='info') {
+        function playSound(type) {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
+            switch(type) {
+                case 'jump':
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(300, now);
+                    osc.frequency.exponentialRampToValueAtTime(600, now + 0.1);
+                    gain.gain.setValueAtTime(0.08, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                    osc.start(now); osc.stop(now + 0.1);
+                    break;
+                case 'land':
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(220, now);
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+                    osc.start(now); osc.stop(now + 0.08);
+                    break;
+                case 'coin':
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(880, now);
+                    osc.frequency.exponentialRampToValueAtTime(1320, now + 0.05);
+                    gain.gain.setValueAtTime(0.04, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+                    osc.start(now); osc.stop(now + 0.15);
+                    break;
+                case 'gameover':
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(200, now);
+                    osc.frequency.linearRampToValueAtTime(60, now + 0.6);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.6);
+                    osc.start(now); osc.stop(now + 0.6);
+                    break;
+                case 'unlock':
+                    const osc2 = audioCtx.createOscillator();
+                    const gain2 = audioCtx.createGain();
+                    osc2.connect(gain2);
+                    gain2.connect(audioCtx.destination);
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc2.frequency.setValueAtTime(659.25, now);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain2.gain.setValueAtTime(0.1, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+                    gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+                    osc.start(now); osc2.start(now);
+                    osc.stop(now + 0.8); osc2.stop(now + 0.8);
+                    break;
+            }
+        }
+
+        function isBezosMode() {
+            return state.username.toLowerCase() === 'bezos';
+        }
+
+        function toggleBezosConsole() {
+            state.bezosConsoleCollapsed = !state.bezosConsoleCollapsed;
+            const body = document.getElementById('bezos-body');
+            const icon = document.getElementById('bezos-toggle-icon');
+            body.classList.toggle('hidden', state.bezosConsoleCollapsed);
+            icon.innerText = state.bezosConsoleCollapsed ? '▲' : '▼';
+        }
+
+        function applyBezosOffset() {
+            const val = parseInt(document.getElementById('bezos-offset-input').value);
+            if (!isNaN(val)) {
+                state.pig.y = val;
+                state.cameraY = val - HEIGHT/2;
+                state.pig.vx = 0;
+                state.pig.vy = 0;
+                state.pig.attachedTo = null; 
+                showToast(`Warped to Height ${val}!`, "sandbox");
+                playSound('jump');
+            }
+        }
+
+        function applyBezosPlayerOffset() {
+            const val = parseInt(document.getElementById('bezos-player-offset-input').value);
+            if (!isNaN(val)) {
+                state.bezosPlayerOffset = val;
+                showToast(`Offset set to ${val}!`, "sandbox");
+            }
+        }
+
+        function showToast(msg, type = 'info') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            toast.className = `toast ${type === 'error' ? 'bg-red-500' : 'bg-pink-500'} text-white px-6 py-2 rounded-full font-black text-xs shadow-xl pointer-events-none`;
-            toast.innerText = msg;
+            const bg = type === 'error' ? 'bg-red-500' : (type === 'sandbox' ? 'bg-cyan-600' : 'bg-pink-500');
+            toast.className = `toast ${bg} text-white px-6 py-2 rounded-full font-black text-xs shadow-xl flex items-center gap-2 pointer-events-none`;
+            toast.innerHTML = `<span>${msg}</span>`;
             container.appendChild(toast);
-            setTimeout(() => toast.remove(), 2500);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-20px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
         }
 
-        function saveUsername() {
-            const val = document.getElementById('username-input').value.trim();
-            if (val === '/clearboard') {
-                if (confirm("DANGER: This will wipe ALL global leaderboards. Continue?")) {
-                    db.ref('leaderboard').remove()
-                        .then(() => showToast("Global Leaderboards Wiped!"))
-                        .catch(e => showToast("Error: " + e.message, "error"));
-                }
-                return;
-            }
-            if (val.length < 2) return;
-            state.username = val;
-            localStorage.setItem('oinkUser', val);
-            document.getElementById('ui-username').classList.add('hidden');
+        function addXP(amount) {
+            state.bpXP += amount;
+            localStorage.setItem('oinkBPXP', state.bpXP);
             refreshUI();
-            startGame();
+            if (state.status === 'HOME') showToast(`+${amount} Pass XP!`, "sandbox");
         }
 
-        function openBattlePass() { renderBPList(); document.getElementById('ui-battlepass').classList.remove('hidden'); }
-        function closeBattlePass() { document.getElementById('ui-battlepass').classList.add('hidden'); }
-        function openSkins() { renderSkins(); document.getElementById('ui-skins').classList.remove('hidden'); }
-        function closeSkins() { document.getElementById('ui-skins').classList.add('hidden'); }
-        function openHats() { renderHats(); document.getElementById('ui-hats').classList.remove('hidden'); }
-        function closeHats() { document.getElementById('ui-hats').classList.add('hidden'); }
-        function openThemes() { renderThemes(); document.getElementById('ui-themes').classList.remove('hidden'); }
-        function closeThemes() { document.getElementById('ui-themes').classList.add('hidden'); }
-        function openAchievements() { renderAchievements(); document.getElementById('ui-achievements').classList.remove('hidden'); }
-        function closeAchievements() { document.getElementById('ui-achievements').classList.add('hidden'); }
-        function openUpgrades() { renderUpgrades(); document.getElementById('ui-upgrades').classList.remove('hidden'); }
-        function closeUpgrades() { document.getElementById('ui-upgrades').classList.add('hidden'); }
-        function openLeaderboardUI() { setLeaderboardTab('regular'); document.getElementById('ui-leaderboard').classList.remove('hidden'); }
-        function closeLeaderboard() { document.getElementById('ui-leaderboard').classList.add('hidden'); }
-        function openLore() { document.getElementById('ui-lore').classList.remove('hidden'); }
-        function closeLore() { document.getElementById('ui-lore').classList.add('hidden'); }
-
-        function renderSkins() {
-            const grid = document.getElementById('skins-grid');
-            grid.innerHTML = SKINS.map(skin => {
-                const unlocked = state.unlockedSkins.includes(skin.id);
-                const isSelected = state.selectedSkinId === skin.id;
-                return `
-                <div onclick="${unlocked ? `selectSkin('${skin.id}')` : ''}" class="card-item bg-white/5 p-3 rounded-xl border-2 ${isSelected ? 'border-pink-500 bg-pink-500/10' : 'border-white/5'} flex items-center gap-4 ${!unlocked ? 'opacity-40' : ''}">
-                    <div class="w-12 h-12 flex items-center justify-center shrink-0">
-                        <canvas id="skin-prev-${skin.id}" width="48" height="48"></canvas>
-                    </div>
-                    <div class="flex-1 text-left">
-                        <div class="text-[10px] font-black uppercase text-pink-400 mb-0.5">${skin.ability}</div>
-                        <div class="text-sm font-black truncate">${unlocked ? skin.name : 'Locked Skin'}</div>
-                        <div class="text-[9px] text-white/50 leading-tight">${skin.desc}</div>
-                    </div>
-                </div>`;
-            }).join('');
-            SKINS.forEach(s => { const c = document.getElementById(`skin-prev-${s.id}`); if (c) drawPigAvatar(c.getContext('2d'), s, 24, 24, 0.8); });
+        function openBattlePass() {
+            renderBPList();
+            uiBattlePass.classList.remove('hidden');
         }
 
-        function renderHats() {
-            const grid = document.getElementById('hats-grid');
-            grid.innerHTML = HATS.map(hat => {
-                const unlocked = state.unlockedHats.includes(hat.id);
-                const isSelected = state.selectedHatId === hat.id;
-                return `
-                <div class="card-item bg-white/5 p-3 rounded-xl border-2 ${isSelected ? 'border-blue-500' : 'border-white/5'} flex items-center justify-between gap-4">
-                    <div class="flex items-center gap-4" onclick="${unlocked ? `selectHat('${hat.id}')` : ''}">
-                        <div class="w-10 h-10 bg-black/20 rounded flex items-center justify-center shrink-0">🎩</div>
-                        <div class="text-left">
-                            <div class="text-xs font-black">${hat.name}</div>
-                            <div class="text-[8px] font-bold opacity-40 uppercase">${hat.type}</div>
-                        </div>
-                    </div>
-                    ${!unlocked ? `<button onclick="buyHat('${hat.id}')" class="bg-blue-600 text-white px-3 py-1 rounded text-[10px] font-black">${hat.price}₵</button>` : ''}
-                </div>`;
-            }).join('');
-        }
-
-        function renderThemes() {
-            const grid = document.getElementById('themes-grid');
-            grid.innerHTML = THEMES.map(theme => {
-                const unlocked = state.unlockedThemes.includes(theme.id);
-                return `
-                <div onclick="${unlocked ? `selectTheme('${theme.id}')` : ''}" class="card-item bg-white/5 p-3 rounded-xl border-2 ${state.selectedThemeId === theme.id ? 'border-cyan-500' : 'border-white/5'} flex items-center gap-4 ${!unlocked ? 'opacity-30' : ''}">
-                    <div class="w-10 h-10 rounded border border-white/20" style="background:${theme.bg}"></div>
-                    <div class="text-left">
-                        <div class="text-xs font-black uppercase">${theme.name}</div>
-                        <div class="text-[8px] opacity-40 uppercase">${theme.type} STYLE</div>
-                    </div>
-                </div>`;
-            }).join('');
+        function closeBattlePass() {
+            uiBattlePass.classList.add('hidden');
         }
 
         function renderBPList() {
-            const list = document.getElementById('bp-tiers-list');
             const currentTier = Math.floor(state.bpXP / XP_PER_TIER) + 1;
-            list.innerHTML = BP_REWARDS.map((rew, i) => {
+            bpTiersList.innerHTML = BP_REWARDS.map((rew, i) => {
                 const tier = i + 1;
-                const unlocked = currentTier >= tier;
-                const claimed = state.bpClaimed.includes(i);
+                const isUnlocked = currentTier >= tier;
+                const isClaimed = state.bpClaimed.includes(i);
+                const canClaim = isUnlocked && !isClaimed;
+                
                 return `
-                <div class="bp-tier-card ${unlocked ? 'unlocked' : ''} p-4 rounded-2xl flex items-center justify-between transition-all duration-300">
+                <div class="bp-tier-card ${isUnlocked ? 'unlocked' : ''} p-4 rounded-2xl flex items-center justify-between transition-all duration-300">
                     <div class="flex items-center gap-4">
-                        <div class="w-8 h-8 rounded-full bg-black/40 flex items-center justify-center text-[10px] font-black border border-white/10">${tier}</div>
+                        <div class="w-10 h-10 rounded-full bg-black/40 flex items-center justify-center font-black text-xs border border-white/10 ${isUnlocked ? 'text-amber-400 border-amber-500/30' : 'text-white/20'}">
+                            ${tier}
+                        </div>
                         <div class="text-left">
-                            <div class="text-[8px] opacity-40 font-black uppercase mb-0.5">Reward</div>
-                            <div class="text-sm font-black ${claimed ? 'line-through opacity-30' : ''}">${rew.label}</div>
+                            <div class="text-[8px] font-black uppercase tracking-widest ${isUnlocked ? 'text-white/60' : 'text-white/20'} mb-0.5">Reward</div>
+                            <div class="text-sm font-black ${isClaimed ? 'line-through opacity-30 text-white/50' : 'text-white'}">${rew.label}</div>
                         </div>
                     </div>
-                    ${!claimed ? `<button onclick="claimBP(${i})" ${!unlocked ? 'disabled' : ''} class="px-4 py-2 rounded-xl text-[10px] font-black uppercase ${unlocked ? 'bg-amber-500 text-black' : 'bg-white/5 text-white/20'}">Claim</button>` : `<div class="text-green-500 font-black text-[10px] uppercase">✓</div>`}
-                </div>`;
-            }).join('');
-        }
-
-        function renderAchievements() {
-            const list = document.getElementById('achievements-list');
-            list.innerHTML = ACHIEVEMENTS.map(ach => {
-                const unlocked = state.unlockedAchievements.includes(ach.id);
-                return `
-                <div class="bg-white/5 p-4 rounded-xl border-2 ${unlocked ? 'border-yellow-500/40 bg-yellow-500/10' : 'border-white/5'} flex items-center gap-4">
-                    <div class="text-2xl">${unlocked ? '🏆' : '🔒'}</div>
-                    <div class="text-left flex-1">
-                        <div class="text-xs font-black uppercase ${unlocked ? 'text-yellow-400' : ''}">${ach.name}</div>
-                        <div class="text-[9px] opacity-50">${ach.desc}</div>
+                    <div>
+                        ${isClaimed ? `
+                            <div class="text-[10px] font-black uppercase text-green-500/60 tracking-widest px-3 py-1 bg-green-500/10 rounded-lg">Claimed</div>
+                        ` : `
+                            <button onclick="claimBPReward(${i})" ${!canClaim ? 'disabled' : ''} class="px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 ${canClaim ? 'bg-amber-500 hover:bg-amber-400 text-black shadow-lg shadow-amber-900/40' : 'bg-white/5 text-white/20 cursor-not-allowed'}">
+                                ${canClaim ? 'Claim' : 'Locked'}
+                            </button>
+                        `}
                     </div>
-                </div>`;
+                </div>
+                `;
             }).join('');
         }
 
-        function renderUpgrades() {
-            const list = document.getElementById('upgrades-list');
-            list.innerHTML = GLOBAL_UPGRADES.map(up => {
-                const lvl = state.upgrades[up.id] || 0;
-                const price = Math.floor(up.basePrice * Math.pow(up.multiplier, lvl));
-                return `
-                <div class="bg-white/5 p-4 rounded-xl border-2 border-white/5 flex items-center justify-between">
-                    <div class="text-left">
-                        <div class="flex items-center gap-2"><span class="text-xs font-black uppercase text-cyan-400">${up.name}</span> <span class="text-[8px] bg-white/10 px-1 rounded">LVL ${lvl}</span></div>
-                        <div class="text-[9px] opacity-50">${up.desc}</div>
-                    </div>
-                    <button onclick="buyUpgrade('${up.id}')" class="bg-cyan-600 text-white px-3 py-1.5 rounded-lg text-[10px] font-black">${price}₵</button>
-                </div>`;
-            }).join('');
-        }
-
-        function rerollDailies() {
-            if (state.coins < 50) return showToast("Need 50₵!", "error");
-            state.coins -= 50; state.dailyChallenges = []; generateDailyChallenge();
-            localStorage.setItem('oinkCoins', state.coins); refreshUI(); showToast("Dailies Rerolled!");
-        }
-
-        function buyHat(id) {
-            const h = HATS.find(x => x.id === id);
-            if (state.coins < h.price) return showToast("Need more coins!", "error");
-            state.coins -= h.price; state.unlockedHats.push(id);
-            localStorage.setItem('oinkCoins', state.coins); localStorage.setItem('oinkHats', JSON.stringify(state.unlockedHats));
-            refreshUI(); renderHats();
-        }
-
-        function claimBP(i) {
+        function claimBPReward(idx) {
             const currentTier = Math.floor(state.bpXP / XP_PER_TIER) + 1;
-            if (currentTier < i + 1 || state.bpClaimed.includes(i)) return;
-            const rew = BP_REWARDS[i];
-            state.bpClaimed.push(i); localStorage.setItem('oinkBPClaimed', JSON.stringify(state.bpClaimed));
-            if (rew.type === 'coins') state.coins += rew.amount;
-            else if (rew.type === 'skin') state.unlockedSkins.push(rew.id);
-            else if (rew.type === 'hat') state.unlockedHats.push(rew.id);
-            else if (rew.type === 'theme') state.unlockedThemes.push(rew.id);
-            localStorage.setItem('oinkCoins', state.coins); localStorage.setItem('oinkUnlocked', JSON.stringify(state.unlockedSkins)); localStorage.setItem('oinkHats', JSON.stringify(state.unlockedHats)); localStorage.setItem('oinkThemesUnlocked', JSON.stringify(state.unlockedThemes));
-            refreshUI(); renderBPList();
+            if (currentTier < idx + 1 || state.bpClaimed.includes(idx)) return;
+
+            const rew = BP_REWARDS[idx];
+            state.bpClaimed.push(idx);
+            localStorage.setItem('bpClaimed', JSON.stringify(state.bpClaimed));
+
+            if (rew.type === 'coins') {
+                state.coins += rew.amount;
+                state.totalCoinsEarned += rew.amount;
+            } else if (rew.type === 'skin') {
+                if (!state.unlockedSkins.includes(rew.id)) state.unlockedSkins.push(rew.id);
+            } else if (rew.type === 'hat') {
+                if (!state.unlockedHats.includes(rew.id)) state.unlockedHats.push(rew.id);
+            } else if (rew.type === 'theme') {
+                if (!state.unlockedThemes.includes(rew.id)) state.unlockedThemes.push(rew.id);
+            }
+
+            localStorage.setItem('oinkCoins', state.coins);
+            localStorage.setItem('oinkUnlocked', JSON.stringify(state.unlockedSkins));
+            localStorage.setItem('oinkHats', JSON.stringify(state.unlockedHats));
+            localStorage.setItem('oinkThemesUnlocked', JSON.stringify(state.unlockedThemes));
+
+            playSound('unlock');
+            showToast(`Unlocked: ${rew.label}!`);
+            renderBPList();
+            refreshUI();
         }
 
-        function selectSkin(id) { state.selectedSkinId = id; localStorage.setItem('oinkSkin', id); renderSkins(); refreshUI(); }
-        function selectHat(id) { state.selectedHatId = id; localStorage.setItem('oinkHatSelected', id); renderHats(); refreshUI(); }
-        function selectTheme(id) { state.selectedThemeId = id; localStorage.setItem('oinkTheme', id); renderThemes(); refreshUI(); }
+        function resetAllData() {
+            if (confirm("ARE YOU SURE? This will permanently delete all your progress, coins, skins, and rankings locally.")) {
+                localStorage.clear();
+                window.location.reload();
+            }
+        }
 
         function generateDailyChallenge() {
-            if (state.dailyChallenges.length > 0) return;
-            for(let i=0; i<3; i++) {
-                const t = DAILY_CHALLENGE_TEMPLATES[Math.floor(Math.random() * DAILY_CHALLENGE_TEMPLATES.length)];
-                state.dailyChallenges.push({ ...t, current: 0, completed: false });
+            const today = new Date().toDateString();
+            if (state.dailyChallenges.length === 3 && state.dailyChallenges[0].date === today) return;
+            
+            const seed = today.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            const numTemplates = DAILY_CHALLENGE_TEMPLATES.length;
+            
+            // Generate 3 unique tasks
+            const tasks = [];
+            for (let i = 0; i < 3; i++) {
+                const templateIdx = (seed + i * 7) % numTemplates;
+                const template = DAILY_CHALLENGE_TEMPLATES[templateIdx];
+                tasks.push({
+                    uid: `daily-${i}-${today}`,
+                    id: template.id,
+                    date: today,
+                    goal: template.goal,
+                    current: 0,
+                    completed: false,
+                    text: template.text.replace('[GOAL]', template.goal),
+                    rewardCoins: template.rewardCoins
+                });
             }
+            
+            state.dailyChallenges = tasks;
             localStorage.setItem('oinkDailies', JSON.stringify(state.dailyChallenges));
+        }
+
+        function updateDailyProgress(type, amount = 1) {
+            let changed = false;
+            state.dailyChallenges.forEach(challenge => {
+                if (challenge.completed) return;
+                if (challenge.id === type) {
+                    challenge.current += amount;
+                    if (challenge.current >= challenge.goal) {
+                        challenge.completed = true;
+                        state.coins += challenge.rewardCoins;
+                        state.totalCoinsEarned += challenge.rewardCoins;
+                        addXP(XP_PER_DAILY); // Battle Pass XP from Daily completion
+                        showToast(`Daily Complete! +${challenge.rewardCoins}₵ & +${XP_PER_DAILY} Pass XP!`);
+                        playSound('unlock');
+                    }
+                    changed = true;
+                }
+            });
+            
+            if (changed) {
+                localStorage.setItem('oinkDailies', JSON.stringify(state.dailyChallenges));
+                refreshUI();
+            }
+        }
+
+        function handleMainPlay() {
+            if (!state.username) return showUsernameEntry();
+            if (state.gameMode === 'hard' || state.gameMode === 'superhard') {
+                startGame(state.gameMode);
+            } else {
+                openModeSelect();
+            }
         }
 
         function refreshUI() {
-            document.getElementById('home-coins').innerText = state.coins;
-            document.getElementById('home-best-val').innerText = state.best;
-            document.getElementById('display-username').innerText = state.username || 'Clock Identifier';
-            const tier = Math.floor(state.bpXP / XP_PER_TIER) + 1;
-            document.getElementById('bp-level-mini').innerText = `T${tier}`;
-            document.getElementById('bp-tier-val').innerText = tier;
-            document.getElementById('bp-xp-text').innerText = `${state.bpXP % 1000}/1000 XP`;
-            document.getElementById('bp-xp-bar').style.width = `${(state.bpXP % 1000) / 10}%`;
-            document.getElementById('daily-list').innerHTML = state.dailyChallenges.map(d => `
-                <div class="bg-indigo-900/40 p-2 rounded-lg border border-white/5 flex justify-between items-center ${d.completed ? 'opacity-40' : ''}">
-                    <div class="text-[9px] font-bold text-indigo-100">${d.text}</div>
-                    <div class="text-[10px] font-black">${d.completed ? 'DONE' : `${d.current}/${d.goal}`}</div>
-                </div>`).join('');
+            const isBezos = isBezosMode();
+            const coinText = isBezos ? "∞" : state.coins;
+            homeCoins.innerText = coinText;
+            hudCoins.innerText = coinText;
+            document.getElementById('upgrade-wallet').innerText = coinText;
+            document.getElementById('hats-wallet').innerText = coinText;
+            
+            document.getElementById('bezos-console').classList.toggle('hidden', !isBezos);
+
+            // Update Battle Pass UI
+            const currentTier = Math.floor(state.bpXP / XP_PER_TIER) + 1;
+            const xpInCurrentTier = state.bpXP % XP_PER_TIER;
+            document.getElementById('bp-level-mini').innerText = `T${currentTier}`;
+            document.getElementById('bp-tier-val').innerText = currentTier;
+            document.getElementById('bp-xp-text').innerText = `${xpInCurrentTier.toLocaleString()} / 1,000 XP`;
+            document.getElementById('bp-xp-bar').style.width = `${(xpInCurrentTier / XP_PER_TIER) * 100}%`;
+
+            if (state.gameMode === 'hard') {
+                homeBestVal.innerText = state.bestHard;
+                btnPlay.innerText = "PLAY HARD";
+                btnSwitchMode.classList.remove('hidden');
+            } else if (state.gameMode === 'superhard') {
+                homeBestVal.innerText = state.bestSuperHard;
+                btnPlay.innerText = "PLAY SUPER HARD";
+                btnSwitchMode.classList.remove('hidden');
+            } else {
+                homeBestVal.innerText = state.best;
+                btnPlay.innerText = "PLAY GAME";
+                btnSwitchMode.classList.add('hidden');
+            }
+            
+            const displayUser = document.getElementById('display-username');
+            displayUser.innerText = state.username || 'Identify Yourself';
+            
+            // Render 3 Daily Challenges
+            const dailyList = document.getElementById('daily-list');
+            dailyList.innerHTML = state.dailyChallenges.map(daily => `
+                <div class="bg-indigo-900/60 p-2 rounded-xl border border-white/5 flex items-center justify-between gap-3 ${daily.completed ? 'opacity-40' : ''}">
+                    <div class="text-left flex-1 min-w-0">
+                        <div class="text-[9px] font-bold leading-tight truncate text-indigo-200">${daily.completed ? 'Goal Met!' : daily.text}</div>
+                    </div>
+                    <div class="text-right shrink-0">
+                        <div class="text-xs font-black ${daily.completed ? 'text-green-400' : 'text-white'}">${daily.completed ? 'DONE' : `${daily.current}/${daily.goal}`}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            if (isBezos) {
+                displayUser.classList.add('bezos-rainbow');
+                document.getElementById('home-coin-pill').classList.add('gold-flash');
+                document.getElementById('hud-coin-pill').classList.add('gold-flash');
+            } else {
+                displayUser.classList.remove('bezos-rainbow');
+                document.getElementById('home-coin-pill').classList.remove('gold-flash');
+                document.getElementById('hud-coin-pill').classList.remove('gold-flash');
+            }
+
+            const purchasableSkins = SKINS.filter(s => !s.isAchievement);
+            const lockedNormalSkins = purchasableSkins.filter(s => !state.unlockedSkins.includes(s.id)).length;
+            document.getElementById('buy-skin-btn').disabled = (!isBezos && state.coins < 100) || lockedNormalSkins === 0;
+            const lockedThemes = THEMES.filter(t => !state.unlockedThemes.includes(t.id)).length;
+            document.getElementById('buy-theme-btn').disabled = (!isBezos && state.coins < 250) || lockedThemes === 0;
+            
+            if (state.selectedThemeId === 'noir') gameContainer.classList.add('noir-mode');
+            else gameContainer.classList.remove('noir-mode');
+            
+            const modeBadge = document.getElementById('sandbox-badge');
+            if (state.gameMode === 'sandbox') {
+                modeBadge.innerText = "Sandbox Mode";
+                modeBadge.classList.remove('hidden');
+                document.getElementById('sandbox-exit').classList.remove('hidden');
+                document.getElementById('score-label').innerText = "PEAK SPEED";
+                bestVal.innerText = "PB: " + state.bestSpeed.toFixed(1) + " u/s";
+            } else if (state.gameMode === 'hard') {
+                modeBadge.innerText = "HARD MODE";
+                modeBadge.classList.remove('hidden');
+                document.getElementById('sandbox-exit').classList.remove('hidden');
+                document.getElementById('score-label').innerText = "HARD SCORE";
+                bestVal.innerText = state.bestHard;
+            } else if (state.gameMode === 'superhard') {
+                modeBadge.innerText = "SUPER HARD";
+                modeBadge.classList.remove('hidden');
+                document.getElementById('sandbox-exit').classList.remove('hidden');
+                document.getElementById('score-label').innerText = "ULTRA SCORE";
+                bestVal.innerText = state.bestSuperHard;
+            } else {
+                modeBadge.classList.add('hidden');
+                document.getElementById('sandbox-exit').classList.add('hidden');
+                document.getElementById('score-label').innerText = "SCORE";
+                bestVal.innerText = state.best;
+            }
         }
 
+        function applyBezosCommand(unlock) {
+            const input = document.getElementById('bezos-input').value.trim();
+            if (!input) return;
+            const inputLower = input.toLowerCase();
+            const upgradeMatch = GLOBAL_UPGRADES.find(u => inputLower.includes(u.name.toLowerCase()));
+            if (upgradeMatch) {
+                const parts = input.split(' ');
+                const level = parseInt(parts[parts.length - 1]);
+                if (!isNaN(level)) {
+                    state.upgrades[upgradeMatch.id] = level;
+                    showToast(`${upgradeMatch.name} Level set to ${level}!`);
+                } else {
+                    state.upgrades[upgradeMatch.id] = unlock ? 5 : 0;
+                    showToast(`${upgradeMatch.name} set to ${state.upgrades[upgradeMatch.id]}!`);
+                }
+                localStorage.setItem('oinkUpgrades', JSON.stringify(state.upgrades));
+                refreshUI();
+                return;
+            }
+            const skinMatch = SKINS.find(s => s.name.toLowerCase() === inputLower);
+            if (skinMatch) {
+                if (unlock && !state.unlockedSkins.includes(skinMatch.id)) state.unlockedSkins.push(skinMatch.id);
+                else if (!unlock) state.unlockedSkins = state.unlockedSkins.filter(id => id !== skinMatch.id);
+                localStorage.setItem('oinkUnlocked', JSON.stringify(state.unlockedSkins));
+                showToast(`Skin ${skinMatch.name} ${unlock ? 'Unlocked' : 'Locked'}!`);
+                refreshUI();
+                return;
+            }
+            if (inputLower === 'xp' || inputLower === 'maxxp') {
+                state.bpXP = unlock ? 25000 : 0;
+                localStorage.setItem('oinkBPXP', state.bpXP);
+                showToast(`Pass XP set to ${state.bpXP}!`);
+                refreshUI();
+                return;
+            }
+            showToast("Item not found. Check spelling!", "error");
+        }
+
+        function openDaily() {
+            const pending = state.dailyChallenges.filter(d => !d.completed).length;
+            if (pending === 0) showToast("All missions finished today. Come back tomorrow!", "info");
+            else showToast(`You have ${pending} objective(s) left today.`, "info");
+        }
+        function openModeSelect() { if (!state.username) return showUsernameEntry(); uiModeSelect.classList.remove('hidden'); }
+        function closeModeSelect() { uiModeSelect.classList.add('hidden'); }
+        function showUsernameEntry() { document.getElementById('username-input').value = state.username; document.getElementById('ui-username').classList.remove('hidden'); }
+        function saveUsername() {
+            const val = document.getElementById('username-input').value.trim();
+            if (val.length < 2) return showToast("Too short!", "error");
+            state.username = val; localStorage.setItem('oinkUser', val);
+            document.getElementById('ui-username').classList.add('hidden'); refreshUI();
+            if(state.best > 0 && !isBezosMode()) db.ref('leaderboard/regular/'+state.username.toLowerCase()).set({ name: state.username, score: state.best }).catch(()=>{});
+            if (!state.hasSeenTutorial) startTutorial();
+            if (isBezosMode()) showToast("Welcome Master Bezos! (Rankings Disabled)", "info");
+        }
+        function openUpgrades() {
+            const isBezos = isBezosMode();
+            upgradesList.innerHTML = GLOBAL_UPGRADES.map(up => {
+                const currentLevel = state.upgrades[up.id] || 0;
+                const price = Math.floor(up.basePrice * Math.pow(up.multiplier, currentLevel));
+                const canAfford = isBezos || state.coins >= price;
+                return `<div class="card-item border-2 border-white/10 bg-white/5 p-4 rounded-2xl flex items-center justify-between gap-4"><div class="flex-1"><div class="flex items-center gap-2"><span class="text-sm font-black uppercase tracking-tight text-cyan-400">${up.name}</span><span class="text-[8px] bg-white/10 px-1.5 py-0.5 rounded font-black">LVL ${currentLevel}</span></div><p class="text-[10px] text-white/50 leading-tight mt-1">${up.desc}</p></div><button onclick="buyUpgrade('${up.id}')" ${!canAfford ? 'disabled' : ''} class="bg-cyan-600 hover:bg-cyan-500 disabled:opacity-30 disabled:grayscale text-white font-black py-2 px-4 rounded-xl text-[10px] flex items-center gap-1 active:scale-95 transition-all"><div class="w-3 h-3 bg-yellow-400 rounded-full text-black font-black flex items-center justify-center text-[7px]">₵</div>${price}</button></div>`;
+            }).join('');
+            uiUpgrades.classList.remove('hidden');
+        }
         function buyUpgrade(id) {
-            const up = GLOBAL_UPGRADES.find(x => x.id === id);
-            const lvl = state.upgrades[id] || 0;
-            const price = Math.floor(up.basePrice * Math.pow(up.multiplier, lvl));
-            if (state.coins < price) return showToast("Need more coins!", "error");
-            state.coins -= price; state.upgrades[id] = lvl + 1;
-            localStorage.setItem('oinkCoins', state.coins); localStorage.setItem('oinkUpgrades', JSON.stringify(state.upgrades));
-            refreshUI(); renderUpgrades();
+            const up = GLOBAL_UPGRADES.find(u => u.id === id);
+            const currentLevel = state.upgrades[id] || 0;
+            const price = Math.floor(up.basePrice * Math.pow(up.multiplier, currentLevel));
+            const isBezos = isBezosMode();
+            if (!isBezos && state.coins < price) return showToast("Not enough coins!", "error");
+            if (!isBezos) { state.coins -= price; localStorage.setItem('oinkCoins', state.coins); }
+            state.upgrades[id] = currentLevel + 1; localStorage.setItem('oinkUpgrades', JSON.stringify(state.upgrades));
+            playSound('unlock'); showToast(`${up.name} Upgraded!`); openUpgrades(); refreshUI();
         }
-
-        function setLeaderboardTab(tab) {
-            const container = document.getElementById('leaderboard-list');
-            container.innerHTML = `<div class="py-10 text-center opacity-30 text-xs font-black animate-pulse">Fetching Rankings...</div>`;
-            db.ref(`leaderboard/${tab}`).orderByChild('score').limitToLast(10).once('value', snap => {
-                const data = []; snap.forEach(c => data.push(c.val()));
-                data.sort((a,b) => b.score - a.score);
-                if (data.length === 0) container.innerHTML = `<div class="py-10 text-center opacity-20 text-[10px] uppercase font-black">No Data Yet</div>`;
-                else container.innerHTML = data.map((e, i) => `
-                    <div class="flex justify-between items-center p-3 bg-white/5 rounded-xl mb-1">
-                        <div class="flex items-center gap-3">
-                            <span class="w-4 font-black text-white/20">${i+1}</span>
-                            <span class="text-xs font-bold uppercase">${e.name}</span>
-                        </div>
-                        <span class="text-pink-400 font-black">${e.score}</span>
-                    </div>`).join('');
-            });
+        function closeUpgrades() { uiUpgrades.classList.add('hidden'); }
+        function openLore() { uiLore.classList.remove('hidden'); }
+        function closeLore() { uiLore.classList.add('hidden'); }
+        function startGame(mode = 'regular') {
+            initAudio(); closeModeSelect();
+            state.gameMode = mode; state.status = 'PLAYING'; state.score = 0; state.currentMaxSpeed = 0; state.cameraY = 0; state.cameraX = 0; state.clocks = []; state.lastClockId = 0; state.consecutiveJumps = 0;
+            state.stars = Array.from({length: 30}, () => ({x: Math.random()*WIDTH, y: Math.random()*HEIGHT, size: Math.random()*2, speed: Math.random()*0.5}));
+            state.bubbles = Array.from({length: 15}, () => ({x: Math.random()*WIDTH, y: Math.random()*HEIGHT, size: Math.random()*4+2, speed: Math.random()*1+0.5}));
+            state.pig = { x: WIDTH/2, y: HEIGHT-150-60, vx: 0, vy: 0, attachedTo: 0, slimeUsed: false, zombieUsed: false, jumpCooldown: 0, trail: [], coinParticles: [], familyMember: 1, bullets: [] };
+            state.clocks.push({ id: 0, x: WIDTH/2, y: HEIGHT-150, radius: 60, angle: -Math.PI/2, speed: 0.04, color: CLOCK_COLORS[0], isFrozen: false, features: [], hasSpikes: false });
+            if (mode === 'sandbox') { for(let i=1; i<15; i++) { const angle = Math.random() * Math.PI * 2; const dist = 150 + Math.random() * 400; const nx = WIDTH/2 + Math.cos(angle) * dist; const ny = (HEIGHT-150) + Math.sin(angle) * dist; state.clocks.push(createClock(i, ny, i, nx)); state.lastClockId = i; } scoreVal.innerText = "0.0"; }
+            else { for(let i=1; i<6; i++) state.clocks.push(createClock(i, HEIGHT-150-i*CLOCK_SPACING, i)); scoreVal.innerText = "0"; }
+            uiHome.classList.add('hidden'); uiGameOver.classList.add('hidden'); uiHUD.classList.remove('hidden'); refreshUI();
         }
-
-        function startGame(mode='regular') {
-            if (!audioCtx) audioCtx = new AudioContextClass();
-            state.status = 'PLAYING'; state.gameMode = mode; state.score = 0; state.cameraY = 0; state.clocks = [];
-            state.pig = { x: WIDTH/2, y: HEIGHT-150-60, vx: 0, vy: 0, attachedTo: 0, jumpCooldown: 0 };
-            state.clocks.push({ id: 0, x: WIDTH/2, y: HEIGHT-150, radius: 60, angle: -Math.PI/2, speed: 0.04, color: CLOCK_COLORS[0] });
-            for(let i=1; i<6; i++) state.clocks.push(createClock(i, HEIGHT-150-i*CLOCK_SPACING, i));
-            document.getElementById('ui-home').classList.add('hidden');
-            document.getElementById('ui-hud').classList.remove('hidden');
+        function startSandbox() { startGame('sandbox'); }
+        function openSkins() {
+            skinsGrid.innerHTML = SKINS.map(skin => {
+                const unlocked = state.unlockedSkins.includes(skin.id);
+                const isSelected = state.selectedSkinId === skin.id;
+                return `<div onclick="${unlocked ? `selectSkin('${skin.id}')` : ''}" class="card-item border-2 border-white/10 bg-white/5 p-4 rounded-2xl flex items-center gap-4 ${isSelected ? 'selected' : ''} ${!unlocked ? 'locked' : ''}"><div class="w-16 h-16 relative flex items-center justify-center bg-indigo-900/50 rounded-xl overflow-hidden shrink-0"><canvas class="pig-preview-canvas" id="preview-${skin.id}" width="64" height="64"></canvas>${!unlocked ? '<div class="absolute inset-0 flex items-center justify-center bg-black/40 text-xl">🔒</div>' : ''}</div><div class="text-left flex-1 min-w-0"><div class="flex justify-between items-start gap-2"><span class="text-sm font-black uppercase tracking-tight truncate">${unlocked ? skin.name : 'Locked Pig'}</span>${unlocked ? `<span class="text-[8px] bg-pink-500/20 text-pink-400 px-1.5 py-0.5 rounded border border-pink-500/30 whitespace-nowrap font-black uppercase tracking-widest">${skin.ability}</span>` : ''}</div><p class="text-[10px] text-white/60 mt-1 leading-tight font-medium">${unlocked ? skin.desc : (skin.isAchievement ? 'Special Reward (Locked)' : 'Unlock for 100 Coins')}</p></div></div>`;
+            }).join('');
+            SKINS.forEach(skin => { const pcanv = document.getElementById(`preview-${skin.id}`); if (pcanv) { const pctx = pcanv.getContext('2d'); pctx.clearRect(0,0,64,64); drawPigAvatar(pctx, skin, 32, 32, 1.2, -0.2); } });
+            document.getElementById('ui-skins').classList.remove('hidden');
         }
+        function selectSkin(id) { state.selectedSkinId = id; localStorage.setItem('oinkSkin', id); openSkins(); refreshUI(); playSound('land'); }
+        function openHats() {
+            const isBezos = isBezosMode();
+            hatsGrid.innerHTML = HATS.map(hat => {
+                if (hat.id === 'none') { const isSelected = state.selectedHatId === 'none'; return `<div onclick="selectHat('none')" class="card-item border-2 ${isSelected ? 'selected border-pink-500' : 'border-white/10'} bg-white/5 p-4 rounded-2xl flex items-center gap-4"><div class="w-16 h-16 relative flex items-center justify-center bg-indigo-900/50 rounded-xl overflow-hidden shrink-0"><canvas class="pig-preview-canvas" id="hat-preview-none" width="64" height="64"></canvas></div><div class="text-left flex-1 min-w-0"><span class="text-sm font-black uppercase tracking-tight truncate">No Hat</span><p class="text-[9px] text-white/50 mt-0.5 leading-tight uppercase font-black">Default look</p></div><div class="w-6 h-6 flex items-center justify-center bg-green-500 rounded-full text-white text-[10px] font-black ${isSelected ? '' : 'hidden'}">✓</div></div>`; }
+                const unlocked = state.unlockedHats.includes(hat.id); const isSelected = state.selectedHatId === hat.id; const canAfford = isBezos || state.coins >= hat.price;
+                return `<div class="card-item border-2 ${isSelected ? 'selected border-pink-500' : 'border-white/10'} bg-white/5 p-4 rounded-2xl flex items-center gap-4 ${!unlocked ? 'locked' : ''}"><div class="w-16 h-16 relative flex items-center justify-center bg-indigo-900/50 rounded-xl overflow-hidden shrink-0" onclick="${unlocked ? `selectHat('${hat.id}')` : ''}"><canvas class="pig-preview-canvas" id="hat-preview-${hat.id}" width="64" height="64"></canvas>${!unlocked ? '<div class="absolute inset-0 flex items-center justify-center bg-black/40 text-[8px] font-black text-yellow-400">PREMIUM</div>' : ''}</div><div class="text-left flex-1 min-w-0" onclick="${unlocked ? `selectHat('${hat.id}')` : ''}"><span class="text-sm font-black uppercase tracking-tight truncate">${hat.name}</span><p class="text-[9px] text-white/50 mt-0.5 leading-tight uppercase font-black">${unlocked ? 'Equipped' : 'Coin Exclusive'}</p></div>${!unlocked ? `<button onclick="buyHat('${hat.id}')" ${!canAfford ? 'disabled' : ''} class="bg-yellow-500 hover:bg-yellow-400 disabled:opacity-30 disabled:grayscale text-black font-black py-2 px-3 rounded-xl text-[10px] flex items-center gap-1 active:scale-95 transition-all"><div class="w-3 h-3 bg-black rounded-full text-yellow-500 font-black flex items-center justify-center text-[7px]">₵</div>${hat.price.toLocaleString()}</button>` : `<div class="w-6 h-6 flex items-center justify-center bg-green-500 rounded-full text-white text-[10px] font-black ${isSelected ? '' : 'invisible'}">✓</div>`}</div>`;
+            }).join('');
+            HATS.forEach(hat => { const pcanv = document.getElementById(`hat-preview-${hat.id}`); if (pcanv) { const pctx = pcanv.getContext('2d'); pctx.clearRect(0,0,64,64); const skin = SKINS.find(s=>s.id==='classic'); drawPigAvatar(pctx, skin, 32, 32, 1.2, -0.2, hat.id); } });
+            uiHats.classList.remove('hidden');
+        }
+        function buyHat(id) { const hat = HATS.find(h => h.id === id); const isBezos = isBezosMode(); if (!isBezos && state.coins < hat.price) return showToast("Not enough coins!", "error"); if (!isBezos) { state.coins -= hat.price; localStorage.setItem('oinkCoins', state.coins); } unlockHat(id); playSound('unlock'); showToast(`${hat.name} Purchased!`); openHats(); refreshUI(); }
+        function selectHat(id) { state.selectedHatId = id; localStorage.setItem('oinkHatSelected', id); openHats(); refreshUI(); playSound('land'); }
+        function unlockHat(id) { if (state.unlockedHats.includes(id)) return; state.unlockedHats.push(id); localStorage.setItem('oinkHats', JSON.stringify(state.unlockedHats)); }
+        function closeHats() { uiHats.classList.add('hidden'); }
+        function openThemes() { themesGrid.innerHTML = THEMES.map(theme => { const unlocked = state.unlockedThemes.includes(theme.id); return `<div onclick="${unlocked?`selectTheme('${theme.id}')`:''}" class="card-item border-2 border-white/10 bg-white/5 p-4 rounded-2xl flex items-center gap-4 ${state.selectedThemeId===theme.id?'selected':''} ${!unlocked?'locked':''}"><div class="w-12 h-12 relative rounded-lg border border-white/20" style="background:${theme.bg}"><div class="absolute inset-0 flex items-center justify-center">${!unlocked?'🔒':''}</div></div><div class="text-left flex-1"><span class="text-sm font-black uppercase">${unlocked?theme.name:'Locked Theme'}</span><div class="text-[9px] text-indigo-400 font-bold uppercase">${theme.type} STYLE</div></div></div>`; }).join(''); document.getElementById('ui-themes').classList.remove('hidden'); }
+        function selectTheme(id) { state.selectedThemeId = id; localStorage.setItem('oinkTheme', id); openThemes(); refreshUI(); playSound('land'); }
+        function openLeaderboardUI() { setLeaderboardTab(state.leaderboardTab); uiLeaderboard.classList.remove('hidden'); }
+        function setLeaderboardTab(tab) { state.leaderboardTab = tab; ['regular', 'hard', 'superhard', 'sandbox', 'wealth'].forEach(t => { const el = document.getElementById('tab-'+t); if (t === tab) { el.classList.add('tab-active'); el.classList.remove('opacity-50'); } else { el.classList.remove('tab-active'); el.classList.add('opacity-50'); } }); openLeaderboard(); }
+        async function openLeaderboard() {
+            const tab = state.leaderboardTab; let path = `leaderboard/${tab}`; if (tab === 'sandbox') path = 'leaderboard/speed'; leaderboardList.innerHTML = `<div class="text-center py-10 opacity-50 animate-pulse">Scanning legends...</div>`;
+            try {
+                const snap = await db.ref(path).orderByChild('score').limitToLast(10).once('value'); const data = []; snap.forEach(c => { const val = c.val(); if (val && val.name && typeof val.score === 'number') data.push(val); }); data.sort((a, b) => b.score - a.score);
+                if (data.length === 0) leaderboardList.innerHTML = `<div class="text-center py-10 opacity-30 font-black tracking-widest text-sm">NO DATA YET</div>`;
+                else leaderboardList.innerHTML = data.map((e, i) => { const isYou = e.name && state.username && (e.name.toLowerCase() === state.username.toLowerCase()); let medal = ''; if (i === 0) medal = '🥇'; else if (i === 1) medal = '🥈'; else if (i === 2) medal = '🥉'; let scoreDisplay = e.score; if (tab === 'sandbox') scoreDisplay = `${e.score.toFixed(1)} u/s`; else if (tab === 'wealth') scoreDisplay = `₵${e.score.toLocaleString()}`; return `<div class="flex justify-between items-center p-3 rounded-2xl border ${isYou ? 'border-pink-500 bg-pink-500/20' : 'border-white/5 bg-white/5'} mb-2"><div class="flex items-center gap-4"><span class="font-black ${i < 3 ? 'text-yellow-400' : 'text-white/20'} text-lg w-6">${medal || (i + 1)}</span><span class="font-black text-xs uppercase truncate">${e.name}</span></div><span class="font-black ${tab === 'wealth' ? 'text-yellow-400' : 'text-pink-400'} text-lg">${scoreDisplay}</span></div>`; }).join('');
+            } catch (err) { leaderboardList.innerHTML = `<div class="text-center py-10 opacity-30">OFFLINE</div>`; }
+        }
+        function openAchievements() {
+            achievementsList.innerHTML = ACHIEVEMENTS.map(ach => {
+                const unlocked = state.unlockedAchievements.includes(ach.id); let progress = 0;
+                switch(ach.type) { case 'score': progress = Math.min(100, (state.best / ach.goal) * 100); break; case 'total_coins': progress = Math.min(100, (state.totalCoinsEarned / ach.goal) * 100); break; case 'cumulative_score': progress = Math.min(100, (state.totalScore / ach.goal) * 100); break; case 'total_jumps': progress = Math.min(100, (state.totalJumps / ach.goal) * 100); break; case 'perfect_streak': progress = Math.min(100, (state.bestStreak / ach.goal) * 100); break; case 'themes': progress = Math.min(100, (state.unlockedThemes.length / ach.goal) * 100); break; case 'skins_normal': progress = Math.min(100, (state.unlockedSkins.filter(id => !SKINS.find(s => s.id === id)?.isAchievement).length / ach.goal) * 100); break; case 'all_achievements': progress = Math.min(100, (state.unlockedAchievements.length / ach.goal) * 100); break; case 'hard_jumps': progress = Math.min(100, (state.hardJumps / ach.goal) * 100); break; }
+                if (unlocked) progress = 100;
+                return `<div class="border-2 ${unlocked?'border-yellow-500/50 bg-yellow-500/10':'border-white/5 bg-white/5'} p-4 rounded-2xl flex items-center gap-4"><div class="text-2xl">${unlocked?'🏆':'🔒'}</div><div class="flex-1"><div class="flex justify-between items-center mb-1"><span class="text-xs font-black uppercase ${unlocked?'text-yellow-400':'text-white'}">${ach.name}</span></div><p class="text-[9px] text-white/50 mb-2 leading-tight">${ach.desc}</p><div class="h-1 bg-white/10 rounded-full overflow-hidden"><div class="h-full bg-yellow-500 transition-all duration-1000" style="width: ${progress}%"></div></div></div><div class="flex flex-col items-center gap-1 opacity-80"><div class="w-8 h-8 rounded-lg bg-indigo-900 border border-white/10 flex items-center justify-center overflow-hidden"><canvas id="ach-prev-${ach.id}" width="32" height="32"></canvas></div></div></div>`;
+            }).join('');
+            ACHIEVEMENTS.forEach(ach => { const rewardSkin = SKINS.find(s => s.id === ach.rewardSkin); const pcanv = document.getElementById(`ach-prev-${ach.id}`); if (pcanv) { const pctx = pcanv.getContext('2d'); pctx.clearRect(0,0,32,32); drawPigAvatar(pctx, rewardSkin, 16, 16, 0.6, -0.2); } });
+            uiAchievements.classList.remove('hidden');
+        }
+        function buyRandomSkin() {
+            const isBezos = isBezosMode(); if (!isBezos && state.coins < 100) return showToast("Not enough coins!", "error");
+            const purchasable = SKINS.filter(s => !s.isAchievement); const locked = purchasable.filter(s => !state.unlockedSkins.includes(s.id)); if (locked.length === 0) return showToast("All normal skins owned!");
+            const choice = locked[Math.floor(Math.random() * locked.length)]; if (!isBezos) { state.coins -= 100; localStorage.setItem('oinkCoins', state.coins); }
+            state.unlockedSkins.push(choice.id); localStorage.setItem('oinkUnlocked', JSON.stringify(state.unlockedSkins)); playSound('unlock'); showToast(`Unlocked ${choice.name}!`); openSkins(); refreshUI(); checkAchievements();
+        }
+        function buyRandomTheme() {
+            const isBezos = isBezosMode(); if (!isBezos && state.coins < 250) return showToast("Not enough coins!", "error");
+            const locked = THEMES.filter(t => !state.unlockedThemes.includes(t.id)); if (locked.length === 0) return showToast("All themes owned!");
+            const choice = locked[Math.floor(Math.random() * locked.length)]; if (!isBezos) state.coins -= 250;
+            state.unlockedThemes.push(choice.id); localStorage.setItem('oinkThemesUnlocked', JSON.stringify(state.unlockedThemes)); playSound('unlock'); showToast(`Unlocked ${choice.name} Theme!`); openThemes(); refreshUI(); checkAchievements();
+        }
+        function startTutorial() { state.isTutorial = true; state.tutorialStep = 0; startGame('regular'); updateTutorialUI(); }
+        function advanceTutorial() {
+            state.tutorialStep++; if (state.tutorialStep >= TUTORIAL_STEPS.length) { state.isTutorial = false; state.hasSeenTutorial = true; localStorage.setItem('oinkTutorialSeen', 'true'); uiTutorial.classList.add('hidden'); return; }
+            updateTutorialUI(); playSound('land');
+        }
+        function updateTutorialUI() { const step = TUTORIAL_STEPS[state.tutorialStep]; document.getElementById('tut-title').innerText = step.title; document.getElementById('tut-desc').innerText = step.desc; document.getElementById('tut-btn').innerText = step.btn; uiTutorial.classList.remove('hidden'); if (state.tutorialStep === 2) { uiTutorial.classList.add('pointer-events-none'); document.getElementById('tut-btn').classList.add('hidden'); } else { uiTutorial.classList.remove('pointer-events-none'); document.getElementById('tut-btn').classList.remove('hidden'); } }
+        function skipTutorial() { state.isTutorial = false; state.hasSeenTutorial = true; localStorage.setItem('oinkTutorialSeen', 'true'); uiTutorial.classList.add('hidden'); startGame('regular'); }
 
-        function createClock(id, y, index) {
-            let radius = 40 + Math.random() * 40;
-            return { id, x: radius + 20 + Math.random() * (WIDTH - (radius * 2 + 40)), y, radius, angle: Math.random()*6, speed: (0.04 + (index * 0.002)) * (index % 2 === 0 ? 1 : -1), color: CLOCK_COLORS[index % CLOCK_COLORS.length] };
+        const TUTORIAL_STEPS = [
+            { title: "Welcome Piggy!", desc: "You are a brave pig leaping through time. Your goal is to jump on clocks to climb higher!", btn: "Let's Go!" },
+            { title: "Watch the Hand", desc: "The clock hand shows where you will jump. Wait for it to point towards the next clock above you.", btn: "Okay!" },
+            { title: "Take the Leap!", desc: "Click or tap to jump! Try to land on the green clock above.", btn: "Jump!" },
+            { title: "Perfect!", desc: "Landing on clocks gives you points. Climbing higher increases your score. Collect coins to buy skins!", btn: "Start Playing!" }
+        ];
+
+        function closeSkins() { uiSkins.classList.add('hidden'); }
+        function closeThemes() { uiThemes.classList.add('hidden'); }
+        function closeLeaderboard() { uiLeaderboard.classList.add('hidden'); }
+        function closeAchievements() { uiAchievements.classList.add('hidden'); }
+        function backToHome() { if (state.gameMode === 'sandbox') saveSandboxSpeed(); state.status='HOME'; uiGameOver.classList.add('hidden'); uiHUD.classList.add('hidden'); uiHome.classList.remove('hidden'); refreshUI(); }
+        function exitGameMode() { if (state.gameMode === 'sandbox') saveSandboxSpeed(); state.gameMode = 'regular'; backToHome(); }
+        function retryGame() { startGame(state.gameMode); }
+
+        function createClock(id, y, index, forcedX = null) {
+            let radius = 35 + Math.random() * 50; if (state.selectedSkinId === 'devil') radius *= 0.65;
+            let speed = (0.04 + (index * 0.0015)) * (60 / radius) * (index % 2 === 0 ? 1 : -1);
+            if (state.selectedSkinId === 'matcha') speed *= 0.75; if (state.selectedSkinId === 'lava' || state.selectedSkinId === 'steampunk' || state.gameMode === 'hard') speed *= 1.8; if (state.gameMode === 'superhard') speed *= 2.5;
+            let hasSpikes = false; let spikeTimer = 120; if (state.gameMode === 'superhard' && id > 0 && Math.random() > 0.4) { hasSpikes = true; spikeTimer = Math.random() * 120; }
+            const posX = forcedX !== null ? forcedX : radius + 20 + Math.random() * (WIDTH - (radius * 2 + 40));
+            return { id, x: posX, y, radius, angle: Math.random() * Math.PI * 2, speed, color: CLOCK_COLORS[index % CLOCK_COLORS.length], isFrozen: false, features: [], hasSpikes, spikeActive: false, spikeTimer };
         }
 
         function jump() {
-            if (state.status !== 'PLAYING' || state.pig.attachedTo === null) return;
-            const clock = state.clocks.find(c => c.id === state.pig.attachedTo);
-            state.pig.vx = Math.cos(clock.angle) * JUMP_SPEED;
-            state.pig.vy = Math.sin(clock.angle) * JUMP_SPEED;
-            state.pig.attachedTo = null; state.pig.jumpCooldown = 15;
+            if (state.status !== 'PLAYING') return;
+            const skin = SKINS.find(s => s.id === state.selectedSkinId) || SKINS[0];
+            if (skin.id === 'family') state.pig.familyMember = Math.floor(Math.random() * FAMILY_MEMBERS.length);
+            let force = JUMP_SPEED; if (skin.id === 'void') force *= 1.25; if (skin.id === 'ninja') force *= 1.4; if (skin.id === 'angel') force *= 0.6; if (skin.id === 'neon') force *= 1.25;
+            if (skin.id === 'gladiator') force *= 1.15;
+            
+            let targetAngle = 0;
+            if (state.gameMode === 'sandbox') {
+                const dx = (state.mouse.x + state.cameraX) - state.pig.x; const dy = (state.mouse.y + state.cameraY) - state.pig.y; targetAngle = Math.atan2(dy, dx);
+                if (state.pig.attachedTo !== null) { const clock = state.clocks.find(c => c.id === state.pig.attachedTo); const tx = -Math.sin(clock.angle) * (clock.speed * clock.radius); const ty = Math.cos(clock.angle) * (clock.speed * clock.radius); state.pig.vx = Math.cos(targetAngle) * force + tx; state.pig.vy = Math.sin(targetAngle) * force + ty; }
+                else { let additive = (skin.id === 'frog' || skin.id === 'ghost') ? 0.9 : 0.7; state.pig.vx += Math.cos(targetAngle) * force * additive; state.pig.vy += Math.sin(targetAngle) * force * additive; }
+            } else {
+                if (state.pig.attachedTo === null) return;
+                const clock = state.clocks.find(c => c.id === state.pig.attachedTo); 
+                targetAngle = clock.angle;
+                state.pig.vx = Math.cos(targetAngle) * force; state.pig.vy = Math.sin(targetAngle) * force;
+            }
+
+            if (skin.id === 'glock') {
+                state.pig.bullets.push({
+                    x: state.pig.x,
+                    y: state.pig.y,
+                    vx: Math.cos(targetAngle + Math.PI) * 15, // Fire backwards for recoil
+                    vy: Math.sin(targetAngle + Math.PI) * 15,
+                    life: 1.0,
+                    angle: targetAngle + Math.PI
+                });
+            }
+
+            state.pig.x += state.pig.vx * 1.2; state.pig.y += state.pig.vy * 1.2; state.pig.attachedTo = null; state.pig.jumpCooldown = 15; playSound('jump');
         }
 
-        function update(dt) {
+        function update(timeScale) {
             if (state.status !== 'PLAYING') return;
-            state.clocks.forEach(c => c.angle += c.speed * dt);
+            state.rainbowHue = (state.rainbowHue + 2 * timeScale) % 360;
+            const skinId = state.selectedSkinId; const isWealthPig = ['golden', 'bank', 'king', 'omega'].includes(skinId); const isBezos = isBezosMode();
+            state.clocks.forEach(c => { let s = c.speed; if (skinId === 'lava' || skinId === 'steampunk' || state.gameMode === 'hard') s *= 1.8; if (state.gameMode === 'superhard') s *= 2.5; if (!c.isFrozen) c.angle += s * timeScale; if (c.hasSpikes) { c.spikeTimer -= timeScale; if (c.spikeTimer <= 0) { c.spikeActive = !c.spikeActive; c.spikeTimer = 120; if (c.spikeActive && state.pig.attachedTo === c.id) { const mercyLvl = state.upgrades.mercy || 0; if (Math.random() > mercyLvl * 0.1) gameOver(); else showToast("Mercy!", "sandbox"); } } } });
+            if (state.pig.jumpCooldown > 0) state.pig.jumpCooldown -= timeScale;
+            
+            state.pig.bullets.forEach((b, i) => {
+                b.x += b.vx * timeScale;
+                b.y += b.vy * timeScale;
+                b.life -= 0.02 * timeScale;
+                if (b.life <= 0) state.pig.bullets.splice(i, 1);
+            });
+
+            if (state.selectedThemeId === 'planets' && state.stars) state.stars.forEach(s => { s.y += s.speed * timeScale; if (s.y > HEIGHT) s.y = 0; });
+            if (state.selectedThemeId === 'ocean' && state.bubbles) state.bubbles.forEach(b => { b.y -= b.speed * timeScale; b.x += Math.sin(Date.now()*0.001) * 0.5; if (b.y < 0) b.y = HEIGHT; });
+            
             if (state.pig.attachedTo !== null) {
-                const c = state.clocks.find(x => x.id === state.pig.attachedTo);
-                state.pig.x = c.x + Math.cos(c.angle) * c.radius;
-                state.pig.y = c.y + Math.sin(c.angle) * c.radius;
-            } else {
-                state.pig.x += state.pig.vx * dt; state.pig.y += state.pig.vy * dt;
-                if (state.pig.jumpCooldown > 0) state.pig.jumpCooldown -= dt;
-                else {
-                    for(const c of state.clocks) {
-                        const d = Math.sqrt((state.pig.x-c.x)**2 + (state.pig.y-c.y)**2);
-                        if (d < c.radius + 10) {
-                            state.pig.attachedTo = c.id; state.pig.vx = 0; state.pig.vy = 0;
-                            if (c.id > state.lastClockId) {
-                                state.score++; state.lastClockId = c.id; state.coins += 2;
-                                updateDaily('jumps', 1); updateDaily('score', state.score); updateDaily('coins', 2);
-                                refreshUI();
+                const clock = state.clocks.find(c => c.id === state.pig.attachedTo);
+                if (skinId === 'ice') clock.isFrozen = true;
+                let bodyOffset = state.bezosPlayerOffset || 0;
+                if (skinId === 'spider' && !state.bezosPlayerOffset) bodyOffset = 50; 
+                state.pig.x = clock.x + Math.cos(clock.angle) * (clock.radius + bodyOffset);
+                state.pig.y = clock.y + Math.sin(clock.angle) * (clock.radius + bodyOffset);
+                state.pig.trail = []; state.pig.vx = 0; state.pig.vy = 0;
+            }
+            else {
+                const prevX = state.pig.x;
+                const prevY = state.pig.y;
+
+                if (state.gameMode === 'hard' || state.gameMode === 'superhard') state.pig.vy += 0.5 * timeScale;
+                if (skinId === 'rocket') { const targetX = state.mouse.x + state.cameraX; const rocketStrength = isBezos ? 0.45 : 0.07; if (targetX < state.pig.x - 5) state.pig.vx -= rocketStrength * timeScale; else if (targetX > state.pig.x + 5) state.pig.vx += rocketStrength * timeScale; }
+                
+                state.pig.x += state.pig.vx * timeScale; state.pig.y += state.pig.vy * timeScale;
+                
+                if (state.gameMode === 'sandbox') { const speed = Math.sqrt(state.pig.vx**2 + state.pig.vy**2); if (speed > state.currentMaxSpeed) { state.currentMaxSpeed = speed; scoreVal.innerText = state.currentMaxSpeed.toFixed(1); } }
+                if (skinId === 'neon' || skinId === 'omega' || skinId === 'smoking') { state.pig.trail.unshift({ x: state.pig.x, y: state.pig.y, life: 1 }); if (state.pig.trail.length > (skinId === 'smoking' ? 20 : 10)) state.pig.trail.pop(); state.pig.trail.forEach(t => t.life -= (skinId === 'smoking' ? 0.04 : 0.1) * timeScale); }
+                if (isWealthPig && Math.random() < 0.4) state.pig.coinParticles.push({ x: state.pig.x, y: state.pig.y, vx: (Math.random() - 0.5) * 5, vy: (Math.random() - 0.5) * 5, rot: Math.random() * Math.PI * 2, rotV: (Math.random() - 0.5) * 0.4, life: 1.0 });
+                if (state.gameMode === 'sandbox') { state.pig.vx *= Math.pow(0.99, timeScale); state.pig.vy *= Math.pow(0.99, timeScale); }
+                
+                let grabRange = 5; if (skinId === 'blueberry') grabRange = 12; if (skinId === 'ninja') grabRange = 15; if (skinId === 'space' || skinId === 'ghost' || skinId === 'omega' || skinId === 'spider') grabRange = 25; if (skinId === 'family') grabRange = FAMILY_MEMBERS[state.pig.familyMember].grab; grabRange += (state.upgrades.magnet || 0) * 8;
+                
+                if (state.pig.jumpCooldown <= 0) {
+                    const samples = 3;
+                    let foundCollision = false;
+                    for (let s = 1; s <= samples; s++) {
+                        const t = s / samples;
+                        const checkX = prevX + (state.pig.x - prevX) * t;
+                        const checkY = prevY + (state.pig.y - prevY) * t;
+
+                        for (const clock of state.clocks) {
+                            const d = Math.sqrt((checkX - clock.x)**2 + (checkY - clock.y)**2);
+                            if (d < clock.radius + grabRange) {
+                                if (clock.hasSpikes && clock.spikeActive) { 
+                                    const mercyLvl = state.upgrades.mercy || 0; 
+                                    if (Math.random() > mercyLvl * 0.1) { gameOver(); return; } 
+                                    else { showToast("Mercy!", "sandbox"); continue; }
+                                }
+                                
+                                state.pig.attachedTo = clock.id; 
+                                state.pig.vx = 0; 
+                                state.pig.vy = 0;
+                                state.pig.x = checkX;
+                                state.pig.y = checkY;
+
+                                if (clock.id > state.lastClockId && state.gameMode !== 'sandbox') {
+                                    let scoreMultiplier = (skinId === 'golden' || skinId === 'king') ? 2 : (skinId === 'devil' || skinId === 'steampunk' ? 3 : 1); 
+                                    if (skinId === 'omega') scoreMultiplier = 4; 
+                                    if (skinId === 'diamond') scoreMultiplier = 5;
+                                    if (state.gameMode === 'hard') scoreMultiplier *= 2; 
+                                    if (state.gameMode === 'superhard') scoreMultiplier *= 5; 
+                                    scoreMultiplier *= (1 + (state.upgrades.score_bonus || 0) * 0.05);
+
+                                    let baseReward = (state.gameMode === 'hard') ? 5 : (state.gameMode === 'superhard' ? 12 : 2); baseReward += (state.upgrades.coin_boost || 0);
+                                    let bonus = 0; if (skinId === 'rainbow') bonus += 1; if (skinId === 'golden') bonus += 2; if (skinId === 'bank') bonus += 3; if (skinId === 'king') bonus += 5; if (skinId === 'omega') bonus += 10;
+                                    let reward = (baseReward + bonus); if (skinId === 'lava') reward *= 2; 
+                                    state.coins += Math.floor(reward); state.totalCoinsEarned += Math.floor(reward); state.score += Math.round((clock.id - state.lastClockId) * scoreMultiplier); state.lastClockId = clock.id; state.consecutiveJumps++; state.bestStreak = Math.max(state.bestStreak, state.consecutiveJumps); state.totalJumps++; scoreVal.innerText = state.score; playSound('coin'); if (isWealthPig) { setTimeout(()=>playSound('coin'), 100); setTimeout(()=>playSound('coin'), 200); }
+                                    updateDailyProgress('jumps', 1); if (state.gameMode === 'hard') updateDailyProgress('hard_jumps', 1); if (state.gameMode === 'superhard') updateDailyProgress('superhard_jumps', 1); updateDailyProgress('earn_coins', Math.floor(reward)); updateDailyProgress('perfect_streaks', state.consecutiveJumps >= 15 ? 1 : 0); refreshUI(); checkAchievements(); if (state.isTutorial && state.tutorialStep === 2) advanceTutorial();
+                                } else if (state.gameMode === 'sandbox') state.lastClockId = Math.max(state.lastClockId, clock.id);
+                                playSound('land');
+                                foundCollision = true;
+                                break;
                             }
                         }
+                        if (foundCollision) break;
                     }
                 }
-                if (state.pig.y > state.cameraY + HEIGHT + 100) gameOver();
-            }
-            state.cameraY += (state.pig.y - HEIGHT/2 - state.cameraY) * 0.1 * dt;
-            const last = state.clocks[state.clocks.length-1];
-            if (last && last.y > state.cameraY - 400) state.clocks.push(createClock(last.id+1, last.y - CLOCK_SPACING, last.id+1));
-            document.getElementById('score-val').innerText = state.score;
-        }
 
-        function updateDaily(id, amt) {
-            state.dailyChallenges.forEach(d => {
-                if (d.id === id && !d.completed) {
-                    d.current += amt;
-                    if (d.current >= d.goal) { d.completed = true; state.coins += d.rewardCoins; state.bpXP += XP_PER_DAILY; showToast(`Goal Done! +${d.rewardCoins}₵ & +${XP_PER_DAILY} XP`); }
+                if (state.pig.attachedTo === null && state.gameMode !== 'sandbox') { 
+                    if (state.pig.y > state.cameraY + HEIGHT + 120 || state.pig.x < -150 || state.pig.x > WIDTH + 150) { 
+                        state.consecutiveJumps = 0; 
+                        if (state.isTutorial) { state.pig.x = WIDTH/2; state.pig.y = state.cameraY + HEIGHT - 200; state.pig.vy = -10; state.pig.vx = 0; return; } 
+                        if (skinId === 'slime' && !state.pig.slimeUsed) { state.pig.slimeUsed = true; state.pig.y = state.cameraY + HEIGHT - 10; state.pig.vy = -22; state.pig.vx = (WIDTH/2 - state.pig.x) * 0.05; gameContainer.classList.add('slime-flash'); playSound('unlock'); setTimeout(() => gameContainer.classList.remove('slime-flash'), 500); } 
+                        else if (skinId === 'zombie' && !state.pig.zombieUsed) { state.pig.zombieUsed = true; state.pig.y = state.cameraY + HEIGHT/2; state.pig.vy = -12; state.pig.vx = 0; state.pig.x = WIDTH/2; gameContainer.classList.add('slime-flash'); playSound('unlock'); setTimeout(() => gameContainer.classList.remove('slime-flash'), 500); } 
+                        else gameOver(); 
+                    } 
                 }
-            });
-            localStorage.setItem('oinkDailies', JSON.stringify(state.dailyChallenges));
-            localStorage.setItem('oinkCoins', state.coins); localStorage.setItem('oinkBPXP', state.bpXP);
+            }
+            state.pig.coinParticles.forEach((cp, idx) => { cp.x += cp.vx * timeScale; cp.y += cp.vy * timeScale; cp.vy += 0.2 * timeScale; cp.rot += cp.rotV * timeScale; cp.life -= 0.02 * timeScale; if (cp.life <= 0) state.pig.coinParticles.splice(idx, 1); });
+            state.cameraY += (state.pig.y - HEIGHT/2 - state.cameraY) * 0.1 * timeScale; if (state.gameMode === 'sandbox') state.cameraX += (state.pig.x - WIDTH/2 - state.cameraX) * 0.1 * timeScale;
+            if (state.gameMode === 'sandbox') { if (state.clocks.length < 50) { const angle = Math.random() * Math.PI * 2; const dist = 300 + Math.random() * 300; const nx = state.pig.x + Math.cos(angle) * dist; const ny = state.pig.y + Math.sin(angle) * dist; let tooClose = false; for(const c of state.clocks) { if (Math.sqrt((nx-c.x)**2 + (ny-c.y)**2) < 180) { tooClose = true; break; } } if (!tooClose) { state.lastClockId++; state.clocks.push(createClock(state.lastClockId, ny, state.lastClockId, nx)); } } state.clocks = state.clocks.filter(c => Math.sqrt((c.x-state.pig.x)**2 + (c.y-state.pig.y)**2) < 1200); }
+            else { const last = state.clocks[state.clocks.length-1]; if (last && last.y > state.cameraY - 400) { const nextId = last.id + 1; state.clocks.push(createClock(nextId, last.y - CLOCK_SPACING, nextId)); } if (state.clocks.length > 20) state.clocks.shift(); }
         }
 
         function gameOver() {
-            state.status = 'GAMEOVER';
-            if (state.score > state.best) { state.best = state.score; localStorage.setItem('oinkBest', state.best); db.ref(`leaderboard/regular/${state.username.toLowerCase()}`).set({ name: state.username, score: state.best }); }
-            document.getElementById('final-score').innerText = state.score;
-            document.getElementById('gameover-total-coins').innerText = state.coins;
-            document.getElementById('ui-gameover').classList.remove('hidden');
-            refreshUI(); checkAchievements();
+            state.status = 'GAMEOVER'; playSound('gameover'); state.totalScore += state.score; localStorage.setItem('oinkCoins', state.coins); localStorage.setItem('oinkTotalCoins', state.totalCoinsEarned); localStorage.setItem('oinkTotalScore', state.totalScore); localStorage.setItem('oinkTotalJumps', state.totalJumps);
+            const isToughMode = (state.gameMode === 'hard' || state.gameMode === 'superhard'); document.getElementById('btn-retry').classList.toggle('hidden', isToughMode);
+            if (state.username && !isBezosMode()) db.ref('leaderboard/wealth/'+state.username.toLowerCase()).set({ name: state.username, score: state.totalCoinsEarned }).catch(()=>{});
+            updateDailyProgress('score', state.score); let isNewBest = false;
+            if (state.gameMode === 'regular') { if (state.score > state.best) { state.best = state.score; isNewBest = true; localStorage.setItem('oinkBest', state.best); } } else if (state.gameMode === 'hard') { if (state.score > state.bestHard) { state.bestHard = state.score; isNewBest = true; localStorage.setItem('oinkBestHard', state.bestHard); } } else if (state.gameMode === 'superhard') { if (state.score > state.bestSuperHard) { state.bestSuperHard = state.score; isNewBest = true; localStorage.setItem('oinkBestSuperHard', state.bestSuperHard); } }
+            if (isNewBest && state.username && !isBezosMode()) db.ref(`leaderboard/${state.gameMode}/${state.username.toLowerCase()}`).set({ name: state.username, score: state.score }).catch(()=>{});
+            document.getElementById('new-best-tag').classList.toggle('hidden', !isNewBest); earnedCoinsText.innerText = `+${state.score}`; finalScoreLabel.innerText = state.score; gameoverTotalCoins.innerText = isBezosMode() ? "∞" : state.coins; uiGameOver.classList.remove('hidden'); refreshUI(); checkAchievements();
         }
 
+        function saveSandboxSpeed() { if (state.currentMaxSpeed > state.bestSpeed) { state.bestSpeed = state.currentMaxSpeed; localStorage.setItem('oinkBestSpeed', state.bestSpeed); if (state.username && !isBezosMode()) db.ref('leaderboard/speed/'+state.username.toLowerCase()).set({ name: state.username, score: state.bestSpeed }).catch(()=>{}); } }
+
         function checkAchievements() {
+            if (state.gameMode === 'sandbox') return;
             ACHIEVEMENTS.forEach(ach => {
-                if (!state.unlockedAchievements.includes(ach.id)) {
-                    let val = (ach.type === 'score') ? state.best : state.unlockedAchievements.length;
-                    if (val >= ach.goal) {
-                        state.unlockedAchievements.push(ach.id); localStorage.setItem('oinkAchieved', JSON.stringify(state.unlockedAchievements));
-                        const skin = SKINS.find(s => s.id === ach.rewardSkin); if (skin && !state.unlockedSkins.includes(skin.id)) state.unlockedSkins.push(skin.id);
-                        localStorage.setItem('oinkUnlocked', JSON.stringify(state.unlockedSkins)); showToast(`Unlock: ${ach.name}!`);
-                    }
-                }
+                let currentVal = 0; switch(ach.type) { case 'score': currentVal = state.best; break; case 'total_coins': currentVal = state.totalCoinsEarned; break; case 'cumulative_score': currentVal = state.totalScore; break; case 'total_jumps': currentVal = state.totalJumps; break; case 'perfect_streak': currentVal = state.bestStreak; break; case 'themes': currentVal = state.unlockedThemes.length; break; case 'skins_normal': currentVal = state.unlockedSkins.filter(id => !SKINS.find(s => s.id === id)?.isAchievement).length; break; case 'all_achievements': currentVal = state.unlockedAchievements.length; break; case 'hard_jumps': currentVal = state.hardJumps; break; }
+                if (currentVal >= ach.goal) unlockAchievement(ach.id);
             });
         }
 
-        function drawPigAvatar(pctx, skin, x, y, scale=1) {
-            if (!skin) return; pctx.save(); pctx.translate(x, y); pctx.scale(scale, scale);
-            pctx.fillStyle = skin.body; pctx.beginPath(); pctx.ellipse(0, 0, 18, 16, 0, 0, Math.PI*2); pctx.fill();
-            pctx.fillStyle = skin.snout; pctx.beginPath(); pctx.ellipse(0, 4, 8, 6, 0, 0, Math.PI*2); pctx.fill();
-            pctx.fillStyle = 'black'; pctx.beginPath(); pctx.arc(-7, -4, 2.5, 0, Math.PI*2); pctx.fill(); pctx.beginPath(); pctx.arc(7, -4, 2.5, 0, Math.PI*2); pctx.fill();
+        function unlockAchievement(id) {
+            if (state.unlockedAchievements.includes(id)) return; const ach = ACHIEVEMENTS.find(a => a.id === id); if (!ach) return;
+            state.unlockedAchievements.push(id); localStorage.setItem('oinkAchieved', JSON.stringify(state.unlockedAchievements));
+            const rewardSkin = SKINS.find(s => s.id === ach.rewardSkin); if (rewardSkin && !state.unlockedSkins.includes(rewardSkin.id)) { state.unlockedSkins.push(rewardSkin.id); localStorage.setItem('oinkUnlocked', JSON.stringify(state.unlockedSkins)); }
+            const container = document.getElementById('achievement-popup-container'); const popup = document.createElement('div');
+            popup.className = 'achievement-unlock bg-gradient-to-r from-yellow-500 to-amber-600 p-4 rounded-2xl border-2 border-yellow-300 shadow-2xl flex items-center gap-4 text-white pointer-events-auto cursor-pointer';
+            popup.onclick = () => popup.remove(); popup.innerHTML = `<div class="text-3xl">🏆</div><div><div class="text-[10px] font-black uppercase tracking-widest opacity-70">Achievement Unlocked!</div><div class="font-black text-sm">${ach.name}</div><div class="text-[9px] opacity-80">Reward: ${rewardSkin.name} Skin!</div></div>`;
+            container.appendChild(popup); setTimeout(() => popup.remove(), 4000); refreshUI(); playSound('unlock');
+        }
+
+        function drawPigAvatar(pctx, skin, x, y, scale = 1, rotation = 0, hatId = null) {
+            if (!skin) return; pctx.save(); pctx.translate(x, y);
+            let scaleMultiplier = 1; let customBodyColor = null;
+            if (skin.id === 'family') { const member = FAMILY_MEMBERS[state.pig.familyMember]; scaleMultiplier = member.scale; customBodyColor = member.body; } 
+            else if (skin.id === 'spider') scaleMultiplier = 0.8;
+            else if (skin.id === 'glock') scaleMultiplier = 1.0;
+
+            pctx.scale(scale * scaleMultiplier, scale * scaleMultiplier); pctx.rotate(rotation);
+            let bodyColor = customBodyColor || skin.body; let earColor = skin.ears; let snoutColor = skin.snout;
+            if (skin.id === 'rainbow' || skin.id === 'omega') { bodyColor = `hsl(${state.rainbowHue}, 80%, 70%)`; earColor = `hsl(${state.rainbowHue + 30}, 80%, 40%)`; snoutColor = `hsl(${state.rainbowHue + 60}, 80%, 80%)`; }
+            
+            if (skin.id === 'glock') {
+                pctx.save();
+                pctx.rotate(-Math.PI / 2);
+                pctx.fillStyle = '#1e293b';
+                pctx.fillRect(-8, 5, 12, 18);
+                pctx.fillStyle = '#475569';
+                pctx.fillRect(-12, -8, 36, 14);
+                pctx.fillStyle = '#334155';
+                pctx.fillRect(5, -6, 15, 2);
+                pctx.fillStyle = '#f9a8d4';
+                pctx.beginPath();
+                pctx.ellipse(24, -1, 6, 8, 0, 0, Math.PI * 2);
+                pctx.fill();
+                pctx.fillStyle = '#be185d';
+                pctx.beginPath(); pctx.arc(22, -2, 1.5, 0, Math.PI * 2); pctx.fill();
+                pctx.beginPath(); pctx.arc(26, -2, 1.5, 0, Math.PI * 2); pctx.fill();
+                pctx.fillStyle = 'white';
+                pctx.beginPath(); pctx.arc(0, -3, 3, 0, Math.PI * 2); pctx.fill();
+                pctx.fillStyle = 'black';
+                pctx.beginPath(); pctx.arc(1, -3, 1.5, 0, Math.PI * 2); pctx.fill();
+                pctx.restore();
+                pctx.restore();
+                return;
+            }
+
+            if (skin.id === 'spider') {
+                const p = state.pig; const time = Date.now() * 0.01; const isAttached = p.attachedTo !== null; const clock = isAttached ? state.clocks.find(c => c.id === p.attachedTo) : null;
+                const legCount = 8;
+                for (let i = 0; i < legCount; i++) {
+                    const side = i < 4 ? -1 : 1; const legIndex = i % 4; const phase = time + i * 0.7; const bx = side * 12; const by = (legIndex - 1.5) * 10;
+                    let fx, fy, jx, jy;
+                    if (isAttached && clock) {
+                        const stepSpeed = Math.abs(clock.speed) * 15; const stepPhase = Math.sin(time * stepSpeed + i * Math.PI / 2);
+                        const relAngleToClock = Math.atan2(p.y - clock.y, p.x - clock.x);
+                        const footRelAngle = (legIndex - 1.5) * 0.5 + (stepPhase * 0.2);
+                        const cr = clock.radius;
+                        const footClockAngle = relAngleToClock + footRelAngle;
+                        const footGlobalX = clock.x + Math.cos(footClockAngle) * cr;
+                        const footGlobalY = clock.y + Math.sin(footClockAngle) * cr;
+                        fx = footGlobalX - p.x; fy = footGlobalY - p.y;
+                        jx = (bx + fx) / 2 + side * 2.5; jy = (by + fy) / 2 - 2.5;
+                    } else {
+                        const spread = 8 + Math.sin(phase) * 4; fx = bx + side * spread; fy = by + Math.cos(phase) * 4; jx = bx + side * (spread * 0.6); jy = by - 4;
+                    }
+                    pctx.strokeStyle = skin.body; pctx.lineWidth = 4; pctx.lineCap = 'round'; pctx.lineJoin = 'round'; pctx.beginPath(); pctx.moveTo(bx, by); pctx.lineTo(jx, jy); pctx.lineTo(fx, fy); pctx.stroke();
+                }
+            }
+
+            pctx.strokeStyle = earColor; pctx.lineWidth = 2; pctx.beginPath(); pctx.moveTo(-18, 0); pctx.bezierCurveTo(-25, -10, -25, 10, -20, 5); pctx.stroke();
+            const currentHatId = hatId || state.selectedHatId;
+            if (currentHatId === 'suit') { pctx.fillStyle = '#000000'; pctx.beginPath(); pctx.ellipse(0, 0, 18, 16, 0, 0, Math.PI * 2); pctx.fill(); pctx.fillStyle = '#ffffff'; pctx.beginPath(); pctx.moveTo(0, -16); pctx.lineTo(-8, 5); pctx.lineTo(8, 5); pctx.closePath(); pctx.fill(); pctx.fillStyle = '#ff0000'; pctx.beginPath(); pctx.moveTo(-4, -10); pctx.lineTo(4, -6); pctx.lineTo(4, -14); pctx.closePath(); pctx.moveTo(4, -10); pctx.lineTo(-4, -6); pctx.lineTo(-4, -14); pctx.closePath(); pctx.fill(); }
+            else { pctx.fillStyle = bodyColor; pctx.beginPath(); pctx.ellipse(0, 0, 18, 16, 0, 0, Math.PI * 2); pctx.fill(); }
+            
+            if (['golden', 'bank', 'king', 'omega'].includes(skin.id)) {
+                const shineGrad = pctx.createLinearGradient(-20, -20, 20, 20); const shift = (Date.now() % 2000) / 2000; shineGrad.addColorStop(Math.max(0, shift - 0.2), 'rgba(255,255,255,0)'); shineGrad.addColorStop(shift, 'rgba(255,255,255,0.4)'); shineGrad.addColorStop(Math.min(1, shift + 0.2), 'rgba(255,255,255,0)');
+                pctx.fillStyle = shineGrad; pctx.beginPath(); pctx.ellipse(0, 0, 18, 16, 0, 0, Math.PI * 2); pctx.fill();
+            }
+            pctx.fillStyle = earColor; pctx.beginPath(); pctx.moveTo(-14, -10); pctx.lineTo(-18, -20); pctx.lineTo(-6, -14); pctx.fill(); pctx.beginPath(); pctx.moveTo(14, -10); pctx.lineTo(18, -20); pctx.lineTo(6, -14); pctx.fill(); pctx.fillStyle = snoutColor; pctx.beginPath(); pctx.ellipse(0, 4, 8, 6, 0, 0, Math.PI * 2); pctx.fill(); pctx.fillStyle = skin.snoutDots || 'rgba(0,0,0,0.3)'; pctx.beginPath(); pctx.arc(-3, 4, 1.5, 0, Math.PI * 2); pctx.fill(); pctx.beginPath(); pctx.arc(3, 4, 1.5, 0, Math.PI * 2); pctx.fill();
+            const eyeColor = (skin.id === 'void' || skin.id === 'neon' || skin.id === 'omega' || skin.id === 'rocket' || skin.id === 'spider') ? 'white' : 'black'; pctx.fillStyle = eyeColor; pctx.beginPath(); pctx.arc(-7, -4, 2.5, 0, Math.PI * 2); pctx.fill(); pctx.beginPath(); pctx.arc(7, -4, 2.5, 0, Math.PI * 2); pctx.fill();
+            if (skin.id === 'spider') { pctx.beginPath(); pctx.arc(-11, -8, 1.5, 0, Math.PI * 2); pctx.fill(); pctx.beginPath(); pctx.arc(11, -8, 1.5, 0, Math.PI * 2); pctx.fill(); }
+            if (currentHatId && currentHatId !== 'none' && currentHatId !== 'suit') {
+                pctx.save(); pctx.translate(0, -14);
+                switch(currentHatId) {
+                    case 'tophat': pctx.fillStyle = '#000000'; pctx.fillRect(-10, -15, 20, 15); pctx.fillRect(-15, -2, 30, 4); break;
+                    case 'hathat': pctx.fillStyle = '#000000'; pctx.fillRect(-10, -15, 20, 15); pctx.fillRect(-15, -2, 30, 4); pctx.fillRect(-8, -28, 16, 12); pctx.fillRect(-12, -17, 24, 3); break;
+                    case 'propeller': pctx.fillStyle = '#ef4444'; pctx.beginPath(); pctx.arc(0, 0, 10, Math.PI, 0); pctx.fill(); pctx.strokeStyle = '#ffffff'; pctx.lineWidth = 2; pctx.beginPath(); pctx.moveTo(0, 0); pctx.lineTo(0, -6); pctx.stroke(); pctx.save(); pctx.rotate(Date.now() * 0.02); pctx.fillStyle = '#fbbf24'; pctx.fillRect(-8, -7, 16, 2); pctx.restore(); break;
+                    case 'crown': pctx.fillStyle = '#fbbf24'; pctx.beginPath(); pctx.moveTo(-12, 0); pctx.lineTo(-12, -10); pctx.lineTo(-6, -5); pctx.lineTo(0, -15); pctx.lineTo(6, -5); pctx.lineTo(12, -10); pctx.lineTo(12, 0); pctx.closePath(); pctx.fill(); break;
+                    case 'chef': pctx.fillStyle = '#ffffff'; pctx.beginPath(); pctx.moveTo(-8, 0); pctx.lineTo(-8, -10); pctx.bezierCurveTo(-15, -25, 15, -25, 8, -10); pctx.lineTo(8, 0); pctx.fill(); break;
+                    case 'viking': pctx.fillStyle = '#64748b'; pctx.beginPath(); pctx.arc(0, 0, 10, Math.PI, 0); pctx.fill(); pctx.fillStyle = '#ffffff'; pctx.beginPath(); pctx.moveTo(-8, -4); pctx.lineTo(-15, -15); pctx.lineTo(-5, -8); pctx.fill(); pctx.beginPath(); pctx.moveTo(8, -4); pctx.lineTo(15, -15); pctx.lineTo(5, -8); pctx.fill(); break;
+                    case 'detective': pctx.fillStyle = '#451a03'; pctx.beginPath(); pctx.ellipse(0, 0, 12, 6, 0, Math.PI, 0); pctx.fill(); pctx.fillRect(-12, -4, 24, 4); pctx.fillRect(8, -2, 8, 3); break;
+                    case 'cowboy': pctx.fillStyle = '#78350f'; pctx.beginPath(); pctx.ellipse(0, 0, 15, 4, 0, 0, Math.PI*2); pctx.fill(); pctx.fillRect(-10, -10, 20, 10); break;
+                    case 'wizard': pctx.fillStyle = '#312e81'; pctx.beginPath(); pctx.moveTo(-12, 0); pctx.lineTo(0, -22); pctx.lineTo(12, 0); pctx.fill(); pctx.fillStyle = '#fef08a'; pctx.beginPath(); pctx.arc(-2, -8, 2, 0, Math.PI*2); pctx.fill(); pctx.beginPath(); pctx.arc(3, -14, 1.5, 0, Math.PI*2); pctx.fill(); break;
+                    case 'straw': pctx.fillStyle = '#fde68a'; pctx.beginPath(); pctx.ellipse(0, 0, 16, 5, 0, 0, Math.PI*2); pctx.fill(); pctx.fillStyle = '#ef4444'; pctx.fillRect(-9, -4, 18, 2); pctx.fillStyle = '#fde68a'; pctx.beginPath(); pctx.arc(0, -3, 9, Math.PI, 0); pctx.fill(); break;
+                    case 'catears': pctx.fillStyle = '#000000'; pctx.beginPath(); pctx.moveTo(-12, 0); pctx.lineTo(-15, -10); pctx.lineTo(-6, -2); pctx.fill(); pctx.beginPath(); pctx.moveTo(12, 0); pctx.lineTo(15, -10); pctx.lineTo(6, -2); pctx.fill(); break;
+                    case 'party': pctx.fillStyle = `hsl(${state.rainbowHue}, 80%, 60%)`; pctx.beginPath(); pctx.moveTo(-8, 0); pctx.lineTo(0, -18); pctx.lineTo(8, 0); pctx.fill(); break;
+                    case 'halo': pctx.strokeStyle = '#fde68a'; pctx.lineWidth = 3; pctx.shadowBlur = 10; pctx.shadowColor = '#fbbf24'; pctx.beginPath(); pctx.ellipse(0, -8, 12, 4, 0, 0, Math.PI*2); pctx.stroke(); break;
+                }
+                pctx.restore();
+            }
+            if (skin.id === 'rocket') { pctx.fillStyle = '#EF4444'; pctx.beginPath(); pctx.moveTo(-5, 16); pctx.lineTo(0, 25); pctx.lineTo(5, 16); pctx.fill(); }
+            if (skin.id === 'smoking') { pctx.fillStyle = 'black'; pctx.fillRect(-10, -6, 20, 2); }
+            if (skin.id === 'lava') { pctx.shadowBlur = 10; pctx.shadowColor = '#F97316'; pctx.fillStyle = '#FB923C'; pctx.beginPath(); pctx.arc(0, 0, 12, 0, Math.PI*2); pctx.fill(); pctx.shadowBlur = 0; }
+            if (skin.id === 'steampunk') { pctx.fillStyle = '#78350F'; pctx.fillRect(-10, -18, 20, 4); pctx.strokeStyle = '#D97706'; pctx.lineWidth = 1; pctx.strokeRect(-10, -18, 20, 4); }
+            if (skin.id === 'neon' || skin.id === 'omega') { pctx.shadowBlur = 15; pctx.shadowColor = '#3B82F6'; pctx.strokeStyle = '#3B82F6'; pctx.lineWidth = 1; pctx.strokeRect(-18, -16, 36, 32); pctx.shadowBlur = 0; }
+            if (skin.id === 'ninja') { pctx.fillStyle = 'rgba(255,0,0,0.8)'; pctx.fillRect(-18, -8, 36, 4); }
+            else if (skin.id === 'frog') { pctx.fillStyle = 'white'; pctx.beginPath(); pctx.arc(-8, -6, 4, 0, Math.PI*2); pctx.fill(); pctx.beginPath(); pctx.arc(8, -6, 4, 0, Math.PI*2); pctx.fill(); pctx.fillStyle = 'black'; pctx.beginPath(); pctx.arc(-8, -6, 2, 0, Math.PI*2); pctx.fill(); pctx.beginPath(); pctx.arc(8, -6, 2, 0, Math.PI*2); pctx.fill(); }
+            else if (skin.id === 'angel') { pctx.strokeStyle = 'rgba(255,255,255,0.8)'; pctx.lineWidth = 2; pctx.beginPath(); pctx.ellipse(0, -22, 10, 3, 0, 0, Math.PI*2); pctx.stroke(); }
+            else if (skin.id === 'king') { pctx.fillStyle = '#FBBF24'; pctx.beginPath(); pctx.moveTo(-10, -16); pctx.lineTo(-14, -26); pctx.lineTo(-6, -20); pctx.lineTo(0, -30); pctx.lineTo(6, -20); pctx.lineTo(14, -26); pctx.lineTo(10, -16); pctx.fill(); }
             pctx.restore();
         }
 
         function draw() {
-            const theme = THEMES.find(t => t.id === state.selectedThemeId) || THEMES[0];
-            ctx.fillStyle = theme.bg; ctx.fillRect(0,0,WIDTH,HEIGHT);
-            ctx.save(); ctx.translate(0, -state.cameraY);
+            const theme = THEMES.find(t => t.id === state.selectedThemeId) || THEMES[0]; ctx.fillStyle = theme.bg; ctx.fillRect(0,0,WIDTH,HEIGHT);
+            if (theme.type === 'PLANET') { ctx.fillStyle = 'white'; state.stars.forEach(s => { ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2); ctx.fill(); }); }
+            else if (theme.type === 'CORAL') { ctx.strokeStyle = 'rgba(255,255,255,0.1)'; state.bubbles.forEach(b => { ctx.beginPath(); ctx.arc(b.x, b.y, b.size, 0, Math.PI * 2); ctx.stroke(); }); }
+            else if (theme.type === 'GRID') { ctx.strokeStyle = 'rgba(167, 139, 250, 0.2)'; ctx.lineWidth = 1; const gridSpacing = 40; const scrollOffset = (Date.now() * 0.05) % gridSpacing; for(let x=0; x<WIDTH; x+=gridSpacing) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, HEIGHT); ctx.stroke(); } for(let y=0; y<HEIGHT; y+=gridSpacing) { ctx.beginPath(); ctx.moveTo(0, y+scrollOffset); ctx.lineTo(WIDTH, y+scrollOffset); ctx.stroke(); } }
+            ctx.save(); ctx.translate(-state.cameraX, -state.cameraY);
             state.clocks.forEach(c => {
-                ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI*2); ctx.strokeStyle = c.color; ctx.lineWidth = 6; ctx.stroke();
-                ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke();
+                if (c.hasSpikes) { ctx.save(); if (c.spikeActive) { ctx.fillStyle = '#ef4444'; ctx.shadowBlur = 10; ctx.shadowColor = '#ef4444'; } else if (c.spikeTimer < 40) ctx.fillStyle = 'rgba(239, 68, 68, 0.4)'; else ctx.fillStyle = 'rgba(239, 68, 68, 0.1)'; const spikeCount = 12; for (let i = 0; i < spikeCount; i++) { let a = i * (Math.PI * 2 / spikeCount); let tipDist = c.radius + (c.spikeActive ? 15 : 5); ctx.beginPath(); ctx.moveTo(c.x + Math.cos(a - 0.1) * c.radius, c.y + Math.sin(a - 0.1) * c.radius); ctx.lineTo(c.x + Math.cos(a) * tipDist, c.y + Math.sin(a) * tipDist); ctx.lineTo(c.x + Math.cos(a + 0.1) * c.radius, c.y + Math.sin(a + 0.1) * c.radius); ctx.fill(); } ctx.restore(); }
+                if (theme.type === 'PLANET') { const gradGlow = ctx.createRadialGradient(c.x, c.y, c.radius, c.x, c.y, c.radius * 1.6); gradGlow.addColorStop(0, c.color + '44'); gradGlow.addColorStop(1, 'transparent'); ctx.fillStyle = gradGlow; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius * 1.6, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = c.color; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = 'white'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius*1.1, c.y + Math.sin(c.angle)*c.radius*1.1); ctx.stroke(); }
+                else if (theme.type === 'LILYPAD') { ctx.fillStyle = '#166534'; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.stroke(); ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.strokeStyle = 'white'; ctx.lineWidth = 3; ctx.stroke(); }
+                else if (theme.type === 'COIN') { const g = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.radius); g.addColorStop(0, '#fef08a'); g.addColorStop(0.7, '#fbbf24'); g.addColorStop(1, '#92400e'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.strokeStyle = '#78350f'; ctx.lineWidth = 4; ctx.stroke(); }
+                else if (theme.type === 'NOIR') { ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.stroke(); ctx.fillStyle = 'rgba(30,30,30,0.8)'; ctx.fill(); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, ctx.y + Math.sin(c.angle)*c.radius); ctx.stroke(); ctx.font = '10px Courier New'; ctx.fillStyle = 'white'; ctx.textAlign = 'center'; ctx.fillText('XII', c.x, c.y - c.radius + 15); }
+                else if (theme.type === 'GRID') { ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.stroke(); ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke(); ctx.setLineDash([2, 4]); ctx.beginPath(); ctx.arc(c.x, c.y, c.radius - 5, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]); }
+                else if (theme.type === 'CANDY') { const grad = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.radius); grad.addColorStop(0, '#fff'); grad.addColorStop(0.5, '#fb7185'); grad.addColorStop(1, '#e11d48'); ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(c.y, c.y, c.radius, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = 'white'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke(); }
+                else if (theme.type === 'CORAL') { ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 5; ctx.beginPath(); for(let i=0; i<8; i++) { const a = i * Math.PI / 4; const r = c.radius + Math.sin(Date.now()*0.005 + i)*5; ctx.lineTo(c.x + Math.cos(a)*r, c.y + Math.sin(a)*r); } ctx.closePath(); ctx.stroke(); ctx.fillStyle = 'rgba(12, 74, 110, 0.6)'; ctx.fill(); ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke(); }
+                else if (theme.type === 'FOREST') { ctx.fillStyle = '#064e3b'; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = '#10b981'; ctx.lineWidth = 6; ctx.stroke(); ctx.strokeStyle = '#dcfce7'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke(); ctx.fillStyle = 'rgba(16, 185, 129, 0.2)'; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius - 8, 0, Math.PI * 2); ctx.fill(); }
+                else if (theme.type === 'LAVA') { const grad = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.radius); grad.addColorStop(0, '#7f1d1d'); grad.addColorStop(0.8, '#450a0a'); grad.addColorStop(1, '#ef4444'); ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = '#f87171'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke(); }
+                else if (theme.type === 'SKY') { ctx.fillStyle = 'white'; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.stroke(); ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke(); }
+                else if (theme.type === 'MATRIX') { ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.stroke(); ctx.fillStyle = 'rgba(0, 0, 0, 0.9)'; ctx.fill(); ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.stroke(); ctx.font = '8px monospace'; ctx.fillStyle = '#22c55e'; ctx.textAlign = 'center'; ctx.fillText((Math.random() > 0.5 ? "1" : "0"), c.x, c.y + 3); }
+                else { ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.strokeStyle = c.color; ctx.lineWidth = 6; ctx.stroke(); ctx.fillStyle = 'rgba(15,23,42,0.9)'; ctx.fill(); ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + Math.cos(c.angle)*c.radius, c.y + Math.sin(c.angle)*c.radius); ctx.strokeStyle = c.color; ctx.lineWidth = 8; ctx.lineCap='round'; ctx.stroke(); }
             });
-            if (state.status === 'PLAYING') drawPigAvatar(ctx, SKINS.find(s=>s.id===state.selectedSkinId), state.pig.x, state.pig.y);
+            
+            state.pig.bullets.forEach(b => {
+                ctx.save();
+                ctx.translate(b.x, b.y);
+                ctx.rotate(b.angle);
+                const grad = ctx.createLinearGradient(0, 0, -20, 0);
+                grad.addColorStop(0, 'rgba(251, 191, 36, 1)');
+                grad.addColorStop(1, 'rgba(251, 191, 36, 0)');
+                ctx.fillStyle = grad;
+                ctx.fillRect(-20, -2, 20, 4);
+                ctx.fillStyle = '#fff';
+                ctx.beginPath(); ctx.arc(0, 0, 3, 0, Math.PI * 2); ctx.fill();
+                ctx.restore();
+            });
+
+            if (state.status === 'PLAYING') {
+                const skin = SKINS.find(s => s.id === state.selectedSkinId) || SKINS[0]; const p = state.pig;
+                
+                let rot;
+                const clock = p.attachedTo !== null ? state.clocks.find(c => c.id === p.attachedTo) : null;
+                if (clock) {
+                    rot = clock.angle + Math.PI / 2;
+                    if (skin.id === 'glock') rot += Math.PI; 
+                } else {
+                    rot = Math.atan2(p.vy, p.vx) + Math.PI / 2;
+                    if (skin.id === 'glock') rot += Math.PI; 
+                }
+
+                p.coinParticles.forEach(cp => { ctx.save(); ctx.translate(cp.x, cp.y); ctx.rotate(cp.rot); ctx.scale(cp.life, cp.life); ctx.fillStyle = '#fbbf24'; ctx.beginPath(); ctx.ellipse(0, 0, 5, 2, 0, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = '#b45309'; ctx.lineWidth = 1; ctx.stroke(); ctx.restore(); });
+                if ((skin.id === 'neon' || skin.id === 'omega' || skin.id === 'smoking') && p.trail.length > 0) p.trail.forEach(t => { ctx.fillStyle = skin.id === 'smoking' ? `rgba(200, 200, 200, ${t.life * 0.4})` : `rgba(59, 130, 246, ${t.life * 0.5})`; ctx.beginPath(); ctx.arc(t.x, t.y, (skin.id === 'smoking' ? 12 : 8) * t.life, 0, Math.PI * 2); ctx.fill(); });
+                const showTrajectory = state.gameMode === 'sandbox' || skin.id === 'cyber' || skin.id === 'king' || skin.id === 'omega';
+                if (showTrajectory) { let trajAngle = null; if (state.gameMode === 'sandbox') { const dx = (state.mouse.x + state.cameraX) - p.x; const dy = (state.mouse.y + state.cameraY) - p.y; trajAngle = Math.atan2(dy, dx); } else if (p.attachedTo !== null) { const clock = state.clocks.find(c => c.id === p.attachedTo); trajAngle = clock.angle; } if (trajAngle !== null) { ctx.save(); ctx.setLineDash([5, 5]); ctx.strokeStyle = (skin.id === 'king' || skin.id === 'omega') ? '#fbbf24' : 'rgba(6, 182, 212, 0.6)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x + Math.cos(trajAngle)*200, p.y + Math.sin(trajAngle)*200); ctx.stroke(); ctx.restore(); } }
+                drawPigAvatar(ctx, skin, p.x, p.y, 1, rot);
+            }
             ctx.restore();
         }
 
-        function loop(timestamp) { if (!state.lastTime) state.lastTime = timestamp; const dt = Math.min((timestamp-state.lastTime)/16.67, 3); state.lastTime = timestamp; update(dt); draw(); requestAnimationFrame(loop); }
-        function backToHome() { state.status = 'HOME'; document.getElementById('ui-gameover').classList.add('hidden'); document.getElementById('ui-hud').classList.add('hidden'); document.getElementById('ui-home').classList.remove('hidden'); refreshUI(); }
-        function retryGame() { document.getElementById('ui-gameover').classList.add('hidden'); startGame(); }
-        function resetAllData() { if (confirm("Clear all data?")) { localStorage.clear(); location.reload(); } }
-        function openModeSelect() { startGame(); }
-        function startTutorial() { startGame(); }
-        function showUsernameEntry() { document.getElementById('ui-username').classList.remove('hidden'); }
+        function loop(timestamp) { if (!state.lastTime) state.lastTime = timestamp; const deltaTime = timestamp - state.lastTime; state.lastTime = timestamp; const cappedDt = Math.min(deltaTime, 100); const timeScale = cappedDt / (1000 / 60); update(timeScale); draw(); requestAnimationFrame(loop); }
+        window.addEventListener('mousemove', (e) => { const rect = canvas.getBoundingClientRect(); state.mouse.x = (e.clientX - rect.left) * (WIDTH / rect.width); state.mouse.y = (e.clientY - rect.top) * (HEIGHT / rect.height); });
+        window.addEventListener('keydown', (e) => { if (document.activeElement.tagName === 'INPUT') return; if (e.code === 'Space') { e.preventDefault(); if (state.status === 'PLAYING') jump(); else if (state.status === 'HOME') handleMainPlay(); else if (state.status === 'GAMEOVER') retryGame(); } });
+        canvas.addEventListener('mousedown', () => { initAudio(); jump(); });
+        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); initAudio(); const rect = canvas.getBoundingClientRect(); state.mouse.x = (e.touches[0].clientX - rect.left) * (WIDTH / rect.width); state.mouse.y = (e.touches[0].clientY - rect.top) * (HEIGHT / rect.height); jump(); });
 
-        window.addEventListener('mousedown', () => jump());
-        window.addEventListener('touchstart', e => { e.preventDefault(); jump(); });
-        generateDailyChallenge(); refreshUI(); requestAnimationFrame(loop);
+        generateDailyChallenge();
+        requestAnimationFrame(loop);
+        refreshUI();
     </script>
 </body>
 </html>
