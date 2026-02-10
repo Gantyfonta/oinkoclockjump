@@ -177,6 +177,7 @@
             <div class="mb-6 mt-32">
                 <h1 id="title-main" class="text-5xl font-black mb-1 tracking-tighter text-pink-400 drop-shadow-lg text-center leading-none">OINK-O-CLOCK</h1>
                 <p id="title-sub" class="text-pink-300/60 font-bold tracking-widest text-[10px] uppercase">Precision Time Leaper</p>
+                <p id="flavor-text" class="text-white/30 text-[9px] italic mt-2 tracking-wide max-w-[200px] mx-auto leading-tight">Searching for the pig in the machine...</p>
             </div>
             
             <div class="flex flex-col gap-3 w-64 items-center">
@@ -492,6 +493,25 @@
         const CLOCK_COLORS = ['#F472B6', '#60A5FA', '#34D399', '#FBBF24', '#A78BFA', '#FB923C'];
         const XP_PER_TIER = 1000;
         const XP_PER_DAILY = 500;
+
+        const FLAVOR_TEXTS = [
+            "Ticks are just clicks in the wrong font.",
+            "The bacon of time waits for no swine.",
+            "Oink once for yes, twice for chronos.",
+            "Jumping over deadlines since 1994.",
+            "Gravity is just a suggestion from a broken clock.",
+            "Time is a flat gear, and we're just jumping on it.",
+            "May your leaps be as precise as a Swiss watch.",
+            "The void is hungry, but so is the pig.",
+            "Even a broken pig jumps twice a day.",
+            "Stuck in a loop? Just jump out of it.",
+            "Why did the pig cross the gear? To reach the next tick.",
+            "Precision is the difference between a ham and a hero.",
+            "Don't let the clock strike back.",
+            "Every second counts, especially when you're airborne.",
+            "Leaping through the gears of destiny.",
+            "Oink-O-Clock: The only time that matters."
+        ];
 
         const FAMILY_MEMBERS = [
             { name: 'George', scale: 0.6, grab: 0, body: '#F472B6' },
@@ -844,6 +864,14 @@
                 toast.style.transform = 'translateY(-20px)';
                 setTimeout(() => toast.remove(), 300);
             }, 2500);
+        }
+
+        function updateFlavorText() {
+            const flavorEl = document.getElementById('flavor-text');
+            if (flavorEl) {
+                const randomText = FLAVOR_TEXTS[Math.floor(Math.random() * FLAVOR_TEXTS.length)];
+                flavorEl.innerText = `"${randomText}"`;
+            }
         }
 
         function addXP(amount) {
@@ -1220,7 +1248,7 @@
                 if (unlocked) progress = 100;
                 return `<div class="border-2 ${unlocked?'border-yellow-500/50 bg-yellow-500/10':'border-white/5 bg-white/5'} p-4 rounded-2xl flex items-center gap-4"><div class="text-2xl">${unlocked?'🏆':'🔒'}</div><div class="flex-1"><div class="flex justify-between items-center mb-1"><span class="text-xs font-black uppercase ${unlocked?'text-yellow-400':'text-white'}">${ach.name}</span></div><p class="text-[9px] text-white/50 mb-2 leading-tight">${ach.desc}</p><div class="h-1 bg-white/10 rounded-full overflow-hidden"><div class="h-full bg-yellow-500 transition-all duration-1000" style="width: ${progress}%"></div></div></div><div class="flex flex-col items-center gap-1 opacity-80"><div class="w-8 h-8 rounded-lg bg-indigo-900 border border-white/10 flex items-center justify-center overflow-hidden"><canvas id="ach-prev-${ach.id}" width="32" height="32"></canvas></div></div></div>`;
             }).join('');
-            ACHIEVEMENTS.forEach(ach => { const rewardSkin = SKINS.find(s => s.id === ach.rewardSkin); const pcanv = document.getElementById(`ach-prev-${ach.id}`); if (pcanv) { const pctx = pcanv.getContext('2d'); pctx.clearRect(0,0,32,32); drawPigAvatar(pctx, skin, 32, 32, 1.2, -0.2); } });
+            ACHIEVEMENTS.forEach(ach => { const rewardSkin = SKINS.find(s => s.id === ach.rewardSkin); const pcanv = document.getElementById(`ach-prev-${ach.id}`); if (pcanv) { const pctx = pcanv.getContext('2d'); pctx.clearRect(0,0,32,32); drawPigAvatar(pctx, rewardSkin, 16, 16, 0.6, -0.2); } });
             uiAchievements.classList.remove('hidden');
         }
         function buyRandomSkin() {
@@ -1254,7 +1282,7 @@
         function closeThemes() { uiThemes.classList.add('hidden'); }
         function closeLeaderboard() { uiLeaderboard.classList.add('hidden'); }
         function closeAchievements() { uiAchievements.classList.add('hidden'); }
-        function backToHome() { if (state.gameMode === 'sandbox') saveSandboxSpeed(); state.status='HOME'; uiGameOver.classList.add('hidden'); uiHUD.classList.add('hidden'); uiHome.classList.remove('hidden'); refreshUI(); }
+        function backToHome() { if (state.gameMode === 'sandbox') saveSandboxSpeed(); state.status='HOME'; uiGameOver.classList.add('hidden'); uiHUD.classList.add('hidden'); uiHome.classList.remove('hidden'); updateFlavorText(); refreshUI(); }
         function exitGameMode() { if (state.gameMode === 'sandbox') saveSandboxSpeed(); state.gameMode = 'regular'; backToHome(); }
         function retryGame() { startGame(state.gameMode); }
 
@@ -1601,6 +1629,7 @@
         canvas.addEventListener('touchstart', (e) => { e.preventDefault(); initAudio(); const rect = canvas.getBoundingClientRect(); state.mouse.x = (e.touches[0].clientX - rect.left) * (WIDTH / rect.width); state.mouse.y = (e.touches[0].clientY - rect.top) * (HEIGHT / rect.height); jump(); });
 
         generateDailyChallenge();
+        updateFlavorText();
         requestAnimationFrame(loop);
         refreshUI();
     </script>
