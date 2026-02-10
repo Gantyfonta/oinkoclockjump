@@ -901,7 +901,7 @@
 
             const rew = BP_REWARDS[idx];
             state.bpClaimed.push(idx);
-            localStorage.setItem('bpClaimed', JSON.stringify(state.bpClaimed));
+            localStorage.setItem('oinkBPClaimed', JSON.stringify(state.bpClaimed));
 
             if (rew.type === 'coins') {
                 state.coins += rew.amount;
@@ -1220,7 +1220,7 @@
                 if (unlocked) progress = 100;
                 return `<div class="border-2 ${unlocked?'border-yellow-500/50 bg-yellow-500/10':'border-white/5 bg-white/5'} p-4 rounded-2xl flex items-center gap-4"><div class="text-2xl">${unlocked?'🏆':'🔒'}</div><div class="flex-1"><div class="flex justify-between items-center mb-1"><span class="text-xs font-black uppercase ${unlocked?'text-yellow-400':'text-white'}">${ach.name}</span></div><p class="text-[9px] text-white/50 mb-2 leading-tight">${ach.desc}</p><div class="h-1 bg-white/10 rounded-full overflow-hidden"><div class="h-full bg-yellow-500 transition-all duration-1000" style="width: ${progress}%"></div></div></div><div class="flex flex-col items-center gap-1 opacity-80"><div class="w-8 h-8 rounded-lg bg-indigo-900 border border-white/10 flex items-center justify-center overflow-hidden"><canvas id="ach-prev-${ach.id}" width="32" height="32"></canvas></div></div></div>`;
             }).join('');
-            ACHIEVEMENTS.forEach(ach => { const rewardSkin = SKINS.find(s => s.id === ach.rewardSkin); const pcanv = document.getElementById(`ach-prev-${ach.id}`); if (pcanv) { const pctx = pcanv.getContext('2d'); pctx.clearRect(0,0,32,32); drawPigAvatar(pctx, rewardSkin, 16, 16, 0.6, -0.2); } });
+            ACHIEVEMENTS.forEach(ach => { const rewardSkin = SKINS.find(s => s.id === ach.rewardSkin); const pcanv = document.getElementById(`ach-prev-${ach.id}`); if (pcanv) { const pctx = pcanv.getContext('2d'); pctx.clearRect(0,0,32,32); drawPigAvatar(pctx, skin, 32, 32, 1.2, -0.2); } });
             uiAchievements.classList.remove('hidden');
         }
         function buyRandomSkin() {
