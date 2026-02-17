@@ -1409,8 +1409,12 @@
                                     let baseReward = (state.gameMode === 'hard') ? 5 : (state.gameMode === 'superhard' ? 12 : 2); baseReward += (state.upgrades.coin_boost || 0);
                                     let bonus = 0; if (skinId === 'rainbow') bonus += 1; if (skinId === 'golden') bonus += 2; if (skinId === 'bank') bonus += 3; if (skinId === 'king') bonus += 5; if (skinId === 'omega') bonus += 10;
                                     let reward = (baseReward + bonus); if (skinId === 'lava') reward *= 2; 
-                                    state.coins += Math.floor(reward); state.totalCoinsEarned += Math.floor(reward); state.score += Math.round((clock.id - state.lastClockId) * scoreMultiplier); state.lastClockId = clock.id; state.consecutiveJumps++; state.bestStreak = Math.max(state.bestStreak, state.consecutiveJumps); state.totalJumps++; scoreVal.innerText = state.score; playSound('coin'); if (isWealthPig) { setTimeout(()=>playSound('coin'), 100); setTimeout(()=>playSound('coin'), 200); }
-                                    updateDailyProgress('jumps', 1); if (state.gameMode === 'hard') updateDailyProgress('hard_jumps', 1); if (state.gameMode === 'superhard') updateDailyProgress('superhard_jumps', 1); updateDailyProgress('earn_coins', Math.floor(reward)); updateDailyProgress('perfect_streaks', state.consecutiveJumps >= 15 ? 1 : 0); refreshUI(); checkAchievements(); if (state.isTutorial && state.tutorialStep === 2) advanceTutorial();
+                                    state.coins += Math.floor(reward); state.totalCoinsEarned += Math.floor(reward); state.score += Math.round((clock.id - state.lastClockId) * scoreMultiplier); state.lastClockId = clock.id; state.consecutiveJumps++; state.bestStreak = Math.max(state.bestStreak, state.consecutiveJumps); state.totalJumps++;
+                                    
+                                    if (state.gameMode === 'hard' || state.gameMode === 'superhard') state.hardJumps++;
+                                    
+                                    scoreVal.innerText = state.score; playSound('coin'); if (isWealthPig) { setTimeout(()=>playSound('coin'), 100); setTimeout(()=>playSound('coin'), 200); }
+                                    updateDailyProgress('jumps', 1); if (state.gameMode === 'hard' || state.gameMode === 'superhard') updateDailyProgress('hard_jumps', 1); if (state.gameMode === 'superhard') updateDailyProgress('superhard_jumps', 1); updateDailyProgress('earn_coins', Math.floor(reward)); updateDailyProgress('perfect_streaks', state.consecutiveJumps >= 15 ? 1 : 0); refreshUI(); checkAchievements(); if (state.isTutorial && state.tutorialStep === 2) advanceTutorial();
                                 } else if (state.gameMode === 'sandbox') state.lastClockId = Math.max(state.lastClockId, clock.id);
                                 playSound('land');
                                 foundCollision = true;
@@ -1438,7 +1442,7 @@
         }
 
         function gameOver() {
-            state.status = 'GAMEOVER'; playSound('gameover'); state.totalScore += state.score; localStorage.setItem('oinkCoins', state.coins); localStorage.setItem('oinkTotalCoins', state.totalCoinsEarned); localStorage.setItem('oinkTotalScore', state.totalScore); localStorage.setItem('oinkTotalJumps', state.totalJumps);
+            state.status = 'GAMEOVER'; playSound('gameover'); state.totalScore += state.score; localStorage.setItem('oinkCoins', state.coins); localStorage.setItem('oinkTotalCoins', state.totalCoinsEarned); localStorage.setItem('oinkTotalScore', state.totalScore); localStorage.setItem('oinkTotalJumps', state.totalJumps); localStorage.setItem('oinkHardJumps', state.hardJumps);
             const isToughMode = (state.gameMode === 'hard' || state.gameMode === 'superhard'); document.getElementById('btn-retry').classList.toggle('hidden', isToughMode);
             if (state.username && !isBezosMode()) db.ref('leaderboard/wealth/'+state.username.toLowerCase()).set({ name: state.username, score: state.totalCoinsEarned }).catch(()=>{});
             updateDailyProgress('score', state.score); let isNewBest = false;
@@ -1463,7 +1467,7 @@
             const rewardSkin = SKINS.find(s => s.id === ach.rewardSkin); if (rewardSkin && !state.unlockedSkins.includes(rewardSkin.id)) { state.unlockedSkins.push(rewardSkin.id); localStorage.setItem('oinkUnlocked', JSON.stringify(state.unlockedSkins)); }
             const container = document.getElementById('achievement-popup-container'); const popup = document.createElement('div');
             popup.className = 'achievement-unlock bg-gradient-to-r from-yellow-500 to-amber-600 p-4 rounded-2xl border-2 border-yellow-300 shadow-2xl flex items-center gap-4 text-white pointer-events-auto cursor-pointer';
-            popup.onclick = () => popup.remove(); popup.innerHTML = `<div class="text-3xl">🏆</div><div><div class="text-[10px] font-black uppercase tracking-widest opacity-70">Achievement Unlocked!</div><div class="font-black text-sm">${ach.name}</div><div class="text-[9px] opacity-80">Reward: ${rewardSkin.name} Skin!</div></div>`;
+            popup.onclick = () => popup.remove(); popup.innerHTML = `<div class="text-3xl">🏆</div><div><div class="text-[10px] font-black uppercase tracking-widest opacity-70">Achievement Unlocked!</div><div class="font-black text-sm">${ach.name}</div><div class="text-[9px] opacity-80">Reward: ${rewardSkin ? rewardSkin.name : 'Unknown'} Skin!</div></div>`;
             container.appendChild(popup); setTimeout(() => popup.remove(), 4000); refreshUI(); playSound('unlock');
         }
 
